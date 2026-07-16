@@ -1,0 +1,27 @@
+# APK build outputs
+koko-bot-android/build/*.apk
+koko-bot-android/build/*.dex
+koko-bot-android/build/classes/
+koko-bot-android/build/bot-dex/
+koko-bot-android/build/new-smali/
+koko-bot-android/build/bot.jar
+koko-bot-android/build/classes.jar
+koko-bot-android/build/classes-token.jar
+
+# Decoded APK directories (large, can be regenerated)
+apkpure-450-decode/
+koko-bot-android/build/orig_working/
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Temp
+*.tmp
+*.log
