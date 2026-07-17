@@ -52,8 +52,11 @@ public class BotService extends Service {
     private BotConfig config;
     private AppTokenReader tokenReader;
     private Handler uiHandler = new Handler(Looper.getMainLooper());
-    private ExecutorService executor = Executors.newFixedThreadPool(3);
+    private ExecutorService executor = Executors.newFixedThreadPool(5);
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(3);
+    // Dedicated pool for async non-critical tasks (road distance, display updates)
+    // so they don't compete with the main order/bid executor
+    private ExecutorService asyncExecutor = Executors.newFixedThreadPool(2);
     private volatile boolean running = false;
 
     private volatile String accessToken;
@@ -92,6 +95,19 @@ public class BotService extends Service {
     private final ConcurrentHashMap<String, Boolean> rebidLock = new ConcurrentHashMap<String, Boolean>();
     // Store order details per tid for won card display: [price, distanceKm, puPlace, doPlace] (thread-safe)
     private final ConcurrentHashMap<String, String[]> orderDetails = new ConcurrentHashMap<String, String[]>();
+    // Trip GPS simulation: tid -> {puLat, puLng, doLat, doLng}
+    private final ConcurrentHashMap<String, double[]> tripCoords = new ConcurrentHashMap<String, double[]>();
+    // Trip GPS route points: tid -> ArrayList<double[2]> (lat, lng)
+    private final ConcurrentHashMap<String, java.util.ArrayList<double[]>> tripRoutePoints = new ConcurrentHashMap<String, java.util.ArrayList<double[]>>();
+    // Trip GPS simulation state: tid -> currentRouteIndex (which point we're at)
+    private final ConcurrentHashMap<String, int[]> tripSimState = new ConcurrentHashMap<String, int[]>();
+    // Trip phase: 1=heading to pickup, 2=heading to dropoff
+    private final ConcurrentHashMap<String, Integer> tripPhase = new ConcurrentHashMap<String, Integer>();
+    // Trip simulated GPS override: tid -> {lat, lng} (latest position)
+    private volatile double tripSimLat = 0;
+    private volatile double tripSimLng = 0;
+    private volatile boolean tripSimActive = false;
+    private volatile String tripSimTid = "";
     // Track customer order count for skip-duplicate detection: key=customerId, value="count,lastTid" (thread-safe)
     private final ConcurrentHashMap<String, String> customerOrderCount = new ConcurrentHashMap<String, String>();
     private static final int MAX_CUSTOMERS_TRACKED = 100;
@@ -458,8 +474,8 @@ public class BotService extends Service {
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
-                CHANNEL_ID, "ບອດ KOKOK", NotificationManager.IMPORTANCE_LOW);
-            channel.setDescription("ບໍລິການບອດສົ່ງອັອດເດີ");
+                CHANNEL_ID, "บอท KOKOK", NotificationManager.IMPORTANCE_LOW);
+            channel.setDescription("บริการบอทส่งออเดอร์");
             NotificationManager nm = (NotificationManager) getSystemService(NotificationManager.class);
             if (nm != null) nm.createNotificationChannel(channel);
         }
@@ -473,7 +489,7 @@ public class BotService extends Service {
             } else {
                 builder = new Notification.Builder(this);
             }
-            builder.setContentTitle("ບອດ KOKOK");
+            builder.setContentTitle("บอท KOKOK");
             builder.setContentText(text);
             builder.setSmallIcon(android.R.drawable.ic_menu_compass);
             builder.setOngoing(true);
@@ -537,10 +553,10 @@ public class BotService extends Service {
             return;
         }
         running = true;
-        showNotification("ບອດເລີ່ມທຳງານ...");
-        notifyUI("status", "ລໍຖ້າເຂົ້າລະບົບ...");
+        showNotification("บอทเริ่มทำงาน...");
+        notifyUI("status", "รอเข้าสู่ระบบ...");
         notifyUI("connection", "connection_red");
-        toast("ບອດເລີ່ມທຳງານ...");
+        toast("บอทเริ่มทำงาน...");
         Log.i(TAG, "startBot: launching bot logic");
 
         startTokenPoll();
@@ -551,7 +567,7 @@ public class BotService extends Service {
                 try {
                     Log.i(TAG, "startBot: executor thread started");
 
-                    notifyUI("status", "ລໍຖ້າໂທເຄັນ...");
+                    notifyUI("status", "รอโทเคน...");
 
                     int waitCount = 0;
                     while (running && accessToken == null) {
@@ -559,9 +575,9 @@ public class BotService extends Service {
                         waitCount++;
                         if (waitCount > 120) {
                             Log.w(TAG, "Timeout waiting for intercepted token");
-                            notifyUI("status", "ບໍ່ພົບໂທເຄັນ! ເຂົ້າແອັບກ່ອນ.");
-                            notifyUI("error", "ເຂົ້າແອັບແລ້ວລ໋ອກອິນ, ຫຼັງເລີ່ມບອດໃໝ່");
-                            toast("ບໍ່ມີໂທເຄັນ! ເຂົ້າແອັບກ່ອນ");
+                            notifyUI("status", "ไม่พบโทเคน! เข้าแอปก่อน.");
+                            notifyUI("error", "เข้าแอปแล้วล็อกอิน, ลองเริ่มบอทใหม่");
+                            toast("ไม่มีโทเคน! เข้าแอปก่อน");
                             stopBot();
                             return;
                         }
@@ -571,11 +587,11 @@ public class BotService extends Service {
                     if (!running) return;
 
                     Log.i(TAG, "startBot: got token, driverId=" + driverId + " listening for orders via app WebSocket");
-                    showNotification("ບອດທຳງານ - ກຳລັງຟັງ");
-                    notifyUI("status", "ອອນໄລ - ພ້ອມສົ່ງອັອດເດີ");
+                    showNotification("บอททำงาน - กำลังฟัง");
+                    notifyUI("status", "ออนไลน์ - พร้อมส่งออเดอร์");
                     notifyUI("token", String.valueOf(tokenExpiresAt));
                     notifyUI("connection", "connection_green");
-                    toast("ບອດອອນໄລ! ກຳລັງຟັງອັອດເດີ...");
+                    toast("บอทออนไลน์! กำลังฟังออเดอร์...");
 
                     startTokenRefresh();
                     startSharedPreferencesPoll();
@@ -585,8 +601,8 @@ public class BotService extends Service {
                 } catch (final Exception e) {
                     Log.e(TAG, "startBot FAILED", e);
                     final String errMsg = e.getClass().getSimpleName() + ": " + e.getMessage();
-                    notifyUI("error", "ຜິດພາດ: " + errMsg);
-                    toast("ບອດຜິດພາດ: " + errMsg);
+                    notifyUI("error", "ผิดพลาด: " + errMsg);
+                    toast("บอทผิดพลาด: " + errMsg);
                     stopBot();
                 }
             }
@@ -606,7 +622,7 @@ public class BotService extends Service {
                     org.json.JSONObject result = HttpClient.checkToken(server, botToken);
                     if (!result.optBoolean("valid", false) && "expired".equals(result.optString("error", ""))) {
                         Log.w(TAG, "ACCOUNT EXPIRED: stopping bot");
-                        notifyUI("expired", "ໝົດອາຍຸກ");
+                        notifyUI("expired", "หมดอายุค์");
                         stopBot();
                         return;
                     }
@@ -646,48 +662,87 @@ public class BotService extends Service {
                         Log.i(TAG, "Heartbeat: goOnline sent");
                     }
 
-                    // Parse fake points
-                    String pointsJson = config.getFakePoints();
-                    double fakeLat = baseLat;
-                    double fakeLng = baseLng;
+                    // If trip simulation is active, use simulated GPS instead of fake points
+                    double sendLat, sendLng;
+                    if (tripSimActive && tripSimLat != 0 && tripSimLng != 0) {
+                        sendLat = tripSimLat;
+                        sendLng = tripSimLng;
+                        // Calculate heading toward next route point
+                        int[] state = tripSimState.get(tripSimTid);
+                        java.util.ArrayList<double[]> route = tripRoutePoints.get(tripSimTid);
+                        if (state != null && route != null && state[0] + 1 < route.size()) {
+                            double[] next = route.get(state[0] + 1);
+                            currentHeading = calcBearing(sendLat, sendLng, next[0], next[1]);
+                        }
+                        Log.i(TAG, "Heartbeat: TRIP GPS (" + String.format("%.5f", sendLat) + "," + String.format("%.5f", sendLng) + ") h=" + String.format("%.0f", currentHeading) + " tid=" + tripSimTid);
+                    } else {
+                        // Normal fake GPS (idle, waiting for orders)
+                        // Try GPS Groups first, fallback to old fake_points
+                        double fakeLat = baseLat;
+                        double fakeLng = baseLng;
+                        JSONArray allPoints = null;
 
-                    if (pointsJson != null && pointsJson.length() > 5) {
-                        try {
-                            JSONArray points = new JSONArray(pointsJson);
-                            if (points.length() > 0) {
-                                int mode = config.getFakeGpsMode();
-                                if (mode == 1 && points.length() > 1) {
-                                    // Multi-location: cycle through points
-                                    pointIndex[0] = pointIndex[0] % points.length();
-                                    JSONObject pt = points.getJSONObject(pointIndex[0]);
-                                    fakeLat = pt.optDouble("lat", baseLat);
-                                    fakeLng = pt.optDouble("lng", baseLng);
-                                    pointIndex[0]++;
-                                } else {
-                                    // Single: always use first point
-                                    JSONObject pt = points.getJSONObject(0);
-                                    fakeLat = pt.optDouble("lat", baseLat);
-                                    fakeLng = pt.optDouble("lng", baseLng);
+                        // Priority 1: GPS Groups (enabled groups only)
+                        String groupsJson = config.getGpsGroups();
+                        if (groupsJson != null && groupsJson.length() > 5) {
+                            try {
+                                JSONArray groups = new JSONArray(groupsJson);
+                                JSONArray enabledPoints = new JSONArray();
+                                for (int g = 0; g < groups.length(); g++) {
+                                    JSONObject grp = groups.getJSONObject(g);
+                                    if (grp.optBoolean("enabled", false)) {
+                                        JSONArray pts = grp.optJSONArray("points");
+                                        if (pts != null) {
+                                            for (int p = 0; p < pts.length(); p++) {
+                                                enabledPoints.put(pts.getJSONObject(p));
+                                            }
+                                        }
+                                    }
+                                }
+                                if (enabledPoints.length() > 0) {
+                                    allPoints = enabledPoints;
+                                }
+                            } catch (Exception e) {
+                                Log.w(TAG, "Failed to parse GPS groups: " + e.getMessage());
+                            }
+                        }
+
+                        // Priority 2: Legacy fake_points (backward compatible)
+                        if (allPoints == null || allPoints.length() == 0) {
+                            String pointsJson = config.getFakePoints();
+                            if (pointsJson != null && pointsJson.length() > 5) {
+                                try {
+                                    allPoints = new JSONArray(pointsJson);
+                                } catch (Exception e) {
+                                    Log.w(TAG, "Failed to parse legacy fake points: " + e.getMessage());
                                 }
                             }
-                        } catch (Exception e) {
-                            Log.w(TAG, "Failed to parse fake points: " + e.getMessage());
                         }
-                    }
+
+                        if (allPoints != null && allPoints.length() > 0) {
+                            // Always cycle through all points (multi-mode behavior)
+                            pointIndex[0] = pointIndex[0] % allPoints.length();
+                            JSONObject pt = allPoints.getJSONObject(pointIndex[0]);
+                            fakeLat = pt.optDouble("lat", baseLat);
+                            fakeLng = pt.optDouble("lng", baseLat);
+                            pointIndex[0]++;
+                        }
 
                     // Add random jitter (±4 meters ≈ ±0.000036 degrees)
                     double jitterLat = (random.nextDouble() * 2 - 1) * 0.000036;
                     double jitterLng = (random.nextDouble() * 2 - 1) * 0.000036;
-                    double sendLat = fakeLat + jitterLat;
-                    double sendLng = fakeLng + jitterLng;
+                    sendLat = fakeLat + jitterLat;
+                    sendLng = fakeLng + jitterLng;
 
                     // Slowly drift heading (±15 degrees from current)
                     currentHeading = currentHeading + (random.nextDouble() * 2 - 1) * 15;
                     if (currentHeading < 0) currentHeading += 360;
                     if (currentHeading >= 360) currentHeading -= 360;
 
+                    Log.i(TAG, "Heartbeat: IDLE GPS (" + String.format("%.5f", sendLat) + "," + String.format("%.5f", sendLng) + ") h=" + String.format("%.0f", currentHeading));
+                    } // end else (idle GPS)
+
                     HttpClient.sendLocation(accessToken, sendLat, sendLng, currentHeading);
-                    Log.i(TAG, "Heartbeat: sent GPS (" + String.format("%.5f", sendLat) + "," + String.format("%.5f", sendLng) + ") h=" + String.format("%.0f", currentHeading));
                 } catch (Exception e) {
                     Log.e(TAG, "Heartbeat error: " + e.getMessage());
                 }
@@ -712,7 +767,7 @@ public class BotService extends Service {
                             accessToken = newToken;
                             tokenExpiresAt = jwt.getLong("exp") * 1000;
                             touchActivity();
-                            notifyUI("status", "ໂທເຄັນໃໝ່ແລ້ວ");
+                            notifyUI("status", "โทเคนใหม่แล้ว");
                             notifyUI("token", String.valueOf(tokenExpiresAt));
                         }
                     }
@@ -721,7 +776,7 @@ public class BotService extends Service {
                         long remaining = tokenExpiresAt - System.currentTimeMillis();
                         if (remaining < 60000) {
                             Log.w(TAG, "Token expiring soon (" + (remaining / 1000) + "s)");
-                            notifyUI("status", "ໂທເຄັນໝົດເວລາ, ລໍຖ້າແອັບ...");
+                            notifyUI("status", "โทเคนหมดเวลา, รอแอป...");
                         }
                     }
                 } catch (Exception e) {
@@ -739,10 +794,10 @@ public class BotService extends Service {
                 try {
                     String[] tokens = tokenReader.getAppTokens();
                     if (tokens != null && tokens[0] != null) {
-                        notifyUI("status", "ໄດ້ໂທເຄັນ! ເລີ່ມທຳງານ...");
+                        notifyUI("status", "ได้โทเคน! เริ่มทำงาน...");
                     } else {
                         int sec = (int) ((System.currentTimeMillis() / 1000) % 60);
-                        notifyUI("status", "ລໍຖ້າໂທເຄັນ... (" + sec + "s)");
+                        notifyUI("status", "รอโทเคน... (" + sec + "s)");
                     }
                 } catch (Exception ignored) {}
             }
@@ -874,7 +929,7 @@ public class BotService extends Service {
                 JSONObject payload2 = orderData.has("payload") ? orderData.optJSONObject("payload") : orderData;
                 String skipTid = payload2 != null ? payload2.optString("tid", "?") : "?";
                 Log.i(TAG, "SKIP (active trip): tid=" + skipTid + ", already on trip " + activeTrip.keySet().iterator().next());
-                notifyUI("skip", "\u0e82\u0ec9\u0eb2\u0ea1: \u0ea1\u0eb5\u0e97\u0ecd\u0eb2\u0e9a\u0e97\u0eb5\u0ec8\u0e81\u0eb3\u0ea5\u0eb1\u0e87");
+                notifyUI("skip", "ข้าม: มีทาบทีี่กำลัง");
                 return;
             }
 
@@ -887,7 +942,7 @@ public class BotService extends Service {
             String tid = payload.getString("tid");
 
             long now = System.currentTimeMillis();
-            if (tid.equals(lastBidTid) && (now - lastBidTime) < 5000) {
+            if (tid.equals(lastBidTid) && (now - lastBidTime) < 2000) {
                 Log.i(TAG, "Skipping duplicate order: " + tid);
                 return;
             }
@@ -935,6 +990,13 @@ public class BotService extends Service {
                 puLat = puCoord.optDouble("y", 0);
                 puLng = puCoord.optDouble("x", 0);
             }
+            // Extract dropoff coordinates for trip simulation
+            JSONObject doCoord = payload.optJSONObject("doCoord");
+            double doLat = 0, doLng = 0;
+            if (doCoord != null) {
+                doLat = doCoord.optDouble("y", 0);
+                doLng = doCoord.optDouble("x", 0);
+            }
             // Use Haversine first for FAST bidding (not blocked by API call)
             if (pickupDist <= 0 && puLat != 0 && puLng != 0) {
                 pickupDist = haversine(baseLat, baseLng, puLat, puLng);
@@ -947,7 +1009,7 @@ public class BotService extends Service {
                 final String asyncTid = tid;
                 final double asyncPuLat = puLat;
                 final double asyncPuLng = puLng;
-                executor.execute(new Runnable() {
+                asyncExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
                         try {
@@ -987,7 +1049,7 @@ public class BotService extends Service {
                 });
                 if (skipDecision[0] >= 2) {
                     Log.i(TAG, "SKIP DUPLICATE: cid=" + cidKey.substring(0, Math.min(cidKey.length(), 8)) + " ordered " + skipDecision[0] + " times");
-                    notifyUI("skip", "\u0e82\u0ec9\u0eb2\u0ea1: \u0eae\u0eb1\u0e9a\u0e0a\u0ecd\u0ec9\u0eb2 (" + skipDecision[0] + "\u0e84\u0ea3\u0eb1\u0ec9\u0e87)");
+                    notifyUI("skip", "ข้าม: รับ\u0e0aํ้า (" + skipDecision[0] + "ครั้ง)");
                     return;
                 }
                 // Evict oldest entry if map too large (done outside compute to avoid deadlock)
@@ -1001,14 +1063,18 @@ public class BotService extends Service {
             }
 
             Log.i(TAG, "NEW ORDER: tid=" + tid + " pickup=" + (int) pickupDist + "m price=" + serverPrice + " " + puPlace + " -> " + doPlace);
-            notifyUI("order", String.format("ໃໝ່: %s -> %s (%dm, %dກບ)", puPlace, doPlace, (int) pickupDist, serverPrice));
-            toast("ອັອດເດີ: " + puPlace + " -> " + doPlace);
+            notifyUI("order", String.format("ใหม่: %s -> %s (%dm, %dกีบ)", puPlace, doPlace, (int) pickupDist, serverPrice));
+            toast("ออเดอร์: " + puPlace + " -> " + doPlace);
 
             // Store order details for won card display
             String distKm = String.format("%.1f", pickupDist / 1000.0);
             orderDetails.put(tid, new String[]{String.valueOf(serverPrice), distKm, puPlace, doPlace});
             // Also save to SharedPreferences for OrderDisplayOverlay
             BotConfig.saveOrderDetails(getApplicationContext(), tid, String.valueOf(serverPrice), distKm, puPlace, doPlace);
+            // Store coords for trip GPS simulation (if we win this order)
+            if (puLat != 0 && puLng != 0) {
+                tripCoords.put(tid, new double[]{puLat, puLng, doLat, doLng});
+            }
 
             if (!config.isEnabled()) {
                 Log.i(TAG, "Bot disabled, skipping");
@@ -1018,7 +1084,7 @@ public class BotService extends Service {
             int maxDistM = config.getMaxDistanceKm() * 1000;
             if (maxDistM > 0 && pickupDist > maxDistM) {
                 Log.i(TAG, "Pickup filter: " + (int) pickupDist + "m > " + maxDistM + "m");
-                notifyUI("order", String.format("ຂ້າມ: ໄກເກີນ (%dm > %dm)", (int) pickupDist, maxDistM));
+                notifyUI("order", String.format("ขาม: ไกลเกิน (%dm > %dm)", (int) pickupDist, maxDistM));
                 return;
             }
 
@@ -1049,13 +1115,13 @@ public class BotService extends Service {
                     if (maxDistKm == 0) {
                         // Price below all tier minimums → reject
                         Log.i(TAG, "Tier: price=" + serverPrice + " below all tiers");
-                        notifyUI("order", String.format("\u0e82\u0ec9\u0eb2\u0ea1: \u0ea5\u0eb2\u0e84\u0eb2 %dk < \u0e95\u0ec8\u0ecd\u0eaa\u0eb8\u0e94\u0e97\u0e38\u0e81\u0e8a\u0ec8\u0ea7\u0e87", serverPrice));
+                        notifyUI("order", String.format("ข้าม: ราคา %dk < ต่ำสุดท\u0e38กช่วง", serverPrice));
                         return;
                     }
                     if (pickupKm > maxDistKm) {
                         // Distance exceeds max for this price tier
                         Log.i(TAG, "Tier: price=" + serverPrice + " dist=" + (int)pickupKm + "km > max " + maxDistKm + "km");
-                        notifyUI("order", String.format("\u0e82\u0ec9\u0eb2\u0ea1: \u0eab\u0ec8\u0eb2\u0e87 %dkm > %dkm (\u0ea5\u0eb2\u0e84\u0eb2 %dk)", (int)pickupKm, maxDistKm, serverPrice));
+                        notifyUI("order", String.format("ข้าม: ไกล %dkm > %dkm (ราคา %dk)", (int)pickupKm, maxDistKm, serverPrice));
                         return;
                     }
                     Log.i(TAG, "Tier: price=" + serverPrice + " dist=" + (int)pickupKm + "km OK (max " + maxDistKm + "km)");
@@ -1068,49 +1134,61 @@ public class BotService extends Service {
                 int minFare = config.getMinFare();
                 if (serverPrice < minFare) {
                     Log.i(TAG, "Price filter: " + serverPrice + " < min " + minFare);
-                    notifyUI("order", String.format("\u0e82\u0ec9\u0eb2\u0ea1: \u0ea5\u0eb2\u0e84\u0eb2 %dk < \u0e95\u0ec8\u0ecd\u0eaa\u0eb8\u0e94 %dk", serverPrice, minFare));
+                    notifyUI("order", String.format("ข้าม: ราคา %dk < ต่ำสุด %dk", serverPrice, minFare));
                     return;
                 }
                 bidPrice = Math.max(minFare, serverPrice);
             }
 
-            // Wait configured delay to let customer UI render accept button
-            int bidDelay = config.getBidDelay();
-            if (bidDelay > 0) {
-                Log.i(TAG, "BIDDING: tid=" + tid + " price=" + bidPrice + " pickup=" + (int) pickupDist + "m (waiting " + bidDelay + "ms)");
-                try { Thread.sleep(bidDelay); } catch (InterruptedException ignored) { return; }
-            }
+            // Schedule bid with delay — non-blocking so executor thread is freed for next order
+            final int bidDelay = config.getBidDelay();
+            final String fTid = tid;
+            final int fPrice = bidPrice;
+            final double fDist = pickupDist;
+            final int maxRetries = config.getBidRetries();
 
-            int maxRetries = config.getBidRetries();
-            boolean bidSuccess = false;
+            Log.i(TAG, "BIDDING: tid=" + tid + " price=" + bidPrice + " pickup=" + (int) pickupDist + "m (scheduled in " + bidDelay + "ms)");
 
-            for (int attempt = 0; attempt <= maxRetries; attempt++) {
-                try {
-                    if (attempt > 0) {
-                        Log.i(TAG, "RETRY #" + attempt + " tid=" + tid);
-                        try { Thread.sleep(2000); } catch (InterruptedException ignored) { return; }
-                    }
+            final Runnable bidTask = new Runnable() {
+                @Override
+                public void run() {
+                    for (int attempt = 0; attempt <= maxRetries; attempt++) {
+                        try {
+                            if (attempt > 0) {
+                                Log.i(TAG, "RETRY #" + attempt + " tid=" + fTid);
+                                try { Thread.sleep(2000); } catch (InterruptedException ignored) { return; }
+                            }
+                            if (!running || accessToken == null) return;
 
-                    Log.i(TAG, "BIDDING NOW: tid=" + tid + " price=" + bidPrice + (attempt > 0 ? " (attempt " + attempt + ")" : ""));
-                    JSONObject bidResp = HttpClient.bid(accessToken, tid, bidPrice, pickupDist);
-                    totalBids.incrementAndGet();
-                    config.addBid();
-                    lastBidTid = tid;
-                    lastBidTime = System.currentTimeMillis();
-                    bidDetails.put(tid, new String[]{String.valueOf(bidPrice), String.valueOf(pickupDist)});
-                    bidSuccess = true;
-                    String msg = String.format("ສົ່ງ %dກບ ສຳເລັດ -> %s", bidPrice, tid);
-                    Log.i(TAG, msg + " resp=" + bidResp.toString().substring(0, Math.min(bidResp.toString().length(), 200)));
-                    notifyUI("bid", msg);
-                    toast("ສົ່ງສຳເລັດ: " + bidPrice + " ກີບ");
-                    updateStats();
-                    break;
-                } catch (Exception e) {
-                    Log.e(TAG, "Bid FAILED (attempt " + attempt + "/" + maxRetries + ")", e);
-                    if (attempt == maxRetries) {
-                        notifyUI("error", "ຜິດພາດ: " + e.getMessage());
+                            Log.i(TAG, "BIDDING NOW: tid=" + fTid + " price=" + fPrice + (attempt > 0 ? " (attempt " + attempt + ")" : ""));
+                            JSONObject bidResp = HttpClient.bid(accessToken, fTid, fPrice, fDist);
+                            totalBids.incrementAndGet();
+                            config.addBid();
+                            lastBidTid = fTid;
+                            lastBidTime = System.currentTimeMillis();
+                            bidDetails.put(fTid, new String[]{String.valueOf(fPrice), String.valueOf(fDist)});
+                            String msg = String.format("ส่ง %dกีบ สำเร็จ -> %s", fPrice, fTid);
+                            Log.i(TAG, msg + " resp=" + bidResp.toString().substring(0, Math.min(bidResp.toString().length(), 200)));
+                            notifyUI("bid", msg);
+                            toast("ส่งสำเร็จ: " + fPrice + " กีบ");
+                            updateStats();
+                            return;
+                        } catch (Exception e) {
+                            Log.e(TAG, "Bid FAILED (attempt " + attempt + "/" + maxRetries + ")", e);
+                            if (attempt == maxRetries) {
+                                notifyUI("error", "ผิดพลาด: " + e.getMessage());
+                            }
+                        }
                     }
                 }
+            };
+
+            // Non-blocking: schedule the bid, return immediately (frees executor thread)
+            if (bidDelay > 0) {
+                scheduler.schedule(bidTask, bidDelay, java.util.concurrent.TimeUnit.MILLISECONDS);
+            } else {
+                // Bid immediately on async pool (don't block)
+                asyncExecutor.execute(bidTask);
             }
         } catch (Exception e) {
             Log.e(TAG, "tryHandleNewOrder error", e);
@@ -1150,7 +1228,7 @@ public class BotService extends Service {
             if (maxRebid <= 0) maxRebid = 3;
             if (count >= maxRebid) {
                 Log.i(TAG, "REBID LIMIT: tid=" + tid + " rejected " + count + "/" + maxRebid + " times, giving up");
-                notifyUI("order", String.format("ຖືກປະຕິເສດ %d/%d ຄັ້ງ, ສະລະ %s", count, maxRebid, tid));
+                notifyUI("order", String.format("ถูกปฏิเสธ %d/%d ครั้ง, สละ %s", count, maxRebid, tid));
                 rejectedCount.remove(tid);
                 rebidLock.remove(tid);
                 return;
@@ -1193,10 +1271,10 @@ public class BotService extends Service {
             lastBidTid = tid;
             lastBidTime = System.currentTimeMillis();
 
-            String msg = String.format("ຣີບິດ %d/%d: %d຺ກ -> %s", count, maxRebid, bidPrice, tid);
+            String msg = String.format("รีบิด %d/%d: %d์ -> %s", count, maxRebid, bidPrice, tid);
             Log.i(TAG, msg + " resp=" + bidResp.toString().substring(0, Math.min(bidResp.toString().length(), 200)));
             notifyUI("bid", msg);
-            toast("ຣີບິດສົ່ງ: " + bidPrice + " ກີບ");
+            toast("รีบิดส่ง: " + bidPrice + " กีบ");
             updateStats();
 
             // Unlock after completing
@@ -1244,6 +1322,9 @@ public class BotService extends Service {
                     }, 30, TimeUnit.MINUTES);
                 }
 
+                // Start trip GPS simulation (move toward pickup, then dropoff)
+                startTripSimulation(tid);
+
                 // Get stored order details for the won card
                 String[] details = orderDetails.containsKey(tid) ? orderDetails.get(tid) : null;
                 // Also try reading from SharedPreferences (OrderDisplayOverlay saves there)
@@ -1254,7 +1335,7 @@ public class BotService extends Service {
                 if (details != null) {
                     // Send pipe-separated: price|distKm|puPlace|doPlace
                     wonMsg = details[0] + "|" + details[1] + "|" + details[2] + "|" + details[3];
-                    String msg = String.format("ໄດ້ແລ້ວ! %sກບ (%s km) %s -> %s", details[0], details[1], details[2], details[3]);
+                    String msg = String.format("ได้แล้ว! %sกีบ (%s km) %s -> %s", details[0], details[1], details[2], details[3]);
                     Log.i(TAG, msg);
                     toast(msg);
                     // Re-save order details so OrderDisplayOverlay can read them
@@ -1263,9 +1344,9 @@ public class BotService extends Service {
                     orderDetails.remove(tid);
                 } else {
                     wonMsg = price + "|?|?|?";
-                    String msg = String.format("ໄດ້ແລ້ວ! %s - %dກບ", tid, price);
+                    String msg = String.format("ได้แล้ว! %s - %dกีบ", tid, price);
                     Log.i(TAG, msg);
-                    toast("ໄດ້ແລ້ວ! ອັອດເດີ " + tid + " - " + price + " ກີບ");
+                    toast("ได้แล้ว! ออเดอร์ " + tid + " - " + price + " กีบ");
                     // Save what we have so overlay can show price
                     if (price > 0) {
                         BotConfig.saveOrderDetails(getApplicationContext(), tid, String.valueOf(price), "?", "?", "?");
@@ -1275,11 +1356,118 @@ public class BotService extends Service {
                 BotConfig.saveWonEvent(getApplicationContext(), tid);
                 notifyUI("won", wonMsg);
             } else {
-                Log.i(TAG, "ຄົນຂັບຄົນອື່ນໄດ້: " + tid);
+                Log.i(TAG, "คนขับคนอื่นได้: " + tid);
             }
             updateStats();
         } catch (Exception e) {
             Log.e(TAG, "tryHandleBidAccepted error", e);
+        }
+    }
+
+    /**
+     * Start trip GPS simulation: move toward pickup, then dropoff.
+     * Only works if fake GPS is enabled.
+     */
+    private void startTripSimulation(final String tid) {
+        if (!config.isFakeGps()) {
+            Log.i(TAG, "Trip simulation skipped: fake GPS disabled");
+            return;
+        }
+        final double[] coords = tripCoords.get(tid);
+        if (coords == null || coords[0] == 0 || coords[1] == 0) {
+            Log.w(TAG, "Trip simulation skipped: no pickup coordinates for tid=" + tid);
+            return;
+        }
+        final double puLat = coords[0], puLng = coords[1];
+        final double doLat = coords[2], doLng = coords[3];
+        final boolean hasDropoff = (doLat != 0 && doLng != 0);
+
+        Log.i(TAG, "Trip simulation starting: tid=" + tid + " pu=" + String.format("%.5f", puLat) + "," + String.format("%.5f", puLng)
+            + (hasDropoff ? " do=" + String.format("%.5f", doLat) + "," + String.format("%.5f", doLng) : " no dropoff coords"));
+
+        tripPhase.put(tid, 1); // Phase 1: heading to pickup
+        tripSimActive = true;
+        tripSimTid = tid;
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // Phase 1: current position → pickup
+                    simulateLeg(tid, 1, baseLat, baseLng, puLat, puLng);
+                    if (!tripSimActive || !tid.equals(tripSimTid)) return;
+
+                    if (hasDropoff) {
+                        // Phase 2: pickup → dropoff
+                        tripPhase.put(tid, 2);
+                        Log.i(TAG, "Trip sim phase 2: heading to dropoff tid=" + tid);
+                        simulateLeg(tid, 2, puLat, puLng, doLat, doLng);
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Trip simulation error: " + e.getMessage());
+                }
+            }
+        });
+    }
+
+    /**
+     * Simulate driving along a route from (fromLat, fromLng) to (toLat, toLng).
+     * Moves GPS position incrementally and updates tripSimLat/tripSimLng for heartbeat to send.
+     */
+    private void simulateLeg(String tid, int phase, double fromLat, double fromLng, double toLat, double toLng) {
+        try {
+            // Try OSRM route first
+            java.util.ArrayList<double[]> routePoints = HttpClient.getRoutePoints(fromLat, fromLng, toLat, toLng);
+
+            if (routePoints == null || routePoints.size() < 2) {
+                // Fallback: linear interpolation (straight line)
+                Log.w(TAG, "Trip sim: OSRM failed, using linear interpolation phase=" + phase);
+                routePoints = new java.util.ArrayList<double[]>();
+                int steps = Math.max(10, (int) (haversine(fromLat, fromLng, toLat, toLng) / 30)); // ~30m per step
+                if (steps > 500) steps = 500; // cap
+                for (int i = 0; i <= steps; i++) {
+                    double frac = (double) i / steps;
+                    double lat = fromLat + (toLat - fromLat) * frac;
+                    double lng = fromLng + (toLng - fromLng) * frac;
+                    routePoints.add(new double[]{lat, lng});
+                }
+            }
+
+            tripRoutePoints.put(tid, routePoints);
+            tripSimState.put(tid, new int[]{0}); // start at index 0
+            Log.i(TAG, "Trip sim: " + routePoints.size() + " route points for phase=" + phase + " tid=" + tid);
+
+            int gpsIntervalSec = Math.max(2, config.getFakeGpsInterval());
+            // Calculate total route distance to estimate realistic speed
+            double totalDist = 0;
+            for (int i = 1; i < routePoints.size(); i++) {
+                totalDist += haversine(routePoints.get(i-1)[0], routePoints.get(i-1)[1],
+                                       routePoints.get(i)[0], routePoints.get(i)[1]);
+            }
+            // Speed: ~40 km/h = ~11 m/s in city. Min interval 2s → ~22m per tick
+            double speedMps = 11.0; // 40 km/h
+            double metersPerTick = speedMps * gpsIntervalSec;
+            double totalTicks = totalDist / metersPerTick;
+            if (totalTicks < 1) totalTicks = 1;
+            double pointsPerTick = (double) routePoints.size() / totalTicks;
+            if (pointsPerTick < 0.5) pointsPerTick = 0.5;
+
+            int idx = 0;
+            while (idx < routePoints.size() && tripSimActive && tid.equals(tripSimTid)) {
+                double[] pt = routePoints.get(idx);
+                tripSimLat = pt[0] + (random.nextDouble() * 2 - 1) * 0.000036; // jitter ±4m
+                tripSimLng = pt[1] + (random.nextDouble() * 2 - 1) * 0.000036;
+                int[] state = tripSimState.get(tid);
+                if (state != null) state[0] = idx;
+
+                Log.i(TAG, "Trip sim GPS: " + String.format("%.5f", tripSimLat) + "," + String.format("%.5f", tripSimLng)
+                    + " phase=" + phase + " idx=" + idx + "/" + routePoints.size());
+                try { Thread.sleep(gpsIntervalSec * 1000); } catch (InterruptedException e) { return; }
+                idx += Math.max(1, (int) pointsPerTick);
+            }
+            Log.i(TAG, "Trip sim leg complete: phase=" + phase + " tid=" + tid);
+        } catch (Exception e) {
+            Log.e(TAG, "simulateLeg error: " + e.getMessage());
         }
     }
 
@@ -1304,13 +1492,25 @@ public class BotService extends Service {
             playSound(soundFileSuccess, "success"); // success chime — trip completed!
             Log.i(TAG, "TRIP UNLOCKED: tid=" + tid + " — accepting new orders again");
             notifyUI("trip_unlock", tid);
-            toast("\u2705 \u0e97\u0ecd\u0eb5\u0ec8\u0eaa\u0eb3\u0ec0\u0ea5\u0eb1\u0e94!");
+            toast("\u2705 ที่สำเร็จ!");
         }
-        // Also clean up order details
+        // Also clean up order details and trip simulation data
         if (tid.length() > 0) {
             rejectedCount.remove(tid);
             orderDetails.remove(tid);
             bidDetails.remove(tid);
+            tripCoords.remove(tid);
+            tripRoutePoints.remove(tid);
+            tripSimState.remove(tid);
+            tripPhase.remove(tid);
+            // Stop trip simulation if this was our trip
+            if (tid.equals(tripSimTid)) {
+                tripSimActive = false;
+                tripSimTid = "";
+                tripSimLat = 0;
+                tripSimLng = 0;
+                Log.i(TAG, "Trip simulation stopped for tid=" + tid);
+            }
         }
     }
 
@@ -1329,6 +1529,17 @@ public class BotService extends Service {
                    Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
         return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    /** Calculate bearing in degrees from point 1 to point 2 */
+    private double calcBearing(double lat1, double lon1, double lat2, double lon2) {
+        double dLon = Math.toRadians(lon2 - lon1);
+        double la1 = Math.toRadians(lat1);
+        double la2 = Math.toRadians(lat2);
+        double y = Math.sin(dLon) * Math.cos(la2);
+        double x = Math.cos(la1) * Math.sin(la2) - Math.sin(la1) * Math.cos(la2) * Math.cos(dLon);
+        double bearing = Math.toDegrees(Math.atan2(y, x));
+        return (bearing + 360) % 360;
     }
 
     private void stopBot() {

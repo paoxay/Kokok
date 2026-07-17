@@ -128,10 +128,11 @@ public class HttpClient {
 
     // ── Bot Login Server API ──
 
-    public static JSONObject login(String server, String username, String password) throws Exception {
+    public static JSONObject login(String server, String username, String password, String deviceId) throws Exception {
         JSONObject body = new JSONObject();
         body.put("username", username);
         body.put("password", password);
+        body.put("device_id", deviceId != null ? deviceId : "");
         String resp = post(server + "/api/login", null, body.toString());
         return new JSONObject(resp);
     }
@@ -180,5 +181,44 @@ public class HttpClient {
             // Silently fallback to Haversine
         }
         return 0; // 0 = failed, caller should fallback
+    }
+
+    /** Get route waypoints between two GPS points via OSRM (free, no key needed).
+     *  Returns ArrayList of double[2] = {lat, lng} along the route.
+     *  Returns null on failure.
+     */
+    public static java.util.ArrayList<double[]> getRoutePoints(double fromLat, double fromLng, double toLat, double toLng) {
+        try {
+            String url = "https://router.project-osrm.org/route/v1/driving/"
+                + fromLng + "," + fromLat + ";"
+                + toLng + "," + toLat
+                + "?overview=full&geometries=geojson";
+            HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(8000);
+            conn.setReadTimeout(8000);
+            conn.setRequestProperty("User-Agent", "okhttp/4.12.0");
+            String body = readResponse(conn);
+            conn.disconnect();
+            // Parse: {"routes":[{"geometry":{"coordinates":[[lng,lat],[lng,lat],...]}}]}
+            org.json.JSONObject json = new org.json.JSONObject(body);
+            if (!"Ok".equals(json.optString("code"))) return null;
+            org.json.JSONArray routes = json.optJSONArray("routes");
+            if (routes == null || routes.length() == 0) return null;
+            org.json.JSONObject route = routes.getJSONObject(0);
+            org.json.JSONObject geometry = route.optJSONObject("geometry");
+            if (geometry == null) return null;
+            org.json.JSONArray coords = geometry.optJSONArray("coordinates");
+            if (coords == null || coords.length() == 0) return null;
+            java.util.ArrayList<double[]> points = new java.util.ArrayList<double[]>();
+            for (int i = 0; i < coords.length(); i++) {
+                org.json.JSONArray c = coords.getJSONArray(i);
+                points.add(new double[]{ c.getDouble(1), c.getDouble(0) }); // [lat, lng]
+            }
+            if (points.size() >= 2) return points;
+        } catch (Exception e) {
+            // Silently fail
+        }
+        return null;
     }
 }

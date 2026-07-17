@@ -192,6 +192,7 @@ tr:hover td { background: #1e293b; }
               <th>ID</th>
               <th>Username</th>
               <th>Role</th>
+              <th>ອຸປະກອນ</th>
               <th>ອາຍຸກ</th>
               <th>ສະຖານະ</th>
               <th>ເຂົ້າລ້າມສຸດ</th>
@@ -280,6 +281,35 @@ function getStatusBadge(active, expires_at) {
   return '<span class="badge badge-active">ໃຊ້ຢູ່</span>';
 }
 
+function getDeviceCell(u) {
+  const approved = u.approved_device || '';
+  const pending = u.pending_device || '';
+  if (pending) {
+    return `<span class="badge badge-expired" title="${pending}">⏳ ລໍຖ້າອະນຸມັດ</span>`;
+  }
+  if (approved) {
+    return `<span style="color:#4ade80;font-family:monospace" title="${approved}">📱 ${approved.substring(0,8)}…</span>`;
+  }
+  return '<span style="color:#475569">ຍັງບໍ່ມີ</span>';
+}
+
+function approveDevice(userId) {
+  api('POST', `/api/users/${userId}/approve-device`)
+    .then(data => {
+      if (data.success) { toast('ອະນຸມັດ ອຸປະກອນແລ້ວ ✓'); loadAll(); }
+      else toast(data.error || 'Error', true);
+    });
+}
+
+function clearDevice(userId) {
+  if (!confirm('ລ້າງ ອຸປະກອນ ອອກ ແລ້ວ?')) return;
+  api('POST', `/api/users/${userId}/clear-device`)
+    .then(data => {
+      if (data.success) { toast('ລ້າງ ອຸປະກອນແລ້ວ ✓'); loadAll(); }
+      else toast(data.error || 'Error', true);
+    });
+}
+
 function loadStats() {
   api('GET', '/api/users').then(users => {
     const total = users.length;
@@ -305,6 +335,7 @@ function loadUsers() {
         <td>${u.id}</td>
         <td><strong>${u.username}</strong></td>
         <td><span class="badge ${u.role === 'admin' ? 'badge-admin' : 'badge-driver'}">${u.role}</span></td>
+        <td style="font-size:11px">${getDeviceCell(u)}</td>
         <td>${getExpiryBadge(u.expires_at)}</td>
         <td>${getStatusBadge(u.active, u.expires_at)}</td>
         <td style="font-size:11px;color:#64748b">${u.last_login || '—'}</td>
@@ -318,15 +349,17 @@ function loadUsers() {
               <option value="30">30 ວັນ</option>
               <option value="90">90 ວັນ</option>
               <option value="365">1 ປີ</option>
-	              <option value="forever" ${u.expires_at==='forever'?'selected':''}>ຖາວນ</option>
-	            </select>
+		              <option value="forever" ${u.expires_at==='forever'?'selected':''}>ຖາວນ</option>
+		            </select>
+            ${u.pending_device ? `<button class="btn btn-sm" style="border-color:#22c55e;color:#4ade80" onclick="approveDevice(${u.id})" title="ອະນຸມັດ ເຄືອງໃໝ່">✓ ອະນຸມັດ</button>` : ''}
+            <button class="btn btn-sm" onclick="clearDevice(${u.id})" title="ລ້າງ ອຸປະກອນ">🔄</button>
             <button class="btn btn-sm" onclick="toggleUser(${u.id}, ${u.active})">${u.active ? 'ປິດ' : 'ເປີດ'}</button>
             <button class="btn btn-sm btn-danger" onclick="deleteUser(${u.id}, '${u.username}')">ລົບ</button>
           </div>
         </td>
       </tr>`;
     });
-    document.getElementById('userTable').innerHTML = html || '<tr><td colspan="7" style="text-align:center;color:#64748b;padding:24px">ບໍ່ມີຜູ້ໃຊ້</td></tr>';
+    document.getElementById('userTable').innerHTML = html || '<tr><td colspan="8" style="text-align:center;color:#64748b;padding:24px">ບໍ່ມີຜູ້ໃຊ້</td></tr>';
   });
 }
 

@@ -52,6 +52,16 @@ def init_db():
         db.execute("ALTER TABLE users ADD COLUMN expires_at TEXT")
     except sqlite3.OperationalError:
         pass
+    # Migrate: add approved_device column (device binding: 1 user = 1 device)
+    try:
+        db.execute("ALTER TABLE users ADD COLUMN approved_device TEXT DEFAULT ''")
+    except sqlite3.OperationalError:
+        pass
+    # Migrate: add pending_device column (new device waiting for admin approval)
+    try:
+        db.execute("ALTER TABLE users ADD COLUMN pending_device TEXT DEFAULT ''")
+    except sqlite3.OperationalError:
+        pass
     db.commit()
     db.close()
     print("[DB] Initialized:", DB_PATH)
@@ -103,18 +113,20 @@ def login():
     data = request.get_json()
     username = data.get('username', '').strip()
     password = data.get('password', '').strip()
+    device_id = data.get('device_id', '').strip()
 
     if not username or not password:
         return jsonify({'error': 'Missing username or password'}), 400
 
     db = get_db()
     user = db.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone()
-    db.close()
 
     if not user:
+        db.close()
         return jsonify({'error': 'Invalid username or password'}), 401
 
     if not user['active']:
+        db.close()
         return jsonify({'error': 'Account disabled'}), 403
 
     # Check user expiry
@@ -123,29 +135,59 @@ def login():
         try:
             exp_time = datetime.datetime.strptime(expires_at, '%Y-%m-%d %H:%M:%S')
             if datetime.datetime.utcnow() > exp_time:
+                db.close()
                 return jsonify({'error': 'expired', 'message': 'Account expired'}), 403
         except ValueError:
             pass
 
     if not bcrypt.checkpw(password.encode('utf-8'), user['password_hash'].encode('utf-8')):
+        db.close()
         return jsonify({'error': 'Invalid username or password'}), 401
 
-    # Update last login
-    db = get_db()
-    db.execute('UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?', (user['id'],))
-    db.commit()
-    db.close()
+    # ── Device Binding Check (1 user = 1 device) ──
+    if not device_id:
+        db.close()
+        return jsonify({'error': 'Missing device_id'}), 400
 
-    token = create_token(user['id'], user['username'], user['role'])
-    log_action(user['id'], user['username'], 'login')
+    approved_device = user['approved_device'] if 'approved_device' in user.keys() else ''
+    pending_device = user['pending_device'] if 'pending_device' in user.keys() else ''
 
-    return jsonify({
-        'token': token,
-        'username': user['username'],
-        'role': user['role'],
-        'expires_in': JWT_EXPIRE_DAYS * 86400,
-        'user_expires_at': expires_at
-    })
+    if not approved_device:
+        # No approved device yet → first login, auto-approve
+        db.execute('UPDATE users SET approved_device = ?, pending_device = ?, last_login = CURRENT_TIMESTAMP WHERE id = ?',
+                   (device_id, '', user['id']))
+        db.commit()
+        db.close()
+        token = create_token(user['id'], user['username'], user['role'])
+        log_action(user['id'], user['username'], 'login (device auto-approved: ' + device_id[:8] + ')')
+        return jsonify({
+            'token': token,
+            'username': user['username'],
+            'role': user['role'],
+            'expires_in': JWT_EXPIRE_DAYS * 86400,
+            'user_expires_at': expires_at
+        })
+    elif device_id == approved_device:
+        # Same device → OK, login success
+        db.execute('UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?', (user['id'],))
+        db.commit()
+        db.close()
+        token = create_token(user['id'], user['username'], user['role'])
+        log_action(user['id'], user['username'], 'login (device match)')
+        return jsonify({
+            'token': token,
+            'username': user['username'],
+            'role': user['role'],
+            'expires_in': JWT_EXPIRE_DAYS * 86400,
+            'user_expires_at': expires_at
+        })
+    else:
+        # Different device → save as pending, reject login
+        db.execute('UPDATE users SET pending_device = ? WHERE id = ?', (device_id, user['id']))
+        db.commit()
+        db.close()
+        log_action(user['id'], user['username'], 'login rejected (new device: ' + device_id[:8] + ')')
+        return jsonify({'error': 'device_not_approved', 'message': 'ອຸປະກອນໃໝ່ ລໍຖ້າ ແອດມິນ ອະນຸມັດ'}), 403
 
 @app.route('/api/check', methods=['GET'])
 def check_token():
@@ -197,7 +239,7 @@ def list_users():
         return result
 
     db = get_db()
-    users = db.execute('SELECT id, username, role, active, created_at, last_login, expires_at FROM users ORDER BY id').fetchall()
+    users = db.execute('SELECT id, username, role, active, created_at, last_login, expires_at, approved_device, pending_device FROM users ORDER BY id').fetchall()
     db.close()
 
     return jsonify([dict(u) for u in users])
@@ -330,6 +372,53 @@ def change_expiry(user_id):
 
     log_action(user_id, user['username'], 'expiry changed to ' + str(expires_at))
     return jsonify({'success': True, 'expires_at': expires_at})
+
+@app.route('/api/users/<int:user_id>/approve-device', methods=['POST'])
+def approve_device(user_id):
+    """Approve the pending device for a user (replaces old approved device)."""
+    result = require_admin()
+    if not isinstance(result, dict):
+        return result
+
+    db = get_db()
+    user = db.execute('SELECT * FROM users WHERE id = ?', (user_id,)).fetchone()
+    if not user:
+        db.close()
+        return jsonify({'error': 'User not found'}), 404
+
+    pending = user['pending_device'] if 'pending_device' in user.keys() else ''
+    if not pending:
+        db.close()
+        return jsonify({'error': 'No pending device'}), 400
+
+    db.execute('UPDATE users SET approved_device = ?, pending_device = ? WHERE id = ?',
+               (pending, '', user_id))
+    db.commit()
+    db.close()
+
+    log_action(user_id, user['username'], 'device approved: ' + pending[:8])
+    return jsonify({'success': True, 'message': 'Device approved', 'approved_device': pending})
+
+@app.route('/api/users/<int:user_id>/clear-device', methods=['POST'])
+def clear_device(user_id):
+    """Clear approved device so user can login from any device again."""
+    result = require_admin()
+    if not isinstance(result, dict):
+        return result
+
+    db = get_db()
+    user = db.execute('SELECT * FROM users WHERE id = ?', (user_id,)).fetchone()
+    if not user:
+        db.close()
+        return jsonify({'error': 'User not found'}), 404
+
+    db.execute('UPDATE users SET approved_device = ?, pending_device = ? WHERE id = ?',
+               ('', '', user_id))
+    db.commit()
+    db.close()
+
+    log_action(user_id, user['username'], 'device cleared')
+    return jsonify({'success': True, 'message': 'Device cleared'})
 
 @app.route('/api/logs', methods=['GET'])
 def get_logs():

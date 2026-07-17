@@ -20,6 +20,10 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -128,6 +132,10 @@ public class BotOverlay {
         overlayContainer = new FrameLayout(activity) {
             @Override
             public boolean dispatchTouchEvent(android.view.MotionEvent ev) {
+                // Check if touch is on map picker (full-screen, consume all touches)
+                if (mapView != null) {
+                    return super.dispatchTouchEvent(ev);
+                }
                 // Only intercept touches on our views, pass rest through
                 if (panelVisible && panelView != null) {
                     int[] panelPos = new int[2];
@@ -269,19 +277,55 @@ public class BotOverlay {
         if (panelView != null) return;
 
         panelView = createPanelView();
+        // Bottom sheet style: anchored to bottom, max height 78% of screen
+        int screenHeight = context.getResources().getDisplayMetrics().heightPixels;
+        int statusBarHeight = getStatusBarHeight();
+        int navBarHeight = getNavigationBarHeight();
+        int maxPanelHeight = (int) (screenHeight * 0.78);
+
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.WRAP_CONTENT,
-            Gravity.BOTTOM | Gravity.END
+            Gravity.BOTTOM
         );
-        lp.rightMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 12, context.getResources().getDisplayMetrics());
-        lp.bottomMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, context.getResources().getDisplayMetrics());
-        lp.width = (int) (context.getResources().getDisplayMetrics().widthPixels * 0.92);
+        // Full width minus small horizontal margins
+        int hMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 6, context.getResources().getDisplayMetrics());
+        lp.leftMargin = hMargin;
+        lp.rightMargin = hMargin;
+        // Bottom margin above bottom nav bar (so it doesn't overlap system nav)
+        lp.bottomMargin = navBarHeight > 0 ? navBarHeight : (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, context.getResources().getDisplayMetrics());
+        // Cap the panel height — clamp after measure
+        panelView.measure(View.MeasureSpec.makeMeasureSpec(context.getResources().getDisplayMetrics().widthPixels - hMargin*2, View.MeasureSpec.AT_MOST),
+                          View.MeasureSpec.makeMeasureSpec(maxPanelHeight, View.MeasureSpec.AT_MOST));
+        int measuredH = panelView.getMeasuredHeight();
+        if (measuredH > maxPanelHeight) {
+            lp.height = maxPanelHeight;
+        }
 
         if (overlayContainer != null) {
             overlayContainer.addView(panelView, lp);
         }
         panelVisible = true;
+    }
+
+    /** Get status bar height to avoid overlap with notch */
+    private int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = context.getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
+    /** Get navigation bar height (bottom system buttons) */
+    private int getNavigationBarHeight() {
+        int result = 0;
+        int resourceId = context.getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = context.getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
     }
 
     private EditText etRebidCount;
@@ -304,12 +348,18 @@ public class BotOverlay {
 
         LinearLayout root = new LinearLayout(context);
         root.setOrientation(LinearLayout.VERTICAL);
-        root.setPadding(20, 16, 20, 16);
+        // Responsive padding: more top padding to clear status bar, balanced sides
+        int padSide = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 14, context.getResources().getDisplayMetrics());
+        int padTop = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 12, context.getResources().getDisplayMetrics());
+        int padBot = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, context.getResources().getDisplayMetrics());
+        root.setPadding(padSide, padTop, padSide, padBot);
+        // Clip children to rounded corners
+        root.setClipToOutline(true);
 
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0xF0181828);
+        bg.setColor(0xF5181828);
         bg.setCornerRadius(20);
-        bg.setStroke(1, 0xFF334155);
+        bg.setStroke(1, 0xFF475569);
         root.setBackground(bg);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             root.setElevation(16);
@@ -337,6 +387,28 @@ public class BotOverlay {
         tvDot.setText("\uD83D\uDD34");
         tvDot.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
         headerRow.addView(tvDot);
+        // Close button (X) in header — visible from all tabs
+        Button btnHeaderClose = new Button(context);
+        btnHeaderClose.setText("\u2715");
+        btnHeaderClose.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        btnHeaderClose.setAllCaps(false);
+        btnHeaderClose.setTextColor(0xFFFFFFFF);
+        btnHeaderClose.setPadding(0, 0, 0, 0);
+        GradientDrawable closeBg = new GradientDrawable();
+        closeBg.setColor(0x33FFFFFF);
+        closeBg.setCornerRadius(16);
+        btnHeaderClose.setBackground(closeBg);
+        int closeBtnSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 32, context.getResources().getDisplayMetrics());
+        LinearLayout.LayoutParams closeLp = new LinearLayout.LayoutParams(closeBtnSize, closeBtnSize);
+        closeLp.leftMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, context.getResources().getDisplayMetrics());
+        btnHeaderClose.setLayoutParams(closeLp);
+        btnHeaderClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hidePanel();
+            }
+        });
+        headerRow.addView(btnHeaderClose);
         root.addView(headerRow);
 
         // ── Tab Bar ──
@@ -382,7 +454,7 @@ public class BotOverlay {
 
         LinearLayout statusCard = createCard(0xFF0d2137);
         tvStatus = new TextView(context);
-        tvStatus.setText("\u23F3 \u0ea5\u0ecd\u0e96\u0ec9\u0eb2\u0ead...");
+        tvStatus.setText("\u23F3 รํถ้าอ...");
         tvStatus.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         tvStatus.setTextColor(0xFF4CAF50);
         tvStatus.setGravity(Gravity.CENTER);
@@ -397,7 +469,7 @@ public class BotOverlay {
         toggleRow.setOrientation(LinearLayout.HORIZONTAL);
         toggleRow.setGravity(Gravity.CENTER_VERTICAL);
         TextView toggleLabel = new TextView(context);
-        toggleLabel.setText("\uD83D\uDD39 \u0ec0\u0e9b\u0eb5\u0e94/\u0e9b\u0eb4\u0e94 \u0e9a\u0ead\u0e94");
+        toggleLabel.setText("\uD83D\uDD39 เปิด/ปิด บอท");
         toggleLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         toggleLabel.setTextColor(0xFFE0E0E0);
         toggleLabel.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
@@ -418,13 +490,13 @@ public class BotOverlay {
 
         LinearLayout statsCard = createCard(0xFF0d2137);
         tvStats = new TextView(context);
-        tvStats.setText("\uD83D\uDCCA \u0eaa\u0ebb\u0ec8\u0e87: 0 | \u0ec4\u0e94\u0ec9: 0 (0%)");
+        tvStats.setText("\uD83D\uDCCA สฺ่ง: 0 | ได้: 0 (0%)");
         tvStats.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         tvStats.setTextColor(0xFF64B5F6);
         tvStats.setGravity(Gravity.CENTER);
         statsCard.addView(tvStats);
         tvToken = new TextView(context);
-        tvToken.setText("\uD83D\uDD11 \u0ec2\u0e97\u0ec0\u0e84\u0eb1\u0e99: \u2014");
+        tvToken.setText("\uD83D\uDD11 โทเคน: \u2014");
         tvToken.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
         tvToken.setTextColor(0xFFFFC107);
         tvToken.setGravity(Gravity.CENTER);
@@ -447,7 +519,7 @@ public class BotOverlay {
             String expiry = config.getBotExpiry();
             if (expiry.length() > 5 && !"forever".equals(expiry)) {
                 TextView tvExpiry = new TextView(context);
-                tvExpiry.setText("\u23F0 \u0ead\u0eb2\u0e8d\u0eb8\u0e81: " + expiry);
+                tvExpiry.setText("\u23F0 อายุ: " + expiry);
                 tvExpiry.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
                 tvExpiry.setTextColor(0xFFFFC107);
                 tvExpiry.setGravity(Gravity.CENTER);
@@ -458,7 +530,7 @@ public class BotOverlay {
             }
 
             Button btnLogout = new Button(context);
-            btnLogout.setText("\uD83D\uDD12 \u0ead\u0ead\u0e81\u0e88\u0eb2\u0e81\u0ea5\u0eb0\u0e9a\u0ebb\u0e9a");
+            btnLogout.setText("\uD83D\uDD12 ออกจากระบฺบ");
             btnLogout.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
             btnLogout.setAllCaps(false);
             GradientDrawable logoutBg = new GradientDrawable();
@@ -471,7 +543,7 @@ public class BotOverlay {
                 public void onClick(View v) {
                     config.clearBotLogin();
                     if (tvBotUser != null) tvBotUser.setText("");
-                    android.widget.Toast.makeText(context, "\u0ead\u0ead\u0e81\u0e88\u0eb2\u0e81\u0ea5\u0eb0\u0e9a\u0ebb\u0e9a\u0ec1\u0ea5\u0ec9\u0ea7", android.widget.Toast.LENGTH_SHORT).show();
+                    android.widget.Toast.makeText(context, "ออกจากระบฺบแร้ว", android.widget.Toast.LENGTH_SHORT).show();
                     hidePanel();
                 }
             });
@@ -490,18 +562,18 @@ public class BotOverlay {
         tabSettings.setVisibility(View.GONE);
 
         LinearLayout settingsCard = createCard(0xFF0d2137);
-        etMinFare = addSettingRow(settingsCard, "\uD83D\uDCB0 \u0ea5\u0eb2\u0e84\u0eb2\u0e95\u0ec8\u0ecd\u0eaa\u0eb8\u0e94", String.valueOf(config.getMinFare()), "\u0e81\u0eb5\u0e9a");
-        etMaxDist = addSettingRow(settingsCard, "\uD83D\uDCCD \u0eae\u0eb1\u0e94\u0eaa\u0eb9\u0e87\u0eaa\u0eb8\u0e94", String.valueOf(config.getMaxDistanceKm()), "km");
-        etBidDelay = addSettingRow(settingsCard, "\u23F1\uFE0F \u0eab\u0ea5\u0eb1\u0e87\u0e81\u0ec8\u0ead\u0e99\u0eaa\u0ebb\u0ec8\u0e87", String.valueOf(config.getBidDelay()), "ms");
-        etBidRetries = addSettingRow(settingsCard, "\uD83D\uDD04 \u0ea5\u0ead\u0e87\u0ec3\u0eab\u0e81\u0ec8\u0eb2 (\u0e9c\u0eb4\u0e94\u0e9e\u0eb2\u0e94)", String.valueOf(config.getBidRetries()), "\u0e84\u0eb1\u0ec9\u0e87");
-        etRebidCount = addSettingRow(settingsCard, "\uD83D\uDD01 \u0e82\u0ecd\u0ec3\u0e9d\u0ec8\u0eb2 (\u0e96\u0eb7\u0e81\u0e82\u0ec9\u0eb2\u0ea1)", String.valueOf(config.getRebidCount()), "\u0e84\u0eb1\u0ec9\u0e87");
+        etMinFare = addSettingRow(settingsCard, "\uD83D\uDCB0 ราคาต่ำสุด", String.valueOf(config.getMinFare()), "กีบ");
+        etMaxDist = addSettingRow(settingsCard, "\uD83D\uDCCD ระยะสูงสุด", String.valueOf(config.getMaxDistanceKm()), "km");
+        etBidDelay = addSettingRow(settingsCard, "\u23F1\uFE0F หลังก่อนสฺ่ง", String.valueOf(config.getBidDelay()), "ms");
+        etBidRetries = addSettingRow(settingsCard, "\uD83D\uDD04 ลองใหก่า (ผิดพลาด)", String.valueOf(config.getBidRetries()), "ครั้ง");
+        etRebidCount = addSettingRow(settingsCard, "\uD83D\uDD01 ขอใฝ่า (ถืกข้าม)", String.valueOf(config.getRebidCount()), "ครั้ง");
 
         LinearLayout skipRow = new LinearLayout(context);
         skipRow.setOrientation(LinearLayout.HORIZONTAL);
         skipRow.setGravity(Gravity.CENTER_VERTICAL);
         skipRow.setPadding(0, 10, 0, 0);
         TextView tvSkipLbl = new TextView(context);
-        tvSkipLbl.setText("\uD83D\uDEAB \u0e82\u0ec9\u0eb2\u0ea1\u0eae\u0eb1\u0e9a\u0e0a\u0ecd\u0ec9\u0eb2 (2\u0e84\u0ea3\u0eb1\u0ec9\u0e87)");
+        tvSkipLbl.setText("\uD83D\uDEAB ข้ามรับ\u0e0aํ้า (2ครั้ง)");
         tvSkipLbl.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         tvSkipLbl.setTextColor(0xFFD0D0D0);
         tvSkipLbl.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
@@ -518,195 +590,393 @@ public class BotOverlay {
         settingsCard.addView(skipRow);
 
         TextView tvSkipDesc = new TextView(context);
-        tvSkipDesc.setText("  \u21B3 \u0e25\u0eb9\u0e81\u0e84\u0ec9\u0eb2\u0ec0\u0ea3\u0eb5\u0ea2 2 \u0e84\u0e23\u0eb1\u0ec9\u0e87\u0e82\u0ec9\u0eb2\u0ea1 \u0e9a\u0ead\u0e94\u0e88\u0eb0\u0e82\u0ec9\u0eb2\u0ea1");
+        tvSkipDesc.setText("  \u21B3 \u0e25ูกค้าเรีย 2 ค\u0e23ั้งข้าม บอทจะข้าม");
         tvSkipDesc.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
         tvSkipDesc.setTextColor(0xFF7a8a9a);
         tvSkipDesc.setPadding(0, 0, 0, 6);
         settingsCard.addView(tvSkipDesc);
 
-        // ── GPS Fake Section ──
+        // ── GPS Fake Section (with Groups) ──
         LinearLayout gpsCard = createCard(0xFF0d2137);
 
-        // GPS toggle
+        // GPS master toggle
         LinearLayout gpsRow = new LinearLayout(context);
         gpsRow.setOrientation(LinearLayout.HORIZONTAL);
         gpsRow.setGravity(Gravity.CENTER_VERTICAL);
         gpsRow.setPadding(0, 10, 0, 0);
         TextView tvGpsLbl = new TextView(context);
-        tvGpsLbl.setText("\uD83D\uDCCD GPS \u0e9b\u0ea5\u0eb2\u0ea1");
+        tvGpsLbl.setText("\uD83D\uDCCD GPS \u0e1b\u0e25\u0e2d\u0e21");
         tvGpsLbl.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         tvGpsLbl.setTextColor(0xFFD0D0D0);
         tvGpsLbl.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
-        final android.widget.Switch[] swMultiHolder = new android.widget.Switch[1];
         final android.widget.Switch swFakeGps = new android.widget.Switch(context);
         swFakeGps.setChecked(config.isFakeGps());
         swFakeGps.setOnCheckedChangeListener(new android.widget.CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(android.widget.CompoundButton b, boolean v) {
                 config.setFakeGps(v);
-                if (swMultiHolder[0] != null) swMultiHolder[0].setEnabled(v);
             }
         });
         gpsRow.addView(tvGpsLbl);
         gpsRow.addView(swFakeGps);
         gpsCard.addView(gpsRow);
 
-        // Multi-location toggle
-        LinearLayout multiRow = new LinearLayout(context);
-        multiRow.setOrientation(LinearLayout.HORIZONTAL);
-        multiRow.setGravity(Gravity.CENTER_VERTICAL);
-        multiRow.setPadding(0, 6, 0, 0);
-        TextView tvMultiLbl = new TextView(context);
-        tvMultiLbl.setText("\uD83D\uDD04 \u0eab\u0ea5\u0eb2\u0e8d\u0e88\u0eb8\u0e94");
-        tvMultiLbl.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
-        tvMultiLbl.setTextColor(0xFFD0D0D0);
-        tvMultiLbl.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
-        final android.widget.Switch swMultiLoc = new android.widget.Switch(context);
-        swMultiLoc.setChecked(config.getFakeGpsMode() == 1);
-        swMultiLoc.setEnabled(config.isFakeGps());
-        swMultiHolder[0] = swMultiLoc;
-        multiRow.addView(tvMultiLbl);
-        multiRow.addView(swMultiLoc);
-        gpsCard.addView(multiRow);
-
         // Interval setting
-        etGpsInterval = addSettingRow(gpsCard, "\u23F1\uFE0F \u0eaa\u0ebb\u0ec8\u0e87\u0e97\u0eb8\u0e81", String.valueOf(config.getFakeGpsInterval()), "\u0ea7\u0eb4\u0e99\u0eb2\u0e97\u0eb5");
+        etGpsInterval = addSettingRow(gpsCard, "\u23F1\uFE0F \u0e2a\u0e48\u0e07\u0e17\u0e38\u0e01", String.valueOf(config.getFakeGpsInterval()), "\u0e27\u0e34\u0e19\u0e32\u0e17\u0e35");
 
-        // GPS points display + add/remove buttons
-        TextView tvPointsLbl = new TextView(context);
-        tvPointsLbl.setText("  \uD83D\uDDFA\uFE0F \u0e88\u0eb8\u0e94 GPS:");
-        tvPointsLbl.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-        tvPointsLbl.setTextColor(0xFFAABBCC);
-        tvPointsLbl.setPadding(0, 10, 0, 4);
-        gpsCard.addView(tvPointsLbl);
+        tabSettings.addView(gpsCard);
 
-        // Points list (scrollable)
-        final android.widget.ScrollView pointsScroll = new android.widget.ScrollView(context);
-        final LinearLayout pointsList = new LinearLayout(context);
-        pointsList.setOrientation(LinearLayout.VERTICAL);
-        pointsScroll.addView(pointsList);
-        LinearLayout.LayoutParams scrollLp = new LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT);
-        scrollLp.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, context.getResources().getDisplayMetrics());
-        pointsScroll.setLayoutParams(scrollLp);
-        gpsCard.addView(pointsScroll);
+        // ── GPS Groups Container ──
+        final LinearLayout gpsGroupsCard = createCard(0xFF0d2137);
+        TextView tvGroupsTitle = new TextView(context);
+        tvGroupsTitle.setText("\uD83D\uDCCD \u0e01\u0e25\u0e38\u0e48\u0e21 GPS");
+        tvGroupsTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        tvGroupsTitle.setTextColor(0xFFD0D0D0);
+        tvGroupsTitle.setPadding(0, 6, 0, 8);
+        gpsGroupsCard.addView(tvGroupsTitle);
 
-        // Helper to refresh points list
-        final Runnable[] refreshPoints = new Runnable[1];
-        refreshPoints[0] = new Runnable() {
+        // List of groups (LinearLayout, NOT ScrollView — the parent settingsScroll handles scrolling)
+        final LinearLayout groupsList = new LinearLayout(context);
+        groupsList.setOrientation(LinearLayout.VERTICAL);
+        gpsGroupsCard.addView(groupsList);
+
+        // Refresh groups UI
+        final Runnable[] refreshGroups = new Runnable[1];
+        refreshGroups[0] = new Runnable() {
             @Override
             public void run() {
-                pointsList.removeAllViews();
-                String pts = config.getFakePoints();
-                if (pts != null && pts.length() > 2) {
-                    try {
-                        org.json.JSONArray arr = new org.json.JSONArray(pts);
-                        for (int i = 0; i < arr.length(); i++) {
-                            final org.json.JSONObject obj = arr.getJSONObject(i);
-                            final int idx = i;
-                            LinearLayout ptRow = new LinearLayout(context);
-                            ptRow.setOrientation(LinearLayout.HORIZONTAL);
-                            ptRow.setGravity(Gravity.CENTER_VERTICAL);
-                            ptRow.setPadding(0, 3, 0, 3);
-                            TextView tvPt = new TextView(context);
-                            tvPt.setText((i + 1) + ". " + String.format("%.5f", obj.optDouble("lat", 0)) + ", " + String.format("%.5f", obj.optDouble("lng", 0)));
-                            tvPt.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-                            tvPt.setTextColor(0xFFE0E0E0);
-                            tvPt.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
-                            ptRow.addView(tvPt);
-                            Button btnDel = new Button(context);
-                            btnDel.setText("\uD83D\uDDD1\uFE0F");
-                            btnDel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
-                            btnDel.setPadding(4, 0, 4, 0);
-                            final Runnable delRunnable = new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        String ptsStr = config.getFakePoints();
-                                        org.json.JSONArray a = (ptsStr != null && ptsStr.length() > 2) ? new org.json.JSONArray(ptsStr) : new org.json.JSONArray();
-                                        if (idx < a.length()) {
-                                            a.remove(idx);
-                                            config.setFakePoints(a.toString());
-                                            refreshPoints[0].run();
-                                        }
-                                    } catch (Exception ignored) {}
-                                }
-                            };
-                            btnDel.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) { delRunnable.run(); }
-                            });
-                            ptRow.addView(btnDel);
-                            pointsList.addView(ptRow);
-                        }
-                    } catch (Exception ignored) {}
-                } else {
+                groupsList.removeAllViews();
+                String groupsStr = config.getGpsGroups();
+                org.json.JSONArray groups;
+                try {
+                    groups = (groupsStr != null && groupsStr.length() > 5) ? new org.json.JSONArray(groupsStr) : new org.json.JSONArray();
+                } catch (Exception e) {
+                    groups = new org.json.JSONArray();
+                }
+
+                if (groups.length() == 0) {
                     TextView tvEmpty = new TextView(context);
-                    tvEmpty.setText("  \u0e22\u0eb1\u0e87\u0ec4\u0ea1\u0ec8\u0ea1\u0eb5\u0e88\u0eb8\u0e94 \u0e81\u0ebb\u0e94 + \u0ec0\u0e9e\u0eb5\u0ec8\u0ec9\u0ea1");
+                    tvEmpty.setText("  \u0e22\u0e31\u0e07\u0e44\u0e21\u0e48\u0e21\u0e35\u0e01\u0e25\u0e38\u0e48\u0e21 \u0e01\u0e14 + \u0e2a\u0e23\u0e49\u0e32\u0e07\u0e01\u0e25\u0e38\u0e48\u0e21");
                     tvEmpty.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
                     tvEmpty.setTextColor(0xFF667788);
                     tvEmpty.setPadding(0, 6, 0, 6);
-                    pointsList.addView(tvEmpty);
+                    groupsList.addView(tvEmpty);
+                    return;
+                }
+
+                for (int gi = 0; gi < groups.length(); gi++) {
+                    final int groupIdx = gi;
+                    final org.json.JSONObject grp = groups.optJSONObject(gi);
+                    if (grp == null) continue;
+
+                    // Group card
+                    LinearLayout grpCard = new LinearLayout(context);
+                    grpCard.setOrientation(LinearLayout.VERTICAL);
+                    grpCard.setPadding(14, 12, 14, 12);
+                    GradientDrawable grpBg = new GradientDrawable();
+                    grpBg.setColor(0xFF0a1a2a);
+                    grpBg.setCornerRadius(12);
+                    grpBg.setStroke(1, 0xFF223344);
+                    grpCard.setBackground(grpBg);
+                    LinearLayout.LayoutParams grpLp = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    grpLp.bottomMargin = 10;
+                    grpCard.setLayoutParams(grpLp);
+
+                    // Group name + edit + delete
+                    LinearLayout nameRow = new LinearLayout(context);
+                    nameRow.setOrientation(LinearLayout.HORIZONTAL);
+                    nameRow.setGravity(Gravity.CENTER_VERTICAL);
+                    final TextView tvGrpName = new TextView(context);
+                    tvGrpName.setText("\uD83D\uDCC1 " + grp.optString("name", "\u0e01\u0e25\u0e38\u0e48\u0e21 " + (gi + 1)));
+                    tvGrpName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+                    tvGrpName.setTextColor(0xFF64B5F6);
+                    tvGrpName.setTypeface(null, android.graphics.Typeface.BOLD);
+                    tvGrpName.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+                    // Edit name button
+                    Button btnEditName = new Button(context);
+                    btnEditName.setText("\u270F\uFE0F");
+                    btnEditName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+                    btnEditName.setAllCaps(false);
+                    btnEditName.setPadding(6, 2, 6, 2);
+                    final int editNameIdx = gi;
+                    btnEditName.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            final android.widget.EditText etName = new android.widget.EditText(context);
+                            etName.setText(grp.optString("name", ""));
+                            etName.setTextColor(0xFFFFFFFF);
+                            etName.setSingleLine(true);
+                            android.app.AlertDialog.Builder dlg = new android.app.AlertDialog.Builder(context);
+                            dlg.setTitle("\u0e41\u0e01\u0e49\u0e0a\u0e37\u0e48\u0e2d\u0e01\u0e25\u0e38\u0e48\u0e21");
+                            dlg.setView(etName);
+                            dlg.setPositiveButton("\u0e15\u0e01\u0e25\u0e07", new android.content.DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(android.content.DialogInterface dialog, int which) {
+                                    try {
+                                        String gs = config.getGpsGroups();
+                                        org.json.JSONArray gArr = (gs != null && gs.length() > 5) ? new org.json.JSONArray(gs) : new org.json.JSONArray();
+                                        if (editNameIdx < gArr.length()) {
+                                            gArr.getJSONObject(editNameIdx).put("name", etName.getText().toString().trim());
+                                            config.setGpsGroups(gArr.toString());
+                                            refreshGroups[0].run();
+                                        }
+                                    } catch (Exception ignored) {}
+                                }
+                            });
+                            dlg.setNegativeButton("\u0e22\u0e01\u0e40\u0e25\u0e34\u0e01", null);
+                            dlg.show();
+                        }
+                    });
+                    // Delete group button
+                    Button btnDelGrp = new Button(context);
+                    btnDelGrp.setText("\uD83D\uDDD1\uFE0F");
+                    btnDelGrp.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+                    btnDelGrp.setAllCaps(false);
+                    btnDelGrp.setPadding(6, 2, 6, 2);
+                    final int delGrpIdx = gi;
+                    btnDelGrp.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            try {
+                                String gs = config.getGpsGroups();
+                                org.json.JSONArray gArr = (gs != null && gs.length() > 5) ? new org.json.JSONArray(gs) : new org.json.JSONArray();
+                                if (delGrpIdx < gArr.length()) {
+                                    gArr.remove(delGrpIdx);
+                                    config.setGpsGroups(gArr.toString());
+                                    refreshGroups[0].run();
+                                }
+                            } catch (Exception ignored) {}
+                        }
+                    });
+                    nameRow.addView(tvGrpName);
+                    nameRow.addView(btnEditName);
+                    nameRow.addView(btnDelGrp);
+                    grpCard.addView(nameRow);
+
+                    // Enable switch row
+                    LinearLayout switchRow = new LinearLayout(context);
+                    switchRow.setOrientation(LinearLayout.HORIZONTAL);
+                    switchRow.setGravity(Gravity.CENTER_VERTICAL);
+                    switchRow.setPadding(0, 4, 0, 4);
+                    TextView tvEnableLbl = new TextView(context);
+                    tvEnableLbl.setText("\u0e40\u0e1b\u0e34\u0e14");
+                    tvEnableLbl.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+                    tvEnableLbl.setTextColor(0xFF8899AA);
+                    tvEnableLbl.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+                    switchRow.addView(tvEnableLbl);
+                    final android.widget.Switch swGrp = new android.widget.Switch(context);
+                    swGrp.setChecked(grp.optBoolean("enabled", false));
+                    final int switchGrpIdx = gi;
+                    swGrp.setOnCheckedChangeListener(new android.widget.CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(android.widget.CompoundButton b, boolean v) {
+                            try {
+                                String gs = config.getGpsGroups();
+                                org.json.JSONArray gArr = (gs != null && gs.length() > 5) ? new org.json.JSONArray(gs) : new org.json.JSONArray();
+                                if (switchGrpIdx < gArr.length()) {
+                                    gArr.getJSONObject(switchGrpIdx).put("enabled", v);
+                                    config.setGpsGroups(gArr.toString());
+                                }
+                            } catch (Exception ignored) {}
+                        }
+                    });
+                    switchRow.addView(swGrp);
+                    grpCard.addView(switchRow);
+
+                    // Points list for this group (LinearLayout, NOT ScrollView — expands fully)
+                    final LinearLayout ptList = new LinearLayout(context);
+                    ptList.setOrientation(LinearLayout.VERTICAL);
+                    ptList.setPadding(0, 4, 0, 4);
+                    grpCard.addView(ptList);
+
+                    // Refresh points list for this group
+                    final Runnable[] refreshGrpPoints = new Runnable[1];
+                    refreshGrpPoints[0] = new Runnable() {
+                        @Override
+                        public void run() {
+                            ptList.removeAllViews();
+                            try {
+                                String gs = config.getGpsGroups();
+                                org.json.JSONArray gArr = (gs != null && gs.length() > 5) ? new org.json.JSONArray(gs) : new org.json.JSONArray();
+                                if (groupIdx >= gArr.length()) return;
+                                org.json.JSONArray pts = gArr.getJSONObject(groupIdx).optJSONArray("points");
+                                if (pts != null && pts.length() > 0) {
+                                    for (int pi = 0; pi < pts.length(); pi++) {
+                                        final int ptIdx = pi;
+                                        final org.json.JSONObject pt = pts.getJSONObject(pi);
+                                        LinearLayout ptRow = new LinearLayout(context);
+                                        ptRow.setOrientation(LinearLayout.HORIZONTAL);
+                                        ptRow.setGravity(Gravity.CENTER_VERTICAL);
+                                        ptRow.setPadding(0, 3, 0, 3);
+                                        TextView tvPt = new TextView(context);
+                                        tvPt.setText((pi + 1) + ". " + String.format("%.5f", pt.optDouble("lat", 0)) + ", " + String.format("%.5f", pt.optDouble("lng", 0)));
+                                        tvPt.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+                                        tvPt.setTextColor(0xFFCCDDEE);
+                                        tvPt.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+                                        ptRow.addView(tvPt);
+                                        Button btnDelPt = new Button(context);
+                                        btnDelPt.setText("\u2715");
+                                        btnDelPt.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
+                                        btnDelPt.setAllCaps(false);
+                                        btnDelPt.setPadding(4, 0, 4, 0);
+                                        btnDelPt.setTextColor(0xFFF85149);
+                                        btnDelPt.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                try {
+                                                    String gs = config.getGpsGroups();
+                                                    org.json.JSONArray gArr = (gs != null && gs.length() > 5) ? new org.json.JSONArray(gs) : new org.json.JSONArray();
+                                                    if (groupIdx < gArr.length()) {
+                                                        org.json.JSONArray groupPts = gArr.getJSONObject(groupIdx).optJSONArray("points");
+                                                        if (groupPts != null && ptIdx < groupPts.length()) {
+                                                            groupPts.remove(ptIdx);
+                                                            config.setGpsGroups(gArr.toString());
+                                                            refreshGrpPoints[0].run();
+                                                        }
+                                                    }
+                                                } catch (Exception ignored) {}
+                                            }
+                                        });
+                                        ptRow.addView(btnDelPt);
+                                        ptList.addView(ptRow);
+                                    }
+                                } else {
+                                    TextView tvEmptyPt = new TextView(context);
+                                    tvEmptyPt.setText("  \u0e22\u0e31\u0e07\u0e44\u0e21\u0e48\u0e21\u0e35\u0e08\u0e38\u0e14");
+                                    tvEmptyPt.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
+                                    tvEmptyPt.setTextColor(0xFF556677);
+                                    ptList.addView(tvEmptyPt);
+                                }
+                            } catch (Exception ignored) {}
+                        }
+                    };
+                    refreshGrpPoints[0].run();
+
+                    // Add point button (THE FIX: explicit LayoutParams MATCH_PARENT x WRAP_CONTENT)
+                    Button btnAddPt = new Button(context);
+                    btnAddPt.setText("+ \u0e08\u0e38\u0e14");
+                    btnAddPt.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+                    btnAddPt.setAllCaps(false);
+                    btnAddPt.setTextColor(0xFF64B5F6);
+                    int addPtPadH = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, context.getResources().getDisplayMetrics());
+                    int addPtPadV = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, context.getResources().getDisplayMetrics());
+                    btnAddPt.setPadding(addPtPadH, addPtPadV, addPtPadH, addPtPadV);
+                    GradientDrawable addPtBg = new GradientDrawable();
+                    addPtBg.setColor(0x00000000);
+                    addPtBg.setCornerRadius(10);
+                    addPtBg.setStroke(1, 0xFF64B5F6);
+                    btnAddPt.setBackground(addPtBg);
+                    LinearLayout.LayoutParams btnLp = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    btnLp.topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 6, context.getResources().getDisplayMetrics());
+                    btnAddPt.setLayoutParams(btnLp);
+                    btnAddPt.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            final String[] items = new String[]{
+                                "\uD83D\uDCCD GPS \u0e15\u0e31\u0e27\u0e40\u0e2d\u0e07",
+                                "\uD83D\uDCCB \u0e27\u0e32\u0e07\u0e1e\u0e34\u0e01\u0e31\u0e14",
+                                "\uD83D\uDDFA\uFE0F \u0e41\u0e1c\u0e19\u0e17\u0e35\u0e48\u0e42\u0e15\u0e49\u0e15\u0e2d\u0e1a (เลือกหลายจุด)"
+                            };
+                            android.app.AlertDialog.Builder chooseDlg = new android.app.AlertDialog.Builder(context);
+                            chooseDlg.setTitle("\u0e40\u0e1e\u0e34\u0e48\u0e21\u0e08\u0e38\u0e14 GPS \u0e01\u0e25\u0e38\u0e48\u0e21: " + grp.optString("name", ""));
+                            chooseDlg.setItems(items, new android.content.DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(android.content.DialogInterface dialog, int which) {
+                                    if (which == 0) {
+                                        addPointToGroup(groupIdx, refreshGrpPoints);
+                                    } else if (which == 1) {
+                                        addPointToGroupFromPaste(groupIdx, refreshGrpPoints);
+                                    } else if (which == 2) {
+                                        showMapPicker(groupIdx, refreshGrpPoints);
+                                    } else {
+                                        addPointToGroupFromMaps(groupIdx, refreshGrpPoints);
+                                    }
+                                }
+                            });
+                            chooseDlg.show();
+                        }
+                    });
+                    grpCard.addView(btnAddPt);
+
+                    groupsList.addView(grpCard);
                 }
             }
         };
-        refreshPoints[0].run();
+        refreshGroups[0].run();
 
-        // Add point button
-        LinearLayout addPtRow = new LinearLayout(context);
-        addPtRow.setOrientation(LinearLayout.HORIZONTAL);
-        addPtRow.setGravity(Gravity.CENTER_VERTICAL);
-        addPtRow.setPadding(0, 8, 0, 0);
-        Button btnAddPt = new Button(context);
-        btnAddPt.setText("\u2795 \u0ec0\u0e9e\u0eb5\u0ec8\u0ec9\u0ea1\u0e88\u0eb8\u0e94");
-        btnAddPt.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-        btnAddPt.setAllCaps(false);
-        GradientDrawable addBg = new GradientDrawable();
-        addBg.setColor(0xFF3B82F6);
-        addBg.setCornerRadius(8);
-        btnAddPt.setBackground(addBg);
-        btnAddPt.setTextColor(0xFFFFFFFF);
-        int btnPadV = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, context.getResources().getDisplayMetrics());
-        btnAddPt.setPadding(0, btnPadV, 0, btnPadV);
-        btnAddPt.setOnClickListener(new View.OnClickListener() {
+        // Add new group button
+        Button btnAddGroup = new Button(context);
+        btnAddGroup.setText("\u2795 \u0e2a\u0e23\u0e49\u0e32\u0e07\u0e01\u0e25\u0e38\u0e48\u0e21\u0e43\u0e2b\u0e21\u0e48");
+        btnAddGroup.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        btnAddGroup.setAllCaps(false);
+        GradientDrawable addGrpBg = new GradientDrawable();
+        addGrpBg.setColor(0xFF22C55E);
+        addGrpBg.setCornerRadius(12);
+        btnAddGroup.setBackground(addGrpBg);
+        btnAddGroup.setTextColor(0xFFFFFFFF);
+        int grpPadV = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 14, context.getResources().getDisplayMetrics());
+        btnAddGroup.setPadding(0, grpPadV, 0, grpPadV);
+        LinearLayout.LayoutParams addGrpLp = new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        addGrpLp.topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, context.getResources().getDisplayMetrics());
+        btnAddGroup.setLayoutParams(addGrpLp);
+        btnAddGroup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Show 3 options: GPS, Paste, Open Maps
-                final String[] items = new String[]{
-                    "\uD83D\uDCCD \u0e23\u0eb1\u0e9a\u0e88\u0eb8\u0e94\u0e88\u0eb2\u0e81 GPS \u0e95\u0eb1\u0ea7\u0ec0\u0e99\u0e87",
-                    "\uD83D\uDCCB \u0ea7\u0eb2\u0e87\u0e9e\u0eb4\u0e81\u0e94\u0e88\u0eb2\u0e81 Maps",
-                    "\uD83D\uDD0D \u0ec0\u0e9b\u0eb5\u0e94 Google Maps"
-                };
-                android.app.AlertDialog.Builder chooseDlg = new android.app.AlertDialog.Builder(context);
-                chooseDlg.setTitle("\u0ec0\u0e9e\u0eb5\u0ec8\u0ec9\u0ea1\u0e88\u0eb8\u0e94 GPS");
-                chooseDlg.setItems(items, new android.content.DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(android.content.DialogInterface dialog, int which) {
-                        if (which == 0) {
-                            // Option 1: Get from device GPS
-                            addPointFromGPS(refreshPoints);
-                        } else if (which == 1) {
-                            // Option 2: Paste from clipboard (Google Maps link or lat,lng)
-                            addPointFromPaste(refreshPoints);
-                        } else if (which == 2) {
-                            // Option 3: Open Google Maps to pick location
-                            addPointFromMaps(refreshPoints);
+                try {
+                    String gs = config.getGpsGroups();
+                    org.json.JSONArray gArr = (gs != null && gs.length() > 5) ? new org.json.JSONArray(gs) : new org.json.JSONArray();
+                    org.json.JSONObject newGrp = new org.json.JSONObject();
+                    newGrp.put("name", "\u0e01\u0e25\u0e38\u0e48\u0e21 " + (gArr.length() + 1));
+                    newGrp.put("enabled", true);
+                    newGrp.put("points", new org.json.JSONArray());
+                    gArr.put(newGrp);
+                    config.setGpsGroups(gArr.toString());
+                    refreshGroups[0].run();
+                    // Auto-open edit name dialog
+                    final int newIdx = gArr.length() - 1;
+                    final android.widget.EditText etName = new android.widget.EditText(context);
+                    etName.setText("\u0e01\u0e25\u0e38\u0e48\u0e21 " + (newIdx + 1));
+                    etName.setTextColor(0xFFFFFFFF);
+                    etName.setSingleLine(true);
+                    etName.selectAll();
+                    android.app.AlertDialog.Builder dlg = new android.app.AlertDialog.Builder(context);
+                    dlg.setTitle("\u0e15\u0e31\u0e49\u0e07\u0e0a\u0e37\u0e48\u0e2d\u0e01\u0e25\u0e38\u0e48\u0e21");
+                    dlg.setView(etName);
+                    dlg.setPositiveButton("\u0e15\u0e01\u0e25\u0e07", new android.content.DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(android.content.DialogInterface dialog, int which) {
+                            try {
+                                String gs2 = config.getGpsGroups();
+                                org.json.JSONArray gArr2 = (gs2 != null && gs2.length() > 5) ? new org.json.JSONArray(gs2) : new org.json.JSONArray();
+                                if (newIdx < gArr2.length()) {
+                                    String name = etName.getText().toString().trim();
+                                    if (name.length() == 0) name = "\u0e01\u0e25\u0e38\u0e48\u0e21 " + (newIdx + 1);
+                                    gArr2.getJSONObject(newIdx).put("name", name);
+                                    config.setGpsGroups(gArr2.toString());
+                                    refreshGroups[0].run();
+                                }
+                            } catch (Exception ignored) {}
                         }
-                    }
-                });
-                chooseDlg.show();
+                    });
+                    dlg.setNegativeButton("\u0e22\u0e01\u0e40\u0e25\u0e34\u0e01", null);
+                    dlg.show();
+                } catch (Exception e) {
+                    android.widget.Toast.makeText(context, "\u0e1c\u0e34\u0e14\u0e1e\u0e25\u0e32\u0e14", android.widget.Toast.LENGTH_SHORT).show();
+                }
             }
         });
-        addPtRow.addView(btnAddPt);
-        gpsCard.addView(addPtRow);
+        gpsGroupsCard.addView(btnAddGroup);
 
-        tabSettings.addView(gpsCard);
+        tabSettings.addView(gpsGroupsCard);
 
         // ── Fare Tiers Section ──
         final LinearLayout tiersCard = createCard(0xFF0d2137);
 
         TextView tvTierTitle = new TextView(context);
-        tvTierTitle.setText("\uD83D\uDCB0 \u0e8a\u0ec8\u0ea7\u0e87\u0e23\u0eb2\u0e84\u0eb2\u0e95\u0eb2\u0ea1\u0e9c\u0eb1\u0e99");
+        tvTierTitle.setText("\uD83D\uDCB0 ช่วง\u0e23าคาตามผัน");
         tvTierTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         tvTierTitle.setTextColor(0xFFD0D0D0);
         tvTierTitle.setPadding(0, 6, 0, 4);
@@ -741,7 +1011,7 @@ public class BotOverlay {
                             tierRow.setGravity(Gravity.CENTER_VERTICAL);
                             tierRow.setPadding(0, 3, 0, 3);
                             TextView tvTier = new TextView(context);
-                            tvTier.setText((i + 1) + ". \u2264" + obj.optInt("km", 0) + "km \u2192 " + obj.optInt("min", 0) + "\u0e81\u0eb5\u0e9a");
+                            tvTier.setText((i + 1) + ". \u2264" + obj.optInt("km", 0) + "km \u2192 " + obj.optInt("min", 0) + "กีบ");
                             tvTier.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
                             tvTier.setTextColor(0xFFE0E0E0);
                             tvTier.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
@@ -770,7 +1040,7 @@ public class BotOverlay {
                     } catch (Exception ignored) {}
                 } else {
                     TextView tvEmpty = new TextView(context);
-                    tvEmpty.setText("  \u0e22\u0eb1\u0e87\u0ec4\u0ea1\u0ec8\u0ea1\u0eb5\u0e0a\u0ec8\u0ea7\u0e87 \u0e81\u0ebb\u0e94 + \u0ec0\u0e9e\u0eb5\u0ec8\u0ec9\u0ea1");
+                    tvEmpty.setText("  \u0e22ังไม่มี\u0e0a่วง กฺด + เพิ่ม");
                     tvEmpty.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
                     tvEmpty.setTextColor(0xFF667788);
                     tvEmpty.setPadding(0, 6, 0, 6);
@@ -786,7 +1056,7 @@ public class BotOverlay {
         addTierRow.setGravity(Gravity.CENTER_VERTICAL);
         addTierRow.setPadding(0, 6, 0, 0);
         Button btnAddTier = new Button(context);
-        btnAddTier.setText("\u2795 \u0ec0\u0e9e\u0eb5\u0ec8\u0ec9\u0ea1\u0e0a\u0ec8\u0ea7\u0e87");
+        btnAddTier.setText("\u2795 เพิ่ม\u0e0a่วง");
         btnAddTier.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
         btnAddTier.setAllCaps(false);
         GradientDrawable tierBg = new GradientDrawable();
@@ -794,35 +1064,35 @@ public class BotOverlay {
         tierBg.setCornerRadius(8);
         btnAddTier.setBackground(tierBg);
         btnAddTier.setTextColor(0xFFFFFFFF);
-        btnAddTier.setPadding(0, btnPadV, 0, btnPadV);
+        btnAddTier.setPadding(0, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, context.getResources().getDisplayMetrics()), 0, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, context.getResources().getDisplayMetrics()));
         btnAddTier.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 android.app.AlertDialog.Builder dlg = new android.app.AlertDialog.Builder(context);
-                dlg.setTitle("\u0ec0\u0e9e\u0eb5\u0ec8\u0ec9\u0ea1\u0e0a\u0ec8\u0ea7\u0e87\u0e23\u0eb2\u0e84\u0eb2");
+                dlg.setTitle("เพิ่ม\u0e0a่วง\u0e23าคา");
                 LinearLayout dlgBody = new LinearLayout(context);
                 dlgBody.setOrientation(LinearLayout.VERTICAL);
                 dlgBody.setPadding(30, 20, 30, 20);
                 final android.widget.EditText etKm = new android.widget.EditText(context);
-                etKm.setHint("\u0ea5\u0eb0\u0e97\u0eb2\u0e87 (km) \u0e95\u0ebb\u0ea7\u0e94\u0eb7\u0ec8\u0eb2\u0e87 (1)");
+                etKm.setHint("ระทาง (km) ตฺวดื่าง (1)");
                 etKm.setInputType(android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_FLAG_SIGNED);
                 etKm.setTextColor(0xFFFFFFFF);
                 dlgBody.addView(etKm);
                 final android.widget.EditText etMin = new android.widget.EditText(context);
-                etMin.setHint("\u0ea5\u0eb2\u0e84\u0eb2\u0e82\u0eb1\u0ec9\u0e99\u0e95\u0ecd\u0eaa\u0eb8\u0e94 (\u0e81\u0eb5\u0e9a) (50000)");
+                etMin.setHint("ราคาขั้นตํสุด (กีบ) (50000)");
                 etMin.setInputType(android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_FLAG_SIGNED);
                 etMin.setTextColor(0xFFFFFFFF);
                 etMin.setPadding(0, 20, 0, 0);
                 dlgBody.addView(etMin);
                 dlg.setView(dlgBody);
-                dlg.setPositiveButton("\u0ec0\u0e9e\u0eb5\u0ec8\u0ec9\u0ea1", new android.content.DialogInterface.OnClickListener() {
+                dlg.setPositiveButton("เพิ่ม", new android.content.DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(android.content.DialogInterface dialog, int which) {
                         try {
                             int km = Integer.parseInt(etKm.getText().toString());
                             int minPrice = Integer.parseInt(etMin.getText().toString());
                             if (km <= 0 || minPrice <= 0) {
-                                android.widget.Toast.makeText(context, "\u274C \u0e84\u0ec8\u0eb2\u0e95\u0ec9\u0ead\u0e87\u0ec8\u0eb2\u0e8d 0", android.widget.Toast.LENGTH_SHORT).show();
+                                android.widget.Toast.makeText(context, "\u274C ค่าต้อง่าญ 0", android.widget.Toast.LENGTH_SHORT).show();
                                 return;
                             }
                             String ts = config.getFareTiers();
@@ -834,11 +1104,11 @@ public class BotOverlay {
                             config.setFareTiers(arr.toString());
                             refreshTiers[0].run();
                         } catch (NumberFormatException e) {
-                            android.widget.Toast.makeText(context, "\u274C \u0e9c\u0eb4\u0e94\u0e9e\u0eb2\u0e94: \u0ec3\u0eaa\u0ec8\u0e95\u0eb1\u0ea7\u0ec0\u0ea5\u0e81", android.widget.Toast.LENGTH_SHORT).show();
+                            android.widget.Toast.makeText(context, "\u274C ผิดพลาด: ใส่ตัวเรก", android.widget.Toast.LENGTH_SHORT).show();
                         } catch (Exception ignored) {}
                     }
                 });
-                dlg.setNegativeButton("\u0e8d\u0ebb\u0e81\u0ec0\u0ea5\u0eb5\u0e81", null);
+                dlg.setNegativeButton("ญฺกเรีก", null);
                 dlg.show();
             }
         });
@@ -849,7 +1119,7 @@ public class BotOverlay {
         tabSettings.addView(settingsCard);
 
         Button btnSave = new Button(context);
-        btnSave.setText("\uD83D\uDCBE \u0e9a\u0eb1\u0e99\u0e97\u0eb6\u0e81");
+        btnSave.setText("\uD83D\uDCBE บันทึก");
         btnSave.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         btnSave.setAllCaps(false);
         GradientDrawable saveBg = new GradientDrawable();
@@ -871,8 +1141,7 @@ public class BotOverlay {
                     config.setRebidCount(Integer.parseInt(etRebidCount.getText().toString()));
                     config.setFakeGpsInterval(Integer.parseInt(etGpsInterval.getText().toString()));
                     config.setFakeGps(swFakeGps.isChecked());
-                    config.setFakeGpsMode(swMultiLoc.isChecked() ? 1 : 0);
-                    android.widget.Toast.makeText(context, "\u2705 \u0e9a\u0eb1\u0e99\u0e97\u0eb6\u0e81\u0ec1\u0ea5\u0ec9\u0ea7!", android.widget.Toast.LENGTH_LONG).show();
+                    android.widget.Toast.makeText(context, "\u2705 \u0e1a\u0e31\u0e19\u0e17\u0e36\u0e01\u0e41\u0e25\u0e49\u0e27!", android.widget.Toast.LENGTH_LONG).show();
                     hidePanel();
                     if (wasEnabled) {
                         swEnabled.setChecked(false);
@@ -882,12 +1151,12 @@ public class BotOverlay {
                             public void run() {
                                 swEnabled.setChecked(true);
                                 startBotService();
-                                android.widget.Toast.makeText(context, "\uD83D\uDD04 \u0ec0\u0ea5\u0eb5\u0ec8\u0ea1\u0ec3\u0e9d\u0ec8\u0eb2 \u0e9a\u0ead\u0e94\u0ec3\u0eb0\u0e97\u0eb2\u0e23\u0e94", android.widget.Toast.LENGTH_SHORT).show();
+                                android.widget.Toast.makeText(context, "\uD83D\uDD04 เรี่มใฝ่า บอทใะทา\u0e23ด", android.widget.Toast.LENGTH_SHORT).show();
                             }
                         }, 1500);
                     }
                 } catch (NumberFormatException e) {
-                    android.widget.Toast.makeText(context, "\u274C \u0e9c\u0eb4\u0e94\u0e9e\u0eb2\u0e94", android.widget.Toast.LENGTH_LONG).show();
+                    android.widget.Toast.makeText(context, "\u274C ผิดพลาด", android.widget.Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -901,7 +1170,7 @@ public class BotOverlay {
         settingsScroll.addView(tabSettings);
         LinearLayout.LayoutParams settingsScrollLp = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        // Limit height to prevent taking full screen
+        // Limit height to fit within panel (panel is 78% of screen, leave room for other elements)
         int screenHeight = context.getResources().getDisplayMetrics().heightPixels;
         settingsScrollLp.height = (int) (screenHeight * 0.55);
         tabContent.addView(settingsScroll, settingsScrollLp);
@@ -913,39 +1182,47 @@ public class BotOverlay {
 
         LinearLayout logCard = createCard(0xFF0a0a1a);
         tvLog = new TextView(context);
-        tvLog.setText("\u0ea5\u0ecd\u0e96\u0ec9\u0eb2ອ...");
-        tvLog.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
-        tvLog.setTextColor(0xFF9E9E9E);
-        tvLog.setMaxLines(8);
+        tvLog.setText("รอ...");
+        tvLog.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        tvLog.setTextColor(0xFFBDBDBD);
+        tvLog.setTypeface(android.graphics.Typeface.MONOSPACE);
+        tvLog.setMaxLines(200);
+        tvLog.setMovementMethod(android.text.method.ScrollingMovementMethod.getInstance());
+        tvLog.setPadding(4, 4, 4, 4);
         ScrollView scroll = new ScrollView(context);
         scroll.addView(tvLog);
+        // Log card fills remaining space (large for cmd-style history)
         LinearLayout.LayoutParams logLp = new LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 150, context.getResources().getDisplayMetrics()));
+            LinearLayout.LayoutParams.MATCH_PARENT, 0);
+        logLp.weight = 1;
+        logLp.height = 0;
         logCard.addView(scroll, logLp);
         tabLog.addView(logCard);
-        tabContent.addView(tabLog);
-
-        // ── Close Button ──
-        Button btnClose = new Button(context);
-        btnClose.setText("\u2715 \u0e9b\u0eb4\u0e94");
-        btnClose.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
-        btnClose.setAllCaps(false);
-        GradientDrawable closeBg = new GradientDrawable();
-        closeBg.setColor(0x33FFFFFF);
-        closeBg.setCornerRadius(12);
-        btnClose.setBackground(closeBg);
-        btnClose.setTextColor(0xFFFFFFFF);
-        btnClose.setOnClickListener(new View.OnClickListener() {
+        // Add a "clear log" button
+        Button btnClearLog = new Button(context);
+        btnClearLog.setText("\uD83D\uDDD1\uFE0F ล้างประวัติ");
+        btnClearLog.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        btnClearLog.setAllCaps(false);
+        btnClearLog.setTextColor(0xFFF85149);
+        GradientDrawable clearLogBg = new GradientDrawable();
+        clearLogBg.setColor(0x22DA3633);
+        clearLogBg.setCornerRadius(10);
+        btnClearLog.setBackground(clearLogBg);
+        int clearPadV = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, context.getResources().getDisplayMetrics());
+        btnClearLog.setPadding(0, clearPadV, 0, clearPadV);
+        LinearLayout.LayoutParams clearLogLp = new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        clearLogLp.topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 6, context.getResources().getDisplayMetrics());
+        btnClearLog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hidePanel();
+                if (tvLog != null) tvLog.setText("");
             }
         });
-        LinearLayout.LayoutParams closeLp = new LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        closeLp.topMargin = 4;
-        root.addView(btnClose, closeLp);
+        tabLog.addView(btnClearLog, clearLogLp);
+        tabContent.addView(tabLog);
+
+        // (Close button is now in the header — visible from all tabs)
 
         // Activate first tab
         switchTab(0);
@@ -1057,22 +1334,29 @@ public class BotOverlay {
         return row;
     }
 
-    // ── GPS Point Helpers ──
+    // ── GPS Point Helpers (Group-based, Thai) ──
 
-    /** Save a GPS point and refresh list */
-    private void savePoint(double lat, double lng, Runnable[] refreshPoints) {
+    /** Save a GPS point into a specific group by index */
+    private void savePointToGroup(double lat, double lng, final int groupIdx, final Runnable[] refreshGrpPoints) {
         try {
-            String ptsStr = config.getFakePoints();
-            org.json.JSONArray arr = (ptsStr != null && ptsStr.length() > 2) ? new org.json.JSONArray(ptsStr) : new org.json.JSONArray();
+            String gs = config.getGpsGroups();
+            org.json.JSONArray gArr = (gs != null && gs.length() > 5) ? new org.json.JSONArray(gs) : new org.json.JSONArray();
+            if (groupIdx >= gArr.length()) return;
+            org.json.JSONObject grp = gArr.getJSONObject(groupIdx);
+            org.json.JSONArray pts = grp.optJSONArray("points");
+            if (pts == null) {
+                pts = new org.json.JSONArray();
+                grp.put("points", pts);
+            }
             org.json.JSONObject pt = new org.json.JSONObject();
             pt.put("lat", (double) Math.round(lat * 100000) / 100000);
             pt.put("lng", (double) Math.round(lng * 100000) / 100000);
-            arr.put(pt);
-            config.setFakePoints(arr.toString());
-            refreshPoints[0].run();
-            android.widget.Toast.makeText(context, "\u2705 \u0ec0\u0e9e\u0eb5\u0ec8\u0eaa\u0ec8\u0ea1\u0e88\u0eb8\u0e94: " + String.format("%.5f", lat) + ", " + String.format("%.5f", lng), android.widget.Toast.LENGTH_SHORT).show();
+            pts.put(pt);
+            config.setGpsGroups(gArr.toString());
+            refreshGrpPoints[0].run();
+            android.widget.Toast.makeText(context, "\u2705 \u0e40\u0e1e\u0e34\u0e48\u0e21\u0e08\u0e38\u0e14: " + String.format("%.5f", lat) + ", " + String.format("%.5f", lng), android.widget.Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
-            android.widget.Toast.makeText(context, "\u274C \u0e9c\u0eb4\u0e94\u0e9e\u0eb2\u0e94", android.widget.Toast.LENGTH_SHORT).show();
+            android.widget.Toast.makeText(context, "\u274C \u0e1c\u0e34\u0e14\u0e1e\u0e25\u0e32\u0e14", android.widget.Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -1081,13 +1365,11 @@ public class BotOverlay {
         double lat = 0, lng = 0;
         if (text == null || text.length() < 3) return null;
         text = text.trim();
-        // Try format: 18.0782, 102.6472
         String[] parts = text.split("[,\\s]+");
         if (parts.length >= 2) {
             try { lat = Double.parseDouble(parts[0]); lng = Double.parseDouble(parts[1]); } catch (NumberFormatException e) { lat = 0; lng = 0; }
         }
         if (lat != 0 && lng != 0) return new double[]{lat, lng};
-        // Try Google Maps link: https://www.google.com/maps?q=18.07,102.64 or @18.07,102.64
         int atIdx = text.indexOf("@");
         if (atIdx >= 0) {
             String after = text.substring(atIdx + 1);
@@ -1097,7 +1379,6 @@ public class BotOverlay {
             }
         }
         if (lat == 0) {
-            // Try finding any pattern like digits.digits,digits.digits
             java.util.regex.Matcher m = java.util.regex.Pattern.compile("(-?\\d+\\.\\d+)[,\\s](-?\\d+\\.\\d+)").matcher(text);
             if (m.find()) {
                 try { lat = Double.parseDouble(m.group(1)); lng = Double.parseDouble(m.group(2)); } catch (NumberFormatException e) { lat = 0; lng = 0; }
@@ -1107,8 +1388,8 @@ public class BotOverlay {
         return null;
     }
 
-    /** Option 1: Get GPS from device location */
-    private void addPointFromGPS(final Runnable[] refreshPoints) {
+    /** Option 1: Get GPS from device location -> save to group */
+    private void addPointToGroup(final int groupIdx, final Runnable[] refreshGrpPoints) {
         try {
             LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
             Location loc = lm != null ? lm.getLastKnownLocation(LocationManager.GPS_PROVIDER) : null;
@@ -1116,87 +1397,297 @@ public class BotOverlay {
                 loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             }
             if (loc != null) {
-                savePoint(loc.getLatitude(), loc.getLongitude(), refreshPoints);
+                savePointToGroup(loc.getLatitude(), loc.getLongitude(), groupIdx, refreshGrpPoints);
             } else {
-                android.widget.Toast.makeText(context, "\u274C \u0e9a\u0ecd\u0ec8\u0ea1\u0eb5 GPS \u0e88\u0eb8\u0e94\u0e97\u0eb5\u0ec8\u0ec1\u0e99\u0e99, \u0ea5\u0ead\u0e87\u0ea7\u0eb2\u0e87\u0e9e\u0eb4\u0e81\u0e94\u0ec1\u0e97\u0e99", android.widget.Toast.LENGTH_LONG).show();
-                addPointFromPaste(refreshPoints);
+                android.widget.Toast.makeText(context, "\u274C \u0e44\u0e21\u0e48\u0e21\u0e35 GPS \u0e08\u0e38\u0e14\u0e17\u0e35\u0e48\u0e41\u0e19\u0e48\u0e19, \u0e25\u0e2d\u0e07\u0e27\u0e32\u0e07\u0e1e\u0e34\u0e01\u0e31\u0e14\u0e41\u0e17\u0e19", android.widget.Toast.LENGTH_LONG).show();
+                addPointToGroupFromPaste(groupIdx, refreshGrpPoints);
             }
         } catch (Exception e) {
-            android.widget.Toast.makeText(context, "\u274C GPS error, \u0ea5\u0ead\u0e87\u0ea7\u0eb2\u0e87\u0e9e\u0eb4\u0e81\u0e94\u0ec1\u0e97\u0e99", android.widget.Toast.LENGTH_LONG).show();
-            addPointFromPaste(refreshPoints);
+            android.widget.Toast.makeText(context, "\u274C GPS error, \u0e25\u0e2d\u0e07\u0e27\u0e32\u0e07\u0e1e\u0e34\u0e01\u0e31\u0e14\u0e41\u0e17\u0e19", android.widget.Toast.LENGTH_LONG).show();
+            addPointToGroupFromPaste(groupIdx, refreshGrpPoints);
         }
     }
 
-    /** Option 2: Paste from clipboard (Google Maps link or lat,lng) */
-    private void addPointFromPaste(final Runnable[] refreshPoints) {
+    /** Option 2: Paste from clipboard -> save to group */
+    private void addPointToGroupFromPaste(final int groupIdx, final Runnable[] refreshGrpPoints) {
         try {
             ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
             String clip = cm != null && cm.hasPrimaryClip() ? cm.getPrimaryClip().getItemAt(0).coerceToText(context).toString() : "";
             android.app.AlertDialog.Builder dlg = new android.app.AlertDialog.Builder(context);
-            dlg.setTitle("\uD83D\uDCCB \u0ea7\u0eb2\u0e87\u0e9e\u0eb4\u0e81\u0e94\u0e88\u0eb8\u0e94");
+            dlg.setTitle("\uD83D\uDCCB \u0e27\u0e32\u0e07\u0e1e\u0e34\u0e01\u0e31\u0e14\u0e08\u0e38\u0e14");
             final android.widget.EditText etInput = new android.widget.EditText(context);
-            etInput.setHint("\u0ea7\u0eb2\u0e87\u0e9e\u0eb4\u0e81\u0e94 Google Maps \u0eab\u0ebc\u0eb7 lat,lng");
+            etInput.setHint("\u0e27\u0e32\u0e07\u0e1e\u0e34\u0e01\u0e31\u0e14 Google Maps \u0e2b\u0e23\u0e37\u0e2d lat,lng");
             etInput.setText(clip);
             etInput.setTextColor(0xFFFFFFFF);
             etInput.setSingleLine(true);
             dlg.setView(etInput);
-            dlg.setPositiveButton("\u0ec0\u0e9e\u0eb4\u0ec8\u0ea1", new DialogInterface.OnClickListener() {
+            dlg.setPositiveButton("\u0e40\u0e1e\u0e34\u0e48\u0e21", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     String text = etInput.getText().toString();
                     double[] coords = parseCoords(text);
                     if (coords != null) {
-                        savePoint(coords[0], coords[1], refreshPoints);
+                        savePointToGroup(coords[0], coords[1], groupIdx, refreshGrpPoints);
                     } else {
-                        android.widget.Toast.makeText(context, "\u274C \u0e9a\u0ecd\u0ec8\u0ea3\u0eb0\u0e9a\u0eb8 lat/lng \u0ec4\u0e94\u0ec9, \u0e95\u0ebb\u0ea7\u0e94\u0eb7\u0ec8\u0eb2\u0e87: 18.0782, 102.6472", android.widget.Toast.LENGTH_LONG).show();
+                        android.widget.Toast.makeText(context, "\u274C \u0e44\u0e21\u0e48\u0e23\u0e30\u0e1a\u0e38 lat/lng \u0e44\u0e14\u0e49, \u0e15\u0e31\u0e27\u0e2d\u0e22\u0e48\u0e32\u0e07: 18.0782, 102.6472", android.widget.Toast.LENGTH_LONG).show();
                     }
                 }
             });
-            dlg.setNegativeButton("\u0e8d\u0ebb\u0e81\u0ec0\u0ea5\u0eb5\u0e81", null);
+            dlg.setNegativeButton("\u0e22\u0e01\u0e40\u0e25\u0e34\u0e01", null);
             dlg.show();
         } catch (Exception e) {
-            android.widget.Toast.makeText(context, "\u274C \u0e9c\u0eb4\u0e94\u0e9e\u0eb2\u0e94", android.widget.Toast.LENGTH_SHORT).show();
+            android.widget.Toast.makeText(context, "\u274C \u0e1c\u0e34\u0e14\u0e1e\u0e25\u0e32\u0e14", android.widget.Toast.LENGTH_SHORT).show();
         }
     }
 
-    /** Option 3: Open Google Maps for user to pick a location */
-    private void addPointFromMaps(final Runnable[] refreshPoints) {
+    /** Option 3: Open Google Maps -> save to group */
+    private void addPointToGroupFromMaps(final int groupIdx, final Runnable[] refreshGrpPoints) {
         try {
-            // Open Google Maps at current default location
-            String ptsStr = config.getFakePoints();
             double defLat = 18.0782, defLng = 102.6472;
-            if (ptsStr != null && ptsStr.length() > 5) {
-                try {
-                    org.json.JSONArray arr = new org.json.JSONArray(ptsStr);
-                    if (arr.length() > 0) {
-                        defLat = arr.getJSONObject(0).optDouble("lat", defLat);
-                        defLng = arr.getJSONObject(0).optDouble("lng", defLng);
+            try {
+                String gs = config.getGpsGroups();
+                org.json.JSONArray gArr = (gs != null && gs.length() > 5) ? new org.json.JSONArray(gs) : new org.json.JSONArray();
+                if (groupIdx < gArr.length()) {
+                    org.json.JSONArray pts = gArr.getJSONObject(groupIdx).optJSONArray("points");
+                    if (pts != null && pts.length() > 0) {
+                        defLat = pts.getJSONObject(0).optDouble("lat", defLat);
+                        defLng = pts.getJSONObject(0).optDouble("lng", defLng);
                     }
-                } catch (Exception ignored) {}
-            }
-            // Open Google Maps with a marker — user long-presses to pick point, then shares
+                }
+            } catch (Exception ignored) {}
             String geoUri = "geo:" + defLat + "," + defLng + "?q=" + defLat + "," + defLng;
             Intent mapIntent = new Intent(Intent.ACTION_VIEW, android.net.Uri.parse(geoUri));
             mapIntent.setPackage("com.google.android.apps.maps");
-            // If Google Maps not installed, fall back to any maps app
             if (mapIntent.resolveActivity(context.getPackageManager()) == null) {
                 mapIntent = new Intent(Intent.ACTION_VIEW, android.net.Uri.parse(geoUri));
             }
-            // After user comes back, prompt them to paste the location
-            android.widget.Toast.makeText(context, "\uD83D\uDD0D \u0e81\u0ebb\u0e94\u0e88\u0eb8\u0e94\u0e97\u0eb5\u0ec8 Maps \u0ec1\u0ea5\u0ec9\u0ea7 \u0e81\u0eb1\u0e9a + \u0ec0\u0e9e\u0eb7\u0ec8\u0ead\u0ec0\u0e9e\u0eb4\u0ec8\u0ea1", android.widget.Toast.LENGTH_LONG).show();
+            android.widget.Toast.makeText(context, "\uD83D\uDD0D \u0e01\u0e14\u0e08\u0e38\u0e14\u0e17\u0e35\u0e48 Maps \u0e41\u0e25\u0e49\u0e27\u0e01\u0e14 + \u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e40\u0e1e\u0e34\u0e48\u0e21", android.widget.Toast.LENGTH_LONG).show();
             mapIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(mapIntent);
 
-            // Auto-open paste dialog after 5 seconds (give user time to copy)
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    addPointFromPaste(refreshPoints);
+                    addPointToGroupFromPaste(groupIdx, refreshGrpPoints);
                 }
             }, 5000);
         } catch (Exception e) {
-            android.widget.Toast.makeText(context, "\u274C \u0e9a\u0ecd\u0ec8\u0ea1\u0eb5 Maps \u0e95\u0eb4\u0e94\u0e95\u0eb1\u0ec9\u0e87, \u0ea5\u0ead\u0e87\u0ea7\u0eb2\u0e87\u0e9e\u0eb4\u0e81\u0e94\u0ec1\u0e97\u0e99", android.widget.Toast.LENGTH_LONG).show();
-            addPointFromPaste(refreshPoints);
+            android.widget.Toast.makeText(context, "\u274C \u0e44\u0e21\u0e48\u0e21\u0e35 Maps \u0e15\u0e34\u0e14\u0e15\u0e31\u0e49\u0e07, \u0e25\u0e2d\u0e07\u0e27\u0e32\u0e07\u0e1e\u0e34\u0e01\u0e31\u0e14\u0e41\u0e17\u0e19", android.widget.Toast.LENGTH_LONG).show();
+            addPointToGroupFromPaste(groupIdx, refreshGrpPoints);
+        }
+    }
+
+    // ── Interactive Map Picker (multi-point selection via WebView + Leaflet) ──
+    private View mapView = null;
+
+    private void showMapPicker(final int groupIdx, final Runnable[] refreshGrpPoints) {
+        // Determine starting location
+        double initLat = 17.9757, initLng = 102.6331; // default: Vientiane
+        try {
+            LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+            Location loc = lm != null ? lm.getLastKnownLocation(LocationManager.GPS_PROVIDER) : null;
+            if (loc == null && lm != null) loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            if (loc != null) { initLat = loc.getLatitude(); initLng = loc.getLongitude(); }
+        } catch (Exception ignored) {}
+        // Or use first point of this group if exists
+        try {
+            String gs = config.getGpsGroups();
+            org.json.JSONArray gArr = (gs != null && gs.length() > 5) ? new org.json.JSONArray(gs) : new org.json.JSONArray();
+            if (groupIdx < gArr.length()) {
+                org.json.JSONArray pts = gArr.getJSONObject(groupIdx).optJSONArray("points");
+                if (pts != null && pts.length() > 0) {
+                    initLat = pts.getJSONObject(0).optDouble("lat", initLat);
+                    initLng = pts.getJSONObject(0).optDouble("lng", initLng);
+                }
+            }
+        } catch (Exception ignored) {}
+
+        if (mapView != null && overlayContainer != null) {
+            overlayContainer.removeView(mapView);
+            mapView = null;
+        }
+
+        // Full-screen container
+        FrameLayout mapRoot = new FrameLayout(context);
+        final WebView webView = new WebView(context);
+        WebSettings ws = webView.getSettings();
+        ws.setJavaScriptEnabled(true);
+        ws.setDomStorageEnabled(true);
+        ws.setGeolocationEnabled(true);
+        ws.setSupportZoom(true);
+        ws.setBuiltInZoomControls(true);
+        ws.setDisplayZoomControls(false);
+        ws.setDatabaseEnabled(true);
+        ws.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        webView.setWebChromeClient(new WebChromeClient());
+
+        final double fLat = initLat, fLng = initLng;
+        final MapJsBridge bridge = new MapJsBridge(groupIdx, refreshGrpPoints, mapRoot);
+        webView.addJavascriptInterface(bridge, "Android");
+
+        // HTML with Leaflet + OpenStreetMap + rotate plugin
+        String html = "<!DOCTYPE html><html><head><meta charset='utf-8'>"
+            + "<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover'>"
+            + "<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css'/>"
+            + "<script src='https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js'></script>"
+            + "<script src='https://cdn.jsdelivr.net/npm/leaflet-rotate@0.2.8/dist/leaflet-rotate.min.js'></script>"
+            + "<style>"
+            + "html,body{margin:0;padding:0;height:100%;width:100%;overflow:hidden;font-family:sans-serif;background:#0a1a2a;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none;}"
+            + "#map{position:absolute;top:0;left:0;right:0;bottom:64px;width:100%;}"
+            + "#bar{position:absolute;bottom:0;left:0;right:0;height:64px;background:#0d2137;"
+            + "display:flex;align-items:center;justify-content:space-around;padding:0 8px;box-shadow:0 -2px 8px rgba(0,0,0,0.5);z-index:1001;}"
+            + ".btn{padding:12px 18px;border:none;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;-webkit-tap-highlight-color:transparent;}"
+            + "#ok{background:#22C55E;color:#fff;}"
+            + "#cancel{background:#33FFFFFF;color:#fff;}"
+            + "#count{color:#fff;font-size:14px;}"
+            + "#hint{position:absolute;top:8px;left:50%;transform:translateX(-50%);background:rgba(13,33,55,0.92);color:#fff;"
+            + "padding:8px 16px;border-radius:18px;font-size:12px;z-index:1000;pointer-events:none;white-space:nowrap;}"
+            + ".leaflet-container{background:#0a1a2a;-webkit-tap-highlight-color:transparent;}"
+            + ".leaflet-control-zoom{border:2px solid #334155 !important;border-radius:8px !important;overflow:hidden;}"
+            + ".leaflet-control-zoom a{background:#0d2137 !important;color:#fff !important;border-bottom:1px solid #334155 !important;font-size:20px !important;}"
+            + ".leaflet-control-zoom a:hover{background:#1565C0 !important;}"
+            + ".leaflet-control-compass{background:#0d2137 !important;border:2px solid #334155 !important;border-radius:50% !important;}"
+            + "</style></head><body>"
+            + "<div id='hint'>แตะเพื่อเพิ่มจุด · แตะหมุดเพื่อลบ · สองนิ้วซูม/หมุน</div>"
+            + "<div id='map'></div>"
+            + "<div id='bar'>"
+            + "<button class='btn' id='cancel' onclick='doCancel()'>❌ ยกเลิก</button>"
+            + "<span id='count'>เลือก 0 จุด</span>"
+            + "<button class='btn' id='ok' onclick='doSubmit()'>✅ เพิ่ม</button>"
+            + "</div>"
+            + "<script>"
+            + "var map=L.map('map',{"
+            + "zoomControl:true,"
+            + "attributionControl:false,"
+            + "touchZoom:true,"              // pinch to zoom
+            + "touchRotate:true,"            // two-finger rotate (leaflet-rotate)
+            + "shiftDragRotate:true,"        // shift+drag rotate (desktop)
+            + "dragging:true,"
+            + "scrollWheelZoom:true,"
+            + "doubleClickZoom:false,"        // avoid conflict with marker placement
+            + "zoomSnap:0.25,"                // smooth zoom
+            + "wheelPxPerZoomLevel:60"
+            + "}).setView([" + fLat + "," + fLng + "],15);"
+            + "L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:20}).addTo(map);"
+            + "var markers=[];"
+            + "function updateCount(){document.getElementById('count').textContent='เลือก '+markers.length+' จุด';"
+            + "document.getElementById('ok').textContent=markers.length>0?('✅ เพิ่ม '+markers.length+' จุด'):'✅ เพิ่ม';}"
+            + "map.on('click',function(e){"
+            + "var ic=L.divIcon({html:'<div style=\"font-size:30px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6));\">📍</div>',iconSize:[30,30],iconAnchor:[15,30],className:''});"
+            + "var m=L.marker(e.latlng,{icon:ic,draggable:true}).addTo(map);"
+            + "m.on('click',function(ev){L.DomEvent.stopPropagation(ev);map.removeLayer(m);markers=markers.filter(function(x){return x!==m;});updateCount();});"
+            + "markers.push(m);updateCount();"
+            + "});"
+            + "function doSubmit(){var pts=markers.map(function(m){var ll=m.getLatLng();return{lat:ll.lat,lng:ll.lng};});"
+            + "Android.onPointsSelected(JSON.stringify(pts));}"
+            + "function doCancel(){Android.cancel();}"
+            + "setTimeout(function(){map.invalidateSize();},300);"
+            + "</script></body></html>";
+
+        webView.loadDataWithBaseURL("https://cdn.jsdelivr.net/", html, "text/html", "utf-8", null);
+        mapRoot.addView(webView, new FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+
+        // Top-right close button (X) as backup
+        Button btnCloseMap = new Button(context);
+        btnCloseMap.setText("✕");
+        btnCloseMap.setTextColor(0xFFFFFFFF);
+        btnCloseMap.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+        GradientDrawable closeMapBg = new GradientDrawable();
+        closeMapBg.setColor(0xE6000000);
+        closeMapBg.setCornerRadius(20);
+        btnCloseMap.setBackground(closeMapBg);
+        int closeSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, context.getResources().getDisplayMetrics());
+        FrameLayout.LayoutParams closeLp = new FrameLayout.LayoutParams(closeSize, closeSize);
+        closeLp.gravity = Gravity.TOP | Gravity.END;
+        int closeMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 12, context.getResources().getDisplayMetrics());
+        closeLp.topMargin = closeMargin;
+        closeLp.rightMargin = closeMargin;
+        btnCloseMap.setLayoutParams(closeLp);
+        btnCloseMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mapView != null && overlayContainer != null) {
+                    overlayContainer.removeView(mapView);
+                    mapView = null;
+                }
+            }
+        });
+        mapRoot.addView(btnCloseMap);
+
+        mapView = mapRoot;
+        FrameLayout.LayoutParams mapLp = new FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+        if (overlayContainer != null) {
+            overlayContainer.addView(mapView, mapLp);
+        }
+    }
+
+    /** Javascript interface bridge for the map picker */
+    private class MapJsBridge {
+        private final int groupIdx;
+        private final Runnable[] refreshGrpPoints;
+        private final View mapRoot;
+        MapJsBridge(int groupIdx, Runnable[] refreshGrpPoints, View mapRoot) {
+            this.groupIdx = groupIdx;
+            this.refreshGrpPoints = refreshGrpPoints;
+            this.mapRoot = mapRoot;
+        }
+        @JavascriptInterface
+        public void onPointsSelected(String json) {
+            try {
+                org.json.JSONArray pts = new org.json.JSONArray(json);
+                if (pts.length() == 0) return;
+                String gs = config.getGpsGroups();
+                org.json.JSONArray gArr = (gs != null && gs.length() > 5) ? new org.json.JSONArray(gs) : new org.json.JSONArray();
+                if (groupIdx >= gArr.length()) return;
+                org.json.JSONObject grp = gArr.getJSONObject(groupIdx);
+                org.json.JSONArray existing = grp.optJSONArray("points");
+                if (existing == null) {
+                    existing = new org.json.JSONArray();
+                    grp.put("points", existing);
+                }
+                for (int i = 0; i < pts.length(); i++) {
+                    org.json.JSONObject p = pts.getJSONObject(i);
+                    org.json.JSONObject pt = new org.json.JSONObject();
+                    pt.put("lat", (double) Math.round(p.optDouble("lat", 0) * 100000) / 100000);
+                    pt.put("lng", (double) Math.round(p.optDouble("lng", 0) * 100000) / 100000);
+                    existing.put(pt);
+                }
+                config.setGpsGroups(gArr.toString());
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mapView != null && overlayContainer != null) {
+                            overlayContainer.removeView(mapView);
+                            mapView = null;
+                        }
+                        if (refreshGrpPoints[0] != null) refreshGrpPoints[0].run();
+                        android.widget.Toast.makeText(context,
+                            pts.length() + " จุดถูกเพิ่ม",
+                            android.widget.Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } catch (final Exception e) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        android.widget.Toast.makeText(context, "ผิดพลาด: " + e.getMessage(), android.widget.Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        }
+        @JavascriptInterface
+        public void cancel() {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (mapView != null && overlayContainer != null) {
+                        overlayContainer.removeView(mapView);
+                        mapView = null;
+                    }
+                }
+            });
         }
     }
 
@@ -1223,7 +1714,7 @@ public class BotOverlay {
 
         // Header
         TextView header = new TextView(context);
-        header.setText("\uD83D\uDD10 ເຂົ້າສູ່ລະບົບ");
+        header.setText("\uD83D\uDD10 เขฺ้าสู่ระบฺบ");
         header.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
         header.setTextColor(0xFFFFFFFF);
         header.setTypeface(null, android.graphics.Typeface.BOLD);
@@ -1275,7 +1766,7 @@ public class BotOverlay {
 
         // Login button
         final Button btnLogin = new Button(context);
-        btnLogin.setText("\uD83D\uDD10 ເຂົ້າສູ່ລະບົບ");
+        btnLogin.setText("\uD83D\uDD10 เขฺ้าสู่ระบฺบ");
         btnLogin.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         btnLogin.setAllCaps(false);
         GradientDrawable loginBg = new GradientDrawable();
@@ -1290,17 +1781,17 @@ public class BotOverlay {
                 final String username = etUser.getText().toString().trim();
                 final String password = etPass.getText().toString().trim();
                 if (username.isEmpty() || password.isEmpty()) {
-                    tvLoginStatus.setText("ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບ");
+                    tvLoginStatus.setText("กะรุนาป้อนขอ้มูนให้คฺบ");
                     return;
                 }
                 btnLogin.setEnabled(false);
-                btnLogin.setText("ກຳລັງລອກອິນ...");
+                btnLogin.setText("กำลังรอกอิน...");
                 tvLoginStatus.setText("");
                 loginExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
                         try {
-                            org.json.JSONObject result = HttpClient.login(server, username, password);
+                            org.json.JSONObject result = HttpClient.login(server, username, password, config.getDeviceId());
                             if (result.has("token")) {
                                 config.setBotServer(server);
                                 config.setBotToken(result.getString("token"));
@@ -1312,7 +1803,7 @@ public class BotOverlay {
                                 loginHandler.post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        android.widget.Toast.makeText(context, "ເຂົ້າສູ່ລະບົບສຳເລັດ: " + username, android.widget.Toast.LENGTH_SHORT).show();
+                                        android.widget.Toast.makeText(context, "เขฺ้าสู่ระบฺบสำเร็จ: " + username, android.widget.Toast.LENGTH_SHORT).show();
                                         hidePanel();
                                         panelVisible = false;
                                         updateFabColor("connection_green");
@@ -1329,7 +1820,7 @@ public class BotOverlay {
                                         } else {
                                             tvLoginStatus.setText(errMessage.length() > 0 ? errMessage : err);
                                             btnLogin.setEnabled(true);
-                                            btnLogin.setText("\uD83D\uDD10 ເຂົ້າສູ່ລະບົບ");
+                                            btnLogin.setText("\uD83D\uDD10 เขฺ้าสู่ระบฺบ");
                                         }
                                     }
                                 });
@@ -1338,9 +1829,9 @@ public class BotOverlay {
                             loginHandler.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    tvLoginStatus.setText("ຜິດພາດ: " + e.getMessage());
+                                    tvLoginStatus.setText("ผิดพลาด: " + e.getMessage());
                                     btnLogin.setEnabled(true);
-                                    btnLogin.setText("\uD83D\uDD10 ເຂົ້າສູ່ລະບົບ");
+                                    btnLogin.setText("\uD83D\uDD10 เขฺ้าสู่ระบฺบ");
                                 }
                             });
                         }
@@ -1354,7 +1845,7 @@ public class BotOverlay {
 
         // Close
         Button btnClose = new Button(context);
-        btnClose.setText("\u2715 ປິດ");
+        btnClose.setText("\u2715 ปิด");
         btnClose.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         btnClose.setAllCaps(false);
         GradientDrawable closeBg = new GradientDrawable();
@@ -1406,7 +1897,7 @@ public class BotOverlay {
         root.addView(icon, iconLp);
 
         TextView title = new TextView(context);
-        title.setText("ໝົດອາຍຸກ");
+        title.setText("หมฺดอายุ");
         title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
         title.setTextColor(0xFFF85149);
         title.setTypeface(null, android.graphics.Typeface.BOLD);
@@ -1416,7 +1907,7 @@ public class BotOverlay {
         root.addView(title, titleLp);
 
         TextView desc = new TextView(context);
-        desc.setText("ບັນຊີຂອງທ່ານໝົດອາຍຸກການໃຊ້ງານ\nກະລຸນາຕິດຕໍ່ ແອດມິນ ເພື່ອຕໍ່ອາຍຸກ");
+        desc.setText("บัญชีของท่านหมฺดอายุการใช้งาน\nกะรุนาติดต่อ แอดมิน เพื่อตํ่อายุ");
         desc.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         desc.setTextColor(0xFFBBBBBB);
         desc.setGravity(Gravity.CENTER);
@@ -1425,7 +1916,7 @@ public class BotOverlay {
         root.addView(desc, descLp);
 
         Button btnContact = new Button(context);
-        btnContact.setText("\uD83D\uDCAC ຕິດຕໍ່ ແອດມິນ");
+        btnContact.setText("\uD83D\uDCAC ติดต่อ แอดมิน");
         btnContact.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         btnContact.setAllCaps(false);
         GradientDrawable contactBg = new GradientDrawable();
@@ -1439,10 +1930,10 @@ public class BotOverlay {
                 try {
                     Intent contactIntent = new Intent(android.content.Intent.ACTION_SENDTO);
                     contactIntent.setData(android.net.Uri.parse("sms:"));
-                    contactIntent.putExtra("sms_body", "KOKOK Bot: ສະແດງຄວາມນິຍົມຕໍ່ອາຍຸກ ບັນຊີ");
+                    contactIntent.putExtra("sms_body", "KOKOK Bot: สะแดงความนิญฺมตํ่อายุ บัญชี");
                     context.startActivity(contactIntent);
                 } catch (Exception e) {
-                    android.widget.Toast.makeText(context, "ກະລຸນາຕິດຕໍ່ແອດມິນ", android.widget.Toast.LENGTH_LONG).show();
+                    android.widget.Toast.makeText(context, "กะรุนาติดต่อแอดมิน", android.widget.Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -1451,7 +1942,7 @@ public class BotOverlay {
         root.addView(btnContact, contactLp);
 
         Button btnLogout = new Button(context);
-        btnLogout.setText("\uD83D\uDD12 ລອກອິນ ອອກ");
+        btnLogout.setText("\uD83D\uDD12 รอกอิน ออก");
         btnLogout.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         btnLogout.setAllCaps(false);
         GradientDrawable logoutBg = new GradientDrawable();
@@ -1466,7 +1957,7 @@ public class BotOverlay {
                 hidePanel();
                 panelVisible = false;
                 updateFabColor("connection_red");
-                android.widget.Toast.makeText(context, "ລອກອິນ ອອກແລ້ວ", android.widget.Toast.LENGTH_SHORT).show();
+                android.widget.Toast.makeText(context, "รอกอิน ออกแร้ว", android.widget.Toast.LENGTH_SHORT).show();
             }
         });
         root.addView(btnLogout);
@@ -1523,7 +2014,7 @@ public class BotOverlay {
 
     private void startBotService() {
         if (!config.isBotLoggedIn()) {
-            android.widget.Toast.makeText(context, "ກະລຸນາເຂົ້າສູ່ລະບົບກ່ອນ", android.widget.Toast.LENGTH_SHORT).show();
+            android.widget.Toast.makeText(context, "กะรุนาเขฺ้าสู่ระบฺบก่อน", android.widget.Toast.LENGTH_SHORT).show();
             swEnabled.setChecked(false);
             config.setEnabled(false);
             return;
@@ -1555,7 +2046,7 @@ public class BotOverlay {
                                 }
                                 swEnabled.setChecked(false);
                                 config.setEnabled(false);
-                                android.widget.Toast.makeText(context, "Token invalid, ກະລຸນາລອກອິນໃໝ່", android.widget.Toast.LENGTH_SHORT).show();
+                                android.widget.Toast.makeText(context, "Token invalid, กะรุนารอกอินใหม่", android.widget.Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -1615,7 +2106,7 @@ public class BotOverlay {
                     if (tvStats != null) {
                         String[] p = msg.split("\\|");
                         if (p.length >= 3) {
-                            tvStats.setText(String.format("ສົ່ງ: %s | ໄດ້: %s (%s%%)", p[0], p[1], p[2]));
+                            tvStats.setText(String.format("สฺ่ง: %s | ได้: %s (%s%%)", p[0], p[1], p[2]));
                         }
                     }
                 } else if ("token".equals(type)) {
@@ -1624,15 +2115,15 @@ public class BotOverlay {
                             long expires = Long.parseLong(msg);
                             long rem = expires - System.currentTimeMillis();
                             int min = (int) (rem / 60000);
-                            tvToken.setText(String.format("ໂທເຄັນ: %d ນາທີ", Math.max(0, min)));
+                            tvToken.setText(String.format("โทเคน: %d นาที", Math.max(0, min)));
                         } catch (Exception e) {
-                            tvToken.setText("ໂທເຄັນ: " + msg);
+                            tvToken.setText("โทเคน: " + msg);
                         }
                     }
                 } else if ("won".equals(type)) {
                     if (tvStatus != null) {
                         tvStatus.setTextColor(0xFF4CAF50);
-                        tvStatus.setText("\uD83C\uDF89 ໄດ້ອັອດເດີ!");
+                        tvStatus.setText("\uD83C\uDF89 ได้อัอดเดี!");
                     }
                     // Parse pipe-separated: price|distKm|puPlace|doPlace
                     String[] parts = msg.split("\\|", -1);
@@ -1642,7 +2133,7 @@ public class BotOverlay {
                         showPopup("\uD83C\uDF89 " + msg, 0xFF4CAF50);
                     }
                     // Still log it
-                    logBuilder.insert(0, time + " \uD83C\uDF89 ໄດ້ແລ້ວ: " + msg + "\n");
+                    logBuilder.insert(0, time + " \uD83C\uDF89 ได้แร้ว: " + msg + "\n");
                     if (logBuilder.length() > 1000) logBuilder.delete(1000, logBuilder.length());
                     if (tvLog != null) tvLog.setText(logBuilder.toString());
                     return;
@@ -1671,9 +2162,9 @@ public class BotOverlay {
                 } else if ("connection".equals(type)) {
                     updateFabColor(msg);
                     String label;
-                    if ("connection_green".equals(msg)) label = "\uD83D\uDFE2 ເຊື່ອມຕໍ່ແລ້ວ";
-                    else if ("connection_yellow".equals(msg)) label = "\uD83D\uDFE1 ບໍ່ມີກິດຈະກຳ";
-                    else label = "\uD83D\uDD34 ຕັດການເຊື່ອມຕໍ່";
+                    if ("connection_green".equals(msg)) label = "\uD83D\uDFE2 เชื่อมตํ่แร้ว";
+                    else if ("connection_yellow".equals(msg)) label = "\uD83D\uDFE1 ไม่มีกิดจะกำ";
+                    else label = "\uD83D\uDD34 ตัดการเชื่อมตํ่";
                     if (tvStatus != null) {
                         tvStatus.setText(label);
                     }
@@ -1795,9 +2286,9 @@ public class BotOverlay {
                 card.setBackground(bg);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) card.setElevation(16);
 
-                // Header: trophy + "ໄດ້ແລ້ວ!"
+                // Header: trophy + "ได้แร้ว!"
                 TextView tvHeader = new TextView(context);
-                tvHeader.setText("\uD83C\uDFC6 ໄດ້ແລ້ວ!");
+                tvHeader.setText("\uD83C\uDFC6 ได้แร้ว!");
                 tvHeader.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
                 tvHeader.setTextColor(0xFFFFFFFF);
                 tvHeader.setTypeface(null, android.graphics.Typeface.BOLD);
@@ -1815,7 +2306,7 @@ public class BotOverlay {
 
                 // Price: big green number
                 TextView tvPrice = new TextView(context);
-                tvPrice.setText("\uD83D\uDCB0 " + price + " ກີບ");
+                tvPrice.setText("\uD83D\uDCB0 " + price + " กีบ");
                 tvPrice.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28);
                 tvPrice.setTextColor(0xFFFFEB3B);
                 tvPrice.setTypeface(null, android.graphics.Typeface.BOLD);

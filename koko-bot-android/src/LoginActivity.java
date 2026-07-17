@@ -88,7 +88,7 @@ public class LoginActivity extends Activity {
 
         // Subtitle
         TextView subtitle = new TextView(this);
-        subtitle.setText("\u0ec0\u0e82\u0ebb\u0ec9\u0eb2\u0eaa\u0eb9\u0ec8\u0e87\u0ea5\u0eb0\u0e9a\u0ebb\u0e9a");
+        subtitle.setText("เข้าสู่ระบบ");
         subtitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         subtitle.setTextColor(0xFF8B949E);
         subtitle.setGravity(Gravity.CENTER);
@@ -99,7 +99,7 @@ public class LoginActivity extends Activity {
 
         // Server URL
         tvServerStatus = new TextView(this);
-        tvServerStatus.setText("\u0e81\u0eb3\u0ea5\u0eb1\u0e87\u0e95\u0eaa\u0eb1\u0e94\u0ea7\u0e99\u0ec0\u0e8b\u0eb5\u0ea2\u0e94...");
+        tvServerStatus.setText("กำลังติดต่อเซิร์ฟเวอร์...");
         tvServerStatus.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
         tvServerStatus.setTextColor(0xFFFFC107);
         tvServerStatus.setGravity(Gravity.CENTER);
@@ -109,7 +109,7 @@ public class LoginActivity extends Activity {
         root.addView(tvServerStatus, ssLp);
 
         // Server input
-        LinearLayout serverRow = createInputRow("\u0ec0\u0e8b\u0eb5\u0ea2\u0e94\u0ec0\u0e9c\u0eb5\u0e99:");
+        LinearLayout serverRow = createInputRow("เซิร์ฟเวอร์:");
         etServer = new EditText(this);
         etServer.setText(config.getBotServer());
         etServer.setHint("https://your-server.com");
@@ -126,7 +126,7 @@ public class LoginActivity extends Activity {
         // Username
         LinearLayout userRow = createInputRow("Username:");
         etUsername = new EditText(this);
-        etUsername.setHint("\u0e0a\u0eb7\u0ec8\u0ead\u0e87\u0ec3\u0e8a\u0eb5\u0ec8\u0e9c\u0eb9\u0ec9\u0ec3\u0e8a\u0ec9");
+        etUsername.setHint("\u0e0aื่องใชี่ผู้ใช้");
         etUsername.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         etUsername.setTextColor(Color.WHITE);
         etUsername.setPadding(12, 8, 12, 8);
@@ -166,7 +166,7 @@ public class LoginActivity extends Activity {
 
         // Login button
         btnLogin = new Button(this);
-        btnLogin.setText("\uD83D\uDD10 \u0ec0\u0e82\u0ebb\u0ec9\u0eb2\u0eaa\u0eb9\u0ec8\u0e87\u0ea5\u0eb0\u0e9a\u0ebb\u0e9a");
+        btnLogin.setText("\uD83D\uDD10 เข้าสู่ระบบ");
         btnLogin.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
         btnLogin.setAllCaps(false);
         btnLogin.setTextColor(Color.WHITE);
@@ -187,7 +187,7 @@ public class LoginActivity extends Activity {
 
         // Skip button (for testing / no server)
         btnSkip = new Button(this);
-        btnSkip.setText("\u0e82\u0ec9\u0ec2\u0ea1\u0e82\u0ec9\u0eb1\u0e87");
+        btnSkip.setText("ข้ามขั้น");
         btnSkip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
         btnSkip.setAllCaps(false);
         btnSkip.setTextColor(0xFF8B949E);
@@ -236,7 +236,7 @@ public class LoginActivity extends Activity {
                     uiHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            tvServerStatus.setText("\u2713 \u0ec0\u0e8a\u0eb7\u0ec8\u0e2d\u0e87\u0ea5\u0eb2\u0e87");
+                            tvServerStatus.setText("\u2713 เชื่\u0e2dงลาง");
                             tvServerStatus.setTextColor(0xFF3FB950);
                         }
                     });
@@ -244,7 +244,7 @@ public class LoginActivity extends Activity {
                     uiHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            tvServerStatus.setText("\u2717 \u0e95\u0ebb\u0ead\u0e87\u0ec0\u0e8a\u0eb7\u0ec8\u0e2d\u0e87");
+                            tvServerStatus.setText("\u2717 ตฺองเชื่\u0e2dง");
                             tvServerStatus.setTextColor(0xFFF85149);
                         }
                     });
@@ -259,23 +259,23 @@ public class LoginActivity extends Activity {
         final String password = etPassword.getText().toString().trim();
 
         if (server.isEmpty()) {
-            tvStatus.setText("\u0e81\u0eb0\u0ea5\u0eb8\u0e99\u0eb2\u0ea1 URL \u0ec0\u0e8b\u0eb5\u0ea2\u0e94");
+            tvStatus.setText("กะลุนาม URL เซียด");
             return;
         }
         if (username.isEmpty() || password.isEmpty()) {
-            tvStatus.setText("\u0e81\u0eb0\u0ea5\u0eb8\u0e99\u0eb2\u0ea1 username \u0ec1\u0ea5\u0eb0 password");
+            tvStatus.setText("กะลุนาม username และ password");
             return;
         }
 
         btnLogin.setEnabled(false);
-        btnLogin.setText("\u0e81\u0eb3\u0ea5\u0eb1\u0e87\u0e95\u0eaa\u0eb1\u0e94...");
+        btnLogin.setText("กำลังตสัด...");
         tvStatus.setText("");
 
         executor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
-                    JSONObject result = HttpClient.login(server, username, password);
+                    JSONObject result = HttpClient.login(server, username, password, config.getDeviceId());
                     if (result.has("token")) {
                         config.setBotServer(server);
                         config.setBotToken(result.getString("token"));
@@ -287,7 +287,7 @@ public class LoginActivity extends Activity {
                             @Override
                             public void run() {
                                 Toast.makeText(LoginActivity.this,
-                                    "\u0ec0\u0e82\u0ebb\u0ec9\u0eb2\u0eaa\u0eb9\u0ec8\u0e87\u0ea5\u0eb0\u0e9a\u0ebb\u0e9a\u0eaa\u0ecd\u0eb2\u0ec0\u0ea5\u0eb1\u0e94: " + username,
+                                    "เข้าสู่ระบบสําเรด: " + username,
                                     Toast.LENGTH_SHORT).show();
                                 launchMain();
                             }
@@ -299,7 +299,7 @@ public class LoginActivity extends Activity {
                             public void run() {
                                 tvStatus.setText(err);
                                 btnLogin.setEnabled(true);
-                                btnLogin.setText("\uD83D\uDD10 \u0ec0\u0e82\u0ebb\u0ec9\u0eb2\u0eaa\u0eb9\u0ec8\u0e87\u0ea5\u0eb0\u0e9a\u0ebb\u0e9a");
+                                btnLogin.setText("\uD83D\uDD10 เข้าสู่ระบบ");
                             }
                         });
                     }
@@ -307,9 +307,9 @@ public class LoginActivity extends Activity {
                     uiHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            tvStatus.setText("\u0e9c\u0eb4\u0e94\u0e9e\u0eb2\u0e94: " + e.getMessage());
+                            tvStatus.setText("ผิดพาด: " + e.getMessage());
                             btnLogin.setEnabled(true);
-                            btnLogin.setText("\uD83D\uDD10 \u0ec0\u0e82\u0ebb\u0ec9\u0eb2\u0eaa\u0eb9\u0ec8\u0e87\u0ea5\u0eb0\u0e9a\u0ebb\u0e9a");
+                            btnLogin.setText("\uD83D\uDD10 เข้าสู่ระบบ");
                         }
                     });
                 }

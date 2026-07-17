@@ -1,16 +1,34 @@
 # APK build outputs
-koko-bot-android/build/*.apk
-koko-bot-android/build/*.dex
-koko-bot-android/build/classes/
-koko-bot-android/build/bot-dex/
-koko-bot-android/build/new-smali/
-koko-bot-android/build/bot.jar
-koko-bot-android/build/classes.jar
-koko-bot-android/build/classes-token.jar
+koko-bot-android/build/
+koko-bot-android/build_smali/
+koko-bot-android/clean_smali/
+koko-bot-android/clean_classes.jar
+koko-bot-android/classes.dex
+koko-bot-android/classes.jar
+koko-bot-android/out/
+koko-bot-android/out-dex/
 
 # Decoded APK directories (large, can be regenerated)
 apkpure-450-decode/
-koko-bot-android/build/orig_working/
+koko-bot-android/bot-apk/
+koko-bot-android/bot-smali/
+koko-bot-android/bot-wrapper.apk
+koko-bot-android/bot-classes.jar
+miniapk-d/
+miniapk-decode/
+
+# Binary tools (download separately)
+koko-bot-android/baksmali*.jar
+koko-bot-android/baksmali.jar
+koko-bot-android/test.jar
+koko-bot-android/lib/
+
+# Conversion scripts (one-time use)
+koko-bot-android/*.py
+*.py
+check_unicode.py
+fix_lao.py
+gen_esc.py
 
 # OS files
 Thumbs.db
@@ -25,3 +43,14 @@ Desktop.ini
 # Temp
 *.tmp
 *.log
+build/
+bot-release.keystore
+*.xml.dump
+window_dump.xml
+*.png
+screenshot*
+
+# Other projects (not part of this repo)
+indrive/
+onnpay/
+

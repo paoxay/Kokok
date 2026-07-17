@@ -27,10 +27,12 @@ public class BotConfig {
     private static final String KEY_FAKE_GPS_MODE = "fake_gps_mode";
     private static final String KEY_FAKE_GPS_INTERVAL = "fake_gps_interval";
     private static final String KEY_FAKE_POINTS = "fake_points";
+    private static final String KEY_GPS_GROUPS = "gps_groups";
     private static final String KEY_BOT_TOKEN = "bot_token";
     private static final String KEY_BOT_SERVER = "bot_server";
     private static final String KEY_BOT_USER = "bot_user";
     private static final String KEY_BOT_EXPIRY = "bot_expiry";
+    private static final String KEY_DEVICE_ID = "bot_device_id";
 
     /** Key where OkHttp interceptor writes the app's Bearer token */
     public static final String KEY_APP_TOKEN = "intercepted_app_token";
@@ -44,9 +46,11 @@ public class BotConfig {
     public static final String SOCKET_NS = "/v3.2/client";
 
     private SharedPreferences prefs;
+    private Context appContext;
 
     public BotConfig(Context ctx) {
         prefs = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        appContext = ctx.getApplicationContext();
     }
 
     public boolean isEnabled() { return prefs.getBoolean(KEY_ENABLED, false); }
@@ -77,6 +81,8 @@ public class BotConfig {
     public void setFakeGpsInterval(int v) { prefs.edit().putInt(KEY_FAKE_GPS_INTERVAL, v).apply(); }
     public String getFakePoints() { return prefs.getString(KEY_FAKE_POINTS, ""); }
     public void setFakePoints(String v) { prefs.edit().putString(KEY_FAKE_POINTS, v).apply(); }
+    public String getGpsGroups() { return prefs.getString(KEY_GPS_GROUPS, ""); }
+    public void setGpsGroups(String v) { prefs.edit().putString(KEY_GPS_GROUPS, v).apply(); }
     public String getBotToken() { return prefs.getString(KEY_BOT_TOKEN, ""); }
     public void setBotToken(String v) { prefs.edit().putString(KEY_BOT_TOKEN, v).apply(); }
     public String getBotServer() {
@@ -97,6 +103,23 @@ public class BotConfig {
     }
     public String getBotExpiry() { return prefs.getString(KEY_BOT_EXPIRY, ""); }
     public void setBotExpiry(String v) { prefs.edit().putString(KEY_BOT_EXPIRY, v).apply(); }
+
+    /** Get device ID (ANDROID_ID, generated once and cached) */
+    public String getDeviceId() {
+        String cached = prefs.getString(KEY_DEVICE_ID, "");
+        if (cached.length() > 5) return cached;
+        try {
+            String id = android.provider.Settings.Secure.getString(
+                appContext.getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+            if (id != null && id.length() > 5) {
+                prefs.edit().putString(KEY_DEVICE_ID, id).apply();
+                return id;
+            }
+        } catch (Exception e) {
+            android.util.Log.e("KOKOK-BOT", "getDeviceId failed", e);
+        }
+        return "";
+    }
 
     /** Check if stored expiry is past current time (local check, no network) */
     public boolean isBotExpired() {
