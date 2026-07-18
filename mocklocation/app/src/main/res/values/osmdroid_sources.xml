@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- osmdroid tile sources ที่อนุญาตให้ดาวน์โหลด (ค่าเริ่มต้น MAPNIK = OpenStreetMap) -->
+    <string-array name="osmdroid_download_sources">
+        <item>MAPNIK</item>
+        <item>OpenStreetMap</item>
+    </string-array>
+</resources>

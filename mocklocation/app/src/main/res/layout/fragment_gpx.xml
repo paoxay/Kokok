@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="GPX / KML"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:paddingBottom="12dp" />
+
+    <Button
+        android:id="@+id/btnImportGpx"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="นำเข้าไฟล์ GPX/KML" />
+
+    <TextView
+        android:id="@+id/txtImported"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ยังไม่ได้นำเข้าไฟล์"
+        android:textSize="14sp"
+        android:paddingBottom="12dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#DDDDDD"
+        android:layout_marginBottom="12dp" />
+
+    <CheckBox
+        android:id="@+id/chkRecordGpx"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="บันทึกเส้นทางเป็น GPX ระหว่างจำลอง" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ไฟล์จะถูกเก็บใน Documents/MockLocation/"
+        android:textSize="12sp"
+        android:textColor="#666666"
+        android:paddingBottom="16dp" />
+
+    <TextView
+        android:id="@+id/txtGpxFiles"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="— ยังไม่มีไฟล์ที่บันทึก —"
+        android:textSize="13sp"
+        android:scrollbars="vertical" />
+
+    <Button
+        android:id="@+id/btnPlayImported"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:enabled="false"
+        android:text="เล่นเส้นทางที่นำเข้า" />
+
+</LinearLayout>
