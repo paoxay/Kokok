@@ -138,7 +138,7 @@
 
     invoke-direct {v6}, Ljava/lang/StringBuilder;-><init>()V
 
-    const-string v7, "https://wds-sea.taximaxim.com/DriverRating?"
+    const-string v7, "https://wds-sea.taximaxim.com/Services/Driver.svc/DriverRating?"
 
     invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 

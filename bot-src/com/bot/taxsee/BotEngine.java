@@ -584,7 +584,7 @@ public final class BotEngine {
                     String q = "appName=TAXSEE&imei=&udid=" + udid
                             + "&rt=" + rtNow() + "&r=" + randomHex(7) + "&0";
                     String sig = com.bot.sig.SigSpoof.hook(ctx, q);
-                    HttpURLConnection c = (HttpURLConnection) new URL(HOST + "/DriverRating?" + q + "&sig=" + (sig == null ? "" : sig)).openConnection();
+                    HttpURLConnection c = (HttpURLConnection) new URL(HOST + "/Services/Driver.svc/DriverRating?" + q + "&sig=" + (sig == null ? "" : sig)).openConnection();
                     c.setRequestMethod("GET");
                     c.setConnectTimeout(10000);
                     c.setReadTimeout(10000);

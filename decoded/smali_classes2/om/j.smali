@@ -338,26 +338,6 @@
     .line 144
     move-result-object v1
 
-    # TAXBOT LOCAL UI TEST: rewrite TOTAL_RANG only after the real server response
-    # has arrived, before the app parses it. This never writes 0.99 back to server.
-    # Keep a visible LOCAL TEST marker in Description so screenshots cannot be
-    # confused with the real server-side rating.
-    const-string v2, "(?s)(?<prefix>\"Code\"\\s*:\\s*\"TOTAL_RANG\"(?:(?!\"Code\").)*?\"Value\"\\s*:\\s*\")[^\"]*(?<suffix>\")"
-
-    const-string v3, "${prefix}0.99${suffix}"
-
-    invoke-virtual {v1, v2, v3}, Ljava/lang/String;->replaceAll(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v1
-
-    const-string v2, "(?s)(?<prefix>\"Code\"\\s*:\\s*\"TOTAL_RANG\"(?:(?!\"Code\").)*?\"Description\"\\s*:\\s*\")[^\"]*(?<suffix>\")"
-
-    const-string v3, "${prefix}เรตติ้ง [LOCAL TEST]${suffix}"
-
-    invoke-virtual {v1, v2, v3}, Ljava/lang/String;->replaceAll(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v1
-
     .line 145
     invoke-static {}, Li10/b;->c()Lpe0/b;
 
