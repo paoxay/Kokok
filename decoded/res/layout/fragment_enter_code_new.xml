@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:background="@color/login_background" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layoutDirection="locale"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <ScrollView android:id="@id/vFormContainer" android:layout_width="fill_parent" android:layout_height="fill_parent" android:fillViewport="true" android:layout_centerVertical="true">
+        <include android:id="@id/vForm" layout="@layout/layout_enter_code_form" />
+    </ScrollView>
+    <com.taxsee.view.progressbar.TaxseeProgressBar android:id="@id/v_progressbar" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" style="@style/TaxseeProgressBar" />
+</RelativeLayout>

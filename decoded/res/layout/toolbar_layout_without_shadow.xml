@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.google.android.material.appbar.MaterialToolbar android:id="@id/toolbar" android:background="@color/top_appbar_background" android:layout_width="fill_parent" android:layout_height="?actionBarSize">
+        <LinearLayout android:orientation="vertical" android:id="@id/title_container" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginEnd="16.0dip">
+            <com.taxsee.driver.feature.text.ScrollingTextView android:textColor="@color/top_appbar_title" android:id="@id/title" android:layout_width="fill_parent" android:layout_height="wrap_content" style="@style/Widget.Toolbar.Title" />
+            <LinearLayout android:orientation="horizontal" android:id="@id/subtitle" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <com.google.android.material.textview.MaterialTextView android:textColor="@color/top_appbar_subtitle" android:id="@id/tv_organization" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textDirection="locale" style="@style/Widget.Toolbar.SubTitle" />
+                <com.google.android.material.textview.MaterialTextView android:textColor="@color/urgent_text" android:gravity="center" android:id="@id/tv_tariff" android:background="@drawable/bg_urgent" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textDirection="locale" style="@style/Widget.Toolbar.SubTitle" />
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.appbar.MaterialToolbar>
+</merge>

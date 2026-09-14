@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="confirmation_code_attempts_left">
+        <item quantity="other">Kod noto‘g‘ri. %d ta urinish qoldi.</item>
+        <item quantity="one">Kod noto‘g‘ri. %d ta urinish qoldi.</item>
+    </plurals>
+    <plurals name="confirmation_code_attempts_left_short">
+        <item quantity="other">%d ta urinish qoldi.</item>
+        <item quantity="one">%d ta urinish qoldi.</item>
+    </plurals>
+    <plurals name="next_order_accepted_countdown_message">
+        <item quantity="other">Buyurtma %1$s soniyadan keyin qabul qilinadi</item>
+        <item quantity="one">Buyurtma %1$s soniyadan keyin qabul qilinadi</item>
+    </plurals>
+    <plurals name="next_order_countdown_message">
+        <item quantity="other">Buyurtma %1$s soniyadan keyin bekor qilinadi</item>
+        <item quantity="one">Buyurtma %1$s soniyadan keyin bekor qilinadi</item>
+    </plurals>
+</resources>

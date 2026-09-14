@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <include android:id="@id/appbar" layout="@layout/view_fragment_appbar" />
+    <WebView android:id="@id/webView" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0" />
+    <LinearLayout android:orientation="horizontal" android:id="@id/v_actions" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_margin="16.0dip" app:layout_anchorGravity="bottom|center">
+        <com.google.android.material.button.MaterialButton android:id="@id/btnNext" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="48.0dip" android:text="@string/Next" />
+        <com.google.android.material.button.MaterialButton android:id="@id/btn_exit" android:visibility="gone" android:layout_width="0.0dip" android:layout_height="48.0dip" android:text="@string/agreement_exit" android:layout_weight="1.0" android:layout_marginEnd="8.0dip" style="?materialButtonOutlinedStyle" />
+        <com.google.android.material.button.MaterialButton android:id="@id/btn_accept" android:visibility="gone" android:layout_width="0.0dip" android:layout_height="48.0dip" android:text="@string/agreement_accept" android:layout_weight="1.0" android:layout_marginStart="8.0dip" />
+    </LinearLayout>
+</LinearLayout>

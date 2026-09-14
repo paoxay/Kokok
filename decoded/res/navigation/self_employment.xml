@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:id="@id/self_employment" app:startDestination="@id/self_employment_loading"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <fragment android:name="com.taxsee.feature.self_employment.loading.ui.SelfEmploymentLoadingFragment" android:id="@id/self_employment_loading" />
+    <fragment android:name="com.taxsee.feature.self_employment.enter_inn.ui.SelfEmploymentEnterInnFragment" android:id="@id/self_employment_enter_inn">
+        <argument android:name="isRequestCancelled" android:defaultValue="false" app:argType="boolean" />
+        <action android:id="@id/action_to_self_employment_details" app:destination="@id/self_employment_details" />
+        <action android:id="@id/action_to_self_employment_wait" app:destination="@id/self_employment_wait" app:popUpTo="@id/self_employment" app:popUpToInclusive="true" />
+    </fragment>
+    <fragment android:name="com.taxsee.feature.self_employment.register.ui.SelfEmploymentRegisterFragment" android:id="@id/self_employment_register">
+        <action android:id="@id/action_to_self_employment_details" app:destination="@id/self_employment_details" />
+        <action android:id="@id/action_to_self_employment_wait" app:destination="@id/self_employment_wait" app:popUpTo="@id/self_employment" app:popUpToInclusive="true" />
+    </fragment>
+    <fragment android:name="com.taxsee.feature.self_employment.accept_request.ui.SelfEmploymentAcceptRequestFragment" android:id="@id/self_employment_accept_request">
+        <action android:id="@id/action_to_self_employment_details" app:destination="@id/self_employment_details" />
+        <action android:id="@id/action_to_self_employment_edit_inn" app:destination="@id/self_employment_enter_inn" />
+    </fragment>
+    <fragment android:name="com.taxsee.feature.self_employment.connected.ui.SelfEmploymentConnectedFragment" android:id="@id/self_employment_connected">
+        <action android:id="@id/action_to_self_employment_enter_inn" app:destination="@id/self_employment_enter_inn" app:popUpTo="@id/self_employment" app:popUpToInclusive="true" />
+    </fragment>
+    <fragment android:name="com.taxsee.feature.self_employment.wait.ui.SelfEmploymentWaitFragment" android:id="@id/self_employment_wait" />
+    <fragment android:name="com.taxsee.feature.self_employment.details.ui.SelfEmploymentDetailsFragment" android:id="@id/self_employment_details">
+        <action android:id="@id/action_to_self_employment_enter_inn" app:destination="@id/self_employment_enter_inn" />
+    </fragment>
+</navigation>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="confirmation_code_attempts_left">
+        <item quantity="other">Код қате. %d енгізу мүмкіндіктері қалды.</item>
+        <item quantity="one">Код қате. %d енгізу мүмкіндігі қалды.</item>
+    </plurals>
+    <plurals name="confirmation_code_attempts_left_short">
+        <item quantity="other">%d енгізу мүмкіндіктері қалды.</item>
+        <item quantity="one">%d енгізу мүмкіндігі қалды.</item>
+    </plurals>
+    <plurals name="next_order_accepted_countdown_message">
+        <item quantity="other">Тапсырыс %1$s секундтан кейін қабылданады</item>
+        <item quantity="one">Тапсырыс %1$s секундтан кейін қабылданады</item>
+    </plurals>
+    <plurals name="next_order_countdown_message">
+        <item quantity="other">Тапсырыс %1$s секундтан кейін алынып тасталады</item>
+        <item quantity="one">Тапсырыс %1$s секундтан кейін алынып тасталады</item>
+    </plurals>
+</resources>

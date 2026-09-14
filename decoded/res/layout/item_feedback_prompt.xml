@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_accent" android:gravity="center_vertical" android:id="@id/tvPrompt" android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="48.0dip" android:paddingHorizontal="16.0dip"
+  xmlns:android="http://schemas.android.com/apk/res/android" />

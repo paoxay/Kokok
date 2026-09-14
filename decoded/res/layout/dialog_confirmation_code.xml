@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.DialogText" android:textColor="@color/text_title" android:id="@id/title" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+    <com.google.android.material.textfield.TextInputLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:hint="@string/codeFromSms">
+        <com.taxsee.shared.feature.formated_edit_text.ui.FormatEditText android:id="@id/short_code" android:layout_width="fill_parent" android:layout_height="wrap_content" android:maxLines="1" android:lines="1" android:minLines="1" android:imeOptions="actionNext|flagNoExtractUi|flagNoFullscreen" android:imeActionId="5" app:formatType="integerNumber" app:trimStartZero="false" />
+    </com.google.android.material.textfield.TextInputLayout>
+</LinearLayout>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="oval">
+            <gradient android:startColor="#33424242" android:endColor="#00424242" android:angle="0.0" android:type="radial" android:gradientRadius="32.0dip" />
+        </shape>
+    </item>
+    <item android:drawable="@drawable/ic_navigator_track" />
+</layer-list>

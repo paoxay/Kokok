@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:id="@id/activity_system_problems_flow" app:startDestination="@id/systemProblemsList"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <fragment android:name="com.taxsee.shared.feature.system_problems.problems_list.ui.SystemProblemListFragment" android:id="@id/systemProblemsList">
+        <action android:id="@id/action_list_to_details" app:destination="@id/systemProblemDetail" />
+    </fragment>
+    <fragment android:name="com.taxsee.shared.feature.system_problems.problem_detail.ui.SystemProblemDetailsFragment" android:id="@id/systemProblemDetail">
+        <argument android:name="code" app:argType="string" />
+        <argument android:name="isFromDeeplink" android:defaultValue="false" app:argType="boolean" />
+        <action android:id="@id/action_details_to_list" app:destination="@id/systemProblemsList" app:popUpTo="@id/activity_system_problems_flow" app:popUpToInclusive="true" />
+        <action android:id="@id/action_reopened_detail" app:destination="@id/systemProblemDetail" app:popUpTo="@id/activity_system_problems_flow" app:popUpToInclusive="true" />
+    </fragment>
+</navigation>

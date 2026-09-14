@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.appbar.AppBarLayout android:id="@id/fragment_appbar" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_alignParentTop="true" android:elevation="4.0dip"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <FrameLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <com.google.android.material.appbar.MaterialToolbar android:id="@id/toolbar" android:background="@color/top_appbar_background" android:layout_width="fill_parent" android:layout_height="?actionBarSize">
+            <LinearLayout android:orientation="vertical" android:id="@id/title_container" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginEnd="16.0dip">
+                <com.taxsee.driver.feature.text.ScrollingTextView android:textColor="@color/top_appbar_title" android:id="@id/title" android:layout_width="fill_parent" android:layout_height="wrap_content" style="@style/Widget.Toolbar.Title" />
+                <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:id="@id/subtitle" android:layout_width="fill_parent" android:layout_height="fill_parent">
+                    <com.taxsee.driver.feature.text.ScrollingTextView android:textColor="@color/chat_appbar_subtitle" android:id="@id/toolbar_title" android:layout_width="wrap_content" android:layout_height="wrap_content" style="@style/Widget.Toolbar.SubTitle" />
+                    <com.feature.chat_list.chat.TypingDotsView android:textColor="@color/chat_appbar_subtitle" android:id="@id/typing_view" android:layout_width="wrap_content" android:layout_height="wrap_content" style="@style/Widget.Toolbar.SubTitle" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.appbar.MaterialToolbar>
+        <com.taxsee.driver.TaxseeLinearProgressIndicator android:layout_gravity="bottom" android:id="@id/progress_loading" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:indeterminate="true" />
+    </FrameLayout>
+</com.google.android.material.appbar.AppBarLayout>

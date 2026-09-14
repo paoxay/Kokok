@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="confirmation_code_attempts_left">
+        <item quantity="other">کد وارد شده صحیح نیست. تعداد دفعات باقی‌مانده برای ثبت کد صحیح: %d</item>
+        <item quantity="one">کد وارد شده صحیح نیست. تعداد دفعات باقی‌مانده برای ثبت کد صحیح: %d</item>
+    </plurals>
+    <plurals name="confirmation_code_attempts_left_short">
+        <item quantity="other">تعداد دفعات باقی‌مانده برای ثبت کد صحیح: %d</item>
+        <item quantity="one">تعداد دفعات باقی‌مانده برای ثبت کد صحیح: %d</item>
+    </plurals>
+    <plurals name="next_order_accepted_countdown_message">
+        <item quantity="other">درخواست پس از %1$s ثانیه پذیرفته خواهد شد</item>
+        <item quantity="one">درخواست پس از %1$s ثانیه پذیرفته خواهد شد</item>
+    </plurals>
+    <plurals name="next_order_countdown_message">
+        <item quantity="other">درخواست پس از %1$s ثانیه لغو خواهد شد.</item>
+        <item quantity="one">درخواست پس از %1$s ثانیه لغو خواهد شد.</item>
+    </plurals>
+</resources>

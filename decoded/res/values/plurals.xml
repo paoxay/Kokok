@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="confirmation_code_attempts_left">
+        <item quantity="other">Код неверный. Осталось %d попыток ввода.</item>
+        <item quantity="one">Код неверный. Осталась %d попытка ввода.</item>
+        <item quantity="two">Код неверный. Осталось %d попытки ввода.</item>
+        <item quantity="few">Код неверный. Осталось %d попытки ввода.</item>
+        <item quantity="many">Код неверный. Осталось %d попыток ввода.</item>
+    </plurals>
+    <plurals name="confirmation_code_attempts_left_short">
+        <item quantity="other">Осталось %d попыток ввода.</item>
+        <item quantity="one">Осталась %d попытка ввода.</item>
+        <item quantity="two">Осталось %d попытки ввода.</item>
+        <item quantity="few">Осталось %d попытки ввода.</item>
+        <item quantity="many">Осталось %d попыток ввода.</item>
+    </plurals>
+    <plurals name="mtrl_badge_content_description">
+        <item quantity="other">%d new notifications</item>
+        <item quantity="one">%d new notification</item>
+    </plurals>
+    <plurals name="next_order_accepted_countdown_message">
+        <item quantity="other">Заказ будет принят через %1$s секунд</item>
+        <item quantity="one">Заказ будет принят через %1$s секунду</item>
+        <item quantity="two">Заказ будет принят через %1$s секунды</item>
+        <item quantity="few">Заказ будет принят через %1$s секунды</item>
+    </plurals>
+    <plurals name="next_order_countdown_message">
+        <item quantity="other">Заказ будет отменен через %1$s секунд</item>
+        <item quantity="one">Заказ будет отменен через %1$s секунду</item>
+        <item quantity="two">Заказ будет отменен через %1$s секунды</item>
+        <item quantity="few">Заказ будет отменен через %1$s секунды</item>
+    </plurals>
+</resources>

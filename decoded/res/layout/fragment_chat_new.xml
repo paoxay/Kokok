@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:layoutDirection="locale"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <include android:id="@id/appbar" layout="@layout/view_client_chat_appbar" />
+    <androidx.recyclerview.widget.RecyclerView android:id="@id/rv_messages" android:scrollbars="vertical" android:clipToPadding="false" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_above="@id/bottom_container" android:layout_below="@id/appbar" android:paddingVertical="16.0dip" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" app:stackFromEnd="true" />
+    <FrameLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_above="@id/bottom_container" android:layout_alignParentEnd="true">
+        <com.google.android.material.floatingactionbutton.FloatingActionButton android:id="@id/btn_scroll_to_bottom" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="@dimen/fab_margin" android:src="@drawable/ic_arrow_down" android:contentDescription="@null" app:fabSize="mini" />
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.BadgeText" android:textColor="@color/badge_text" android:gravity="center" android:layout_gravity="center|top" android:id="@id/tv_count_new_messages" android:background="@drawable/chat_counter" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4.0dip" android:minHeight="16.0dip" />
+    </FrameLayout>
+    <LinearLayout android:orientation="vertical" android:id="@id/bottom_container" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_alignParentBottom="true">
+        <com.google.android.material.divider.MaterialDivider android:layout_width="fill_parent" android:layout_height="wrap_content" />
+        <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:id="@id/message_container" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:paddingHorizontal="16.0dip" android:paddingVertical="8.0dip">
+            <com.google.android.material.textfield.TextInputLayout android:id="@id/message_layout" android:layout_width="0.0dip" android:layout_height="wrap_content" android:hint="@string/MessageText" android:layout_weight="1.0" android:layout_marginEnd="16.0dip">
+                <com.google.android.material.textfield.TextInputEditText android:id="@id/et_message" android:layout_width="fill_parent" android:layout_height="wrap_content" android:maxLines="@integer/message_edit_lines" android:minLines="1" android:maxLength="4000" android:inputType="textAutoCorrect|textCapSentences|textMultiLine" android:imeOptions="actionSend|flagNoExtractUi|flagNoFullscreen" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.floatingactionbutton.FloatingActionButton android:enabled="false" android:id="@id/btn_send" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/ic_send_arrow_up" android:contentDescription="@null" app:fabSize="mini" />
+            <com.google.android.material.progressindicator.CircularProgressIndicator android:id="@id/v_send_process" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:indeterminate="true" app:indicatorColor="@color/chat_send_progressbar" app:indicatorSize="28.0dip" />
+        </LinearLayout>
+        <LinearLayout android:orientation="horizontal" android:id="@id/forbid_send_message_container" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_title" android:layout_gravity="center_vertical" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/ChatBanMsg" android:layout_weight="1.0" android:layout_marginHorizontal="16.0dip" />
+            <androidx.appcompat.widget.AppCompatImageView android:layout_gravity="center_vertical" android:id="@id/iv_forbid_send_message_close" android:background="?selectableItemBackgroundBorderless" android:padding="16.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/ic_cancel_order_black" android:minWidth="@dimen/send_min_width" android:contentDescription="@null" app:tint="@color/icon_default" />
+        </LinearLayout>
+    </LinearLayout>
+    <com.taxsee.view.progressbar.TaxseeProgressBar android:id="@id/v_fullscreen_progressbar" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" style="@style/TaxseeProgressBar" />
+</RelativeLayout>

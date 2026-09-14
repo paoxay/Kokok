@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="CountAdditionalOfAddresses">
+        <item>ອີກ %d ທີ່ຢູ່</item>
+        <item>ອີກ %d ທີ່ຢູ່</item>
+        <item>ອີກ %d ທີ່ຢູ່</item>
+    </string-array>
+    <string-array name="months_short">
+        <item>ມັງກອນ</item>
+        <item>ກຸມພາ</item>
+        <item>ມີນາ</item>
+        <item>ເມສາ</item>
+        <item>ພຶດສະພາ</item>
+        <item>ມິຖຸນາ</item>
+        <item>ກໍລະກົດ</item>
+        <item>ສິງຫາ</item>
+        <item>ກັນຍາ</item>
+        <item>ຕຸລາ</item>
+        <item>ພະຈິກ</item>
+        <item>ທັນວາ</item>
+    </string-array>
+</resources>

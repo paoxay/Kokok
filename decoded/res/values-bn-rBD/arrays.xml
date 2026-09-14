@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="CountAdditionalOfAddresses">
+        <item>আরো %d টি ঠিকানা</item>
+        <item>আরো %d টি ঠিকানা</item>
+        <item>আরো %d টি ঠিকানা</item>
+    </string-array>
+    <string-array name="months_short">
+        <item>জানুয়ারি</item>
+        <item>ফেব্রুয়ারি</item>
+        <item>মার্চ</item>
+        <item>এপ্রিল</item>
+        <item>মে</item>
+        <item>জুন</item>
+        <item>জুলাই</item>
+        <item>আগস্ট</item>
+        <item>সেপ্টেম্বর</item>
+        <item>অক্টোবার</item>
+        <item>নভেম্বর</item>
+        <item>ডিসেম্বর</item>
+    </string-array>
+</resources>

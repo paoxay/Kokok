@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layoutDirection="locale"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <include layout="@layout/view_fragment_appbar" />
+    <com.google.android.material.textfield.TextInputLayout android:id="@id/til_delay" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="10.0dip" android:hint="@string/ExtendArrivalBy" android:layout_marginHorizontal="10.0dip">
+        <com.taxsee.shared.feature.formated_edit_text.ui.FormatEditText android:id="@id/et_delay" android:nextFocusRight="@id/extend" android:nextFocusDown="@id/extend" android:layout_width="fill_parent" android:layout_height="wrap_content" android:imeOptions="actionSend|flagNoExtractUi|flagNoFullscreen" android:imeActionId="4" android:nextFocusForward="@id/extend" app:formatType="integerNumber" />
+    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.button.MaterialButton android:id="@id/btn_extend" android:nextFocusLeft="@id/delay" android:nextFocusUp="@id/delay" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_margin="10.0dip" android:text="@string/DoExtend" />
+</LinearLayout>

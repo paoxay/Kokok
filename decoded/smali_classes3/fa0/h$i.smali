@@ -1,0 +1,102 @@
+.class final Lfa0/h$i;
+.super Lkd0/w;
+.source "r8-map-id-83369e011c7089229a2d93be69079bfb1a01165be964184299498138074a9cc0"
+
+# interfaces
+.implements Lkotlin/jvm/functions/Function0;
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingMethod;
+    value = Lfa0/h;-><init>(Landroid/hardware/Camera$Parameters;)V
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x18
+    name = null
+.end annotation
+
+
+# instance fields
+.field final synthetic d:Lfa0/h;
+
+
+# direct methods
+.method constructor <init>(Lfa0/h;)V
+    .locals 0
+
+    .line 1
+    iput-object p1, p0, Lfa0/h$i;->d:Lfa0/h;
+
+    .line 2
+    .line 3
+    const/4 p1, 0x0
+
+    .line 4
+    invoke-direct {p0, p1}, Lkd0/w;-><init>(I)V
+
+    .line 5
+    .line 6
+    .line 7
+    return-void
+.end method
+
+
+# virtual methods
+.method public final a()Ljava/util/List;
+    .locals 2
+
+    .line 1
+    iget-object v0, p0, Lfa0/h$i;->d:Lfa0/h;
+
+    .line 2
+    .line 3
+    invoke-static {v0}, Lfa0/h;->a(Lfa0/h;)Landroid/hardware/Camera$Parameters;
+
+    .line 4
+    .line 5
+    .line 6
+    move-result-object v0
+
+    .line 7
+    invoke-static {}, Lfa0/i;->a()Ljava/util/List;
+
+    .line 8
+    .line 9
+    .line 10
+    move-result-object v1
+
+    .line 11
+    invoke-static {v0, v1}, Lka0/a;->a(Landroid/hardware/Camera$Parameters;Ljava/util/List;)Ljava/util/List;
+
+    .line 12
+    .line 13
+    .line 14
+    move-result-object v0
+
+    .line 15
+    invoke-static {v0}, Lpa0/b;->a(Ljava/util/List;)Ljava/util/List;
+
+    .line 16
+    .line 17
+    .line 18
+    move-result-object v0
+
+    .line 19
+    return-object v0
+.end method
+
+.method public bridge synthetic invoke()Ljava/lang/Object;
+    .locals 1
+
+    .line 1
+    invoke-virtual {p0}, Lfa0/h$i;->a()Ljava/util/List;
+
+    .line 2
+    .line 3
+    .line 4
+    move-result-object v0
+
+    .line 5
+    return-object v0
+.end method

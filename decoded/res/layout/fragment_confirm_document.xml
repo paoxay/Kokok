@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:gravity="center_horizontal" android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <include layout="@layout/view_fragment_appbar" />
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.GroupTitle" android:textColor="@color/text_title" android:id="@id/tv_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:text="@string/registration_confirm_document_driver_license" android:layout_marginHorizontal="16.0dip" />
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.GroupSubTitle" android:textColor="@color/text_subtitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:text="@string/registration_confirm_document_driver_subtitle" android:layout_marginHorizontal="16.0dip" />
+        <com.mukeshsolanki.OtpView android:textAppearance="@style/TextAppearance.Text_40_400" android:textColor="@color/text_title" android:textColorHint="@color/text_title" android:id="@id/v_code" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="64.0dip" android:itemBackground="@android:color/transparent" android:inputType="number" android:imeOptions="actionDone" android:textIsSelectable="false" android:importantForAutofill="no" app:OtpCursorColor="@color/text_title" app:OtpCursorWidth="2.0dip" app:OtpHideLineWhenFilled="false" app:OtpItemCount="4" app:OtpItemSpacing="4.0dip" app:OtpItemWidth="40.0dip" app:OtpLineColor="@color/text_subtitle" app:OtpLineWidth="2.0dip" app:OtpState_filled="true" app:OtpViewType="line" />
+    </LinearLayout>
+    <com.taxsee.view.progressbar.TaxseeProgressBar android:id="@id/pb_fullscreen" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" style="@style/TaxseeProgressBar" />
+</FrameLayout>

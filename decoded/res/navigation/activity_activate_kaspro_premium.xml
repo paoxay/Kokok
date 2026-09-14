@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:id="@id/activity_activate_kaspro_premium" app:startDestination="@id/onboarding"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <fragment android:name="com.taxsee.feature.kaspro.premium.onboarding.ui.ActivateKasproPremiumFragment" android:id="@id/onboarding">
+        <action android:id="@id/action_onboarding_to_select_upgrade_type" app:destination="@id/select_upgrade_type" app:popUpTo="@id/onboarding" app:popUpToInclusive="true" />
+    </fragment>
+    <fragment android:name="com.taxsee.feature.kaspro.premium.select_upgrade_type.ui.SelectUpgradeTypeFragment" android:id="@id/select_upgrade_type">
+        <action android:id="@id/action_onboarding_to_start_activate" app:destination="@id/start_activate" app:popUpTo="@id/select_upgrade_type" app:popUpToInclusive="true" />
+    </fragment>
+    <fragment android:name="com.taxsee.feature.kaspro.premium.start_activate.ui.StartActivatePremiumFragment" android:id="@id/start_activate">
+        <argument android:name="upgradeType" app:argType="string" />
+        <argument android:name="promotion" android:defaultValue="" app:argType="string" />
+        <action android:id="@id/action_activate_to_select_photo_source" app:destination="@id/select_photo_source" />
+        <action android:id="@id/action_activate_to_photo_detail" app:destination="@id/photo_detail" />
+        <action android:id="@id/action_activate_to_personal_info" app:destination="@id/personal_info" />
+    </fragment>
+    <fragment android:name="com.taxsee.feature.kaspro.premium.enter_personal_info.ui.KasproPersonalInfoFragment" android:id="@id/personal_info">
+        <argument android:name="upgradeType" app:argType="string" />
+        <argument android:name="promotion" android:defaultValue="" app:argType="string" />
+        <action android:id="@id/action_personal_info_to_date_picker" app:destination="@id/date_picker" />
+        <action android:id="@id/action_personal_info_to_start_activate" app:destination="@id/start_activate" app:popUpTo="@id/start_activate" app:popUpToInclusive="true" />
+    </fragment>
+    <dialog android:name="com.taxsee.feature.kaspro.premium.date_picker.ui.KasproDatePickerFragment" android:id="@id/date_picker">
+        <argument android:name="current" app:argType="java.util.Date" />
+        <argument android:name="minDate" android:defaultValue="@null" app:argType="java.util.Date" app:nullable="true" />
+        <argument android:name="maxDate" android:defaultValue="@null" app:argType="java.util.Date" app:nullable="true" />
+        <argument android:name="timeZone" android:defaultValue="@null" app:argType="java.util.TimeZone" app:nullable="true" />
+    </dialog>
+    <fragment android:name="com.taxsee.feature.kaspro.premium.photo_detail.ui.PhotoDetailFragment" android:id="@id/photo_detail">
+        <argument android:name="upgradeType" app:argType="string" />
+        <argument android:name="photoCode" app:argType="string" />
+        <argument android:name="file_path" app:argType="string" />
+        <argument android:name="promotion" android:defaultValue="" app:argType="string" />
+        <action android:id="@id/action_photo_detail_to_select_photo_source" app:destination="@id/select_photo_source" />
+    </fragment>
+    <dialog android:name="com.taxsee.feature.kaspro.premium.select_photo_source.ui.SelectKasproPhotoSourceFragment" android:id="@id/select_photo_source">
+        <argument android:name="upgradeType" app:argType="string" />
+        <argument android:name="photoCode" app:argType="string" />
+        <argument android:name="promotion" android:defaultValue="" app:argType="string" />
+        <action android:id="@id/action_select_source_to_gallery_preview" app:destination="@id/gallery_photo_preview" app:popUpTo="@id/start_activate" app:popUpToInclusive="false" />
+    </dialog>
+    <fragment android:name="com.taxsee.feature.kaspro.premium.gallery_photo_preview.ui.GalleryPhotoPreviewFragment" android:id="@id/gallery_photo_preview">
+        <argument android:name="upgradeType" app:argType="string" />
+        <argument android:name="photoCode" app:argType="string" />
+        <argument android:name="gallery_file_path" app:argType="string" />
+        <argument android:name="promotion" android:defaultValue="" app:argType="string" />
+        <action android:id="@id/action_preview_to_select_photo_source" app:destination="@id/select_photo_source" />
+        <action android:id="@id/action_preview_to_start" app:destination="@id/start_activate" app:popUpTo="@id/start_activate" app:popUpToInclusive="true" />
+    </fragment>
+    <action android:id="@id/action_camera_to_preview" app:destination="@id/photo_preview" app:popUpTo="@id/start_activate" app:popUpToInclusive="false" />
+    <fragment android:name="com.taxsee.feature.kaspro.premium.photo_preview.ui.PhotoPreviewFragment" android:id="@id/photo_preview">
+        <argument android:name="upgradeType" app:argType="string" />
+        <argument android:name="photoCode" app:argType="string" />
+        <argument android:name="file_path" app:argType="string" />
+        <argument android:name="promotion" android:defaultValue="" app:argType="string" />
+        <argument android:name="orientation" app:argType="com.taxsee.shared.feature.kaspro.CameraOrientation" />
+        <action android:id="@id/action_preview_to_start" app:destination="@id/start_activate" app:popUpTo="@id/start_activate" app:popUpToInclusive="true" />
+    </fragment>
+</navigation>

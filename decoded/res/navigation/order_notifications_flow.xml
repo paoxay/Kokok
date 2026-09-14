@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:id="@id/order_notifications_flow" app:startDestination="@id/order_notifications"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <fragment android:name="com.taxsee.shared.feature.order_notifications.notifications.ui.OrderNotificationsFragment" android:id="@id/order_notifications">
+        <action android:id="@id/action_order_notifications_to_intercity_directions" app:destination="@id/intercity_directions" />
+    </fragment>
+    <fragment android:name="com.taxsee.shared.feature.order_notifications.directions.list.ui.IntercityDirectionsFragment" android:id="@id/intercity_directions">
+        <action android:id="@id/action_intercity_directions_to_onboarding" app:destination="@id/onboarding" />
+        <action android:id="@id/action_intercity_directions_to_remove" app:destination="@id/remove_intercity_directions" />
+        <action android:id="@id/action_intercity_directions_to_create_intercity_direction" app:destination="@id/create_intercity_direction" />
+    </fragment>
+    <fragment android:name="com.taxsee.shared.feature.order_notifications.directions.onboarding.ui.IntercityDirectionsOnboardingFragment" android:id="@id/onboarding" />
+    <fragment android:name="com.taxsee.shared.feature.order_notifications.directions.remove.ui.RemoveIntercityDirectionFragment" android:id="@id/remove_intercity_directions" />
+    <fragment android:name="com.taxsee.shared.feature.order_notifications.directions.create.ui.CreateIntercityDirectionFragment" android:id="@id/create_intercity_direction" />
+</navigation>

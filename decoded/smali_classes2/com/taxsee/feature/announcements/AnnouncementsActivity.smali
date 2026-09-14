@@ -1,0 +1,71 @@
+.class public final Lcom/taxsee/feature/announcements/AnnouncementsActivity;
+.super Ldj/e;
+.source "r8-map-id-83369e011c7089229a2d93be69079bfb1a01165be964184299498138074a9cc0"
+
+
+# annotations
+.annotation runtime Lkotlin/Metadata;
+.end annotation
+
+
+# direct methods
+.method public constructor <init>()V
+    .locals 0
+
+    .line 1
+    invoke-direct {p0}, Ldj/e;-><init>()V
+
+    .line 2
+    .line 3
+    .line 4
+    return-void
+.end method
+
+
+# virtual methods
+.method protected onCreate(Landroid/os/Bundle;)V
+    .locals 7
+
+    .line 1
+    invoke-super {p0, p1}, Ldj/e;->onCreate(Landroid/os/Bundle;)V
+
+    .line 2
+    .line 3
+    .line 4
+    sget-object v1, Lcom/taxsee/feature/announcements/AnnouncementsActivity$a;->v:Lcom/taxsee/feature/announcements/AnnouncementsActivity$a;
+
+    .line 5
+    .line 6
+    const/16 v5, 0xc
+
+    .line 7
+    .line 8
+    const/4 v6, 0x0
+
+    .line 9
+    const/4 v2, 0x0
+
+    .line 10
+    const/4 v3, 0x0
+
+    .line 11
+    const/4 v4, 0x0
+
+    .line 12
+    move-object v0, p0
+
+    .line 13
+    invoke-static/range {v0 .. v6}, Leh/b;->b(Landroid/app/Activity;Lkotlin/jvm/functions/Function1;ZZZILjava/lang/Object;)Li4/a;
+
+    .line 14
+    .line 15
+    .line 16
+    move-result-object p1
+
+    .line 17
+    check-cast p1, Lrj/a;
+
+    .line 18
+    .line 19
+    return-void
+.end method

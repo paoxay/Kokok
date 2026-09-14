@@ -1,0 +1,17 @@
+version: 2.10.0
+apkFileName: bot2-classes.jar
+isFrameworkApk: false
+usesFramework:
+  ids:
+  tag: null
+sdkInfo:
+  minSdkVersion: 23
+packageInfo:
+  forcedPackageId: null
+  renameManifestPackage: null
+versionInfo:
+  versionCode: null
+  versionName: null
+resourcesAreCompressed: false
+sharedLibrary: false
+sparseResources: false

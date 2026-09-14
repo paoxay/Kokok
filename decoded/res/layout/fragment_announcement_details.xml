@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layoutDirection="locale"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <include layout="@layout/view_fragment_appbar" />
+    <androidx.recyclerview.widget.RecyclerView android:id="@id/rvMarkdown" android:visibility="gone" android:clipToPadding="false" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0" android:fadeScrollbars="false" android:paddingHorizontal="8.0dip" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+    <com.google.android.material.divider.MaterialDivider android:id="@id/divider" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.MessageDate" android:textColor="@color/text_subtitle" android:gravity="center_horizontal" android:id="@id/vDate" android:padding="@dimen/padding_modest" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+</LinearLayout>

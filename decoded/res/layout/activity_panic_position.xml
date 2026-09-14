@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <include layout="@layout/view_fragment_appbar" />
+    <androidx.constraintlayout.widget.ConstraintLayout android:id="@id/content" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0">
+        <include android:id="@id/layout_map" layout="@layout/layout_map" />
+        <LinearLayout android:layout_gravity="bottom" android:orientation="vertical" android:id="@id/bottom_panel" android:background="@color/card_background" android:layout_width="fill_parent" android:layout_height="wrap_content" android:paddingHorizontal="16.0dip" android:paddingVertical="10.0dip" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent">
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Text_18_400" android:textColor="@color/text_title" android:id="@id/tv_panic_text" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

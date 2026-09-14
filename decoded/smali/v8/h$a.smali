@@ -1,0 +1,19 @@
+.class public interface abstract Lv8/h$a;
+.super Ljava/lang/Object;
+.source "r8-map-id-83369e011c7089229a2d93be69079bfb1a01165be964184299498138074a9cc0"
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Lv8/h;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x609
+    name = "a"
+.end annotation
+
+
+# virtual methods
+.method public abstract a(Lt8/k;)Ljava/lang/Object;
+.end method

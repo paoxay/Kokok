@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout android:id="@id/clRoot" android:background="@color/screen_with_cards_background" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <include android:id="@id/appbar" layout="@layout/view_fragment_appbar" />
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout android:id="@id/srlRefresh" android:layout_width="fill_parent" android:layout_height="fill_parent" app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <androidx.core.widget.NestedScrollView android:layout_width="fill_parent" android:layout_height="fill_parent">
+            <LinearLayout android:orientation="vertical" android:paddingBottom="80.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <com.google.android.material.card.MaterialCardView android:layout_width="fill_parent" android:layout_height="wrap_content" app:cardCornerRadius="0.0dip">
+                    <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.GroupTitle" android:textColor="@color/text_title" android:gravity="start|center" android:id="@id/tvHeader" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:text="@string/gas_filters_title" android:paddingHorizontal="16.0dip" />
+                        <androidx.recyclerview.widget.RecyclerView android:id="@id/rvFilters" android:scrollbars="vertical" android:clipToPadding="false" android:layout_width="fill_parent" android:layout_height="wrap_content" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+                <com.google.android.material.card.MaterialCardView android:id="@id/vDefaultFilter" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:minHeight="56.0dip" app:cardCornerRadius="0.0dip">
+                    <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+                        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_title" android:ellipsize="end" android:gravity="start" android:id="@id/tvDefaultFilterTitle" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:text="@string/default_filter" android:maxLines="1" android:minLines="1" android:textAlignment="viewStart" android:layout_marginHorizontal="16.0dip" app:layout_constraintBottom_toTopOf="@id/tvDefaultFilter" app:layout_constraintEnd_toStartOf="@id/ivAction" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" app:layout_constraintVertical_chainStyle="packed" />
+                        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.SubTitle" android:textColor="@color/text_accent" android:id="@id/tvDefaultFilter" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_marginTop="4.0dip" android:layout_marginBottom="16.0dip" android:textAlignment="viewStart" android:layout_marginHorizontal="16.0dip" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toStartOf="@id/ivAction" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toBottomOf="@id/tvDefaultFilterTitle" />
+                        <androidx.appcompat.widget.AppCompatImageView android:id="@id/ivAction" android:layout_width="74.0dip" android:layout_height="wrap_content" android:src="@drawable/ic_details" android:scaleType="center" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent" app:tint="@color/icon_accent" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.card.MaterialCardView>
+                <com.google.android.material.card.MaterialCardView android:id="@id/vAboutAuto" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginVertical="8.0dip" app:cardCornerRadius="0.0dip">
+                    <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="50.0dip">
+                        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_title" android:ellipsize="end" android:gravity="start" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_margin="16.0dip" android:text="@string/what_is_auto_title" android:maxLines="1" android:minLines="1" android:layout_weight="1.0" android:textAlignment="viewStart" />
+                        <androidx.appcompat.widget.AppCompatImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/ic_details" android:scaleType="center" android:layout_marginEnd="24.0dip" app:tint="@color/icon_accent" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    <LinearLayout android:background="@color/card_background" android:layout_width="fill_parent" android:layout_height="wrap_content" app:layout_anchor="@id/srlRefresh" app:layout_anchorGravity="bottom|center">
+        <com.google.android.material.button.MaterialButton android:id="@id/bNewFilter" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_margin="16.0dip" android:text="@string/add_filter" />
+    </LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

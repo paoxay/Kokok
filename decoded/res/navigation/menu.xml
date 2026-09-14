@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:id="@id/menu_navigation" app:startDestination="@id/fragment_menu"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <fragment android:label="fragment_menu" android:name="com.feature.menu.MenuFragment" android:id="@id/fragment_menu">
+        <argument android:name="group_code" app:argType="string" app:nullable="true" />
+        <argument android:name="group_name" app:argType="string" app:nullable="true" />
+    </fragment>
+</navigation>

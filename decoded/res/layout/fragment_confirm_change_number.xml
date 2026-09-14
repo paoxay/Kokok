@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:orientation="vertical" android:background="@color/screen_with_cards_background" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <include layout="@layout/view_fragment_appbar" />
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.GroupTitle" android:textColor="@color/text_title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:text="@string/registration_confirm_change_number_title" android:layout_marginHorizontal="16.0dip" />
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.GroupSubTitle" android:textColor="@color/text_subtitle" android:id="@id/tv_subtitle" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:layout_marginHorizontal="16.0dip" />
+        <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="26.0dip" android:layout_marginHorizontal="16.0dip">
+            <androidx.appcompat.widget.AppCompatImageView android:layout_gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/ic_smartphone_36" android:tint="@color/icon_default" />
+            <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginStart="16.0dip">
+                <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Text_16_400" android:textColor="@color/text_subtitle" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/registration_confirm_change_number_old_phone_number" />
+                <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Text_20_500" android:textColor="@color/text_subtitle" android:id="@id/tv_old_number" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="26.0dip" android:layout_marginHorizontal="16.0dip">
+            <androidx.appcompat.widget.AppCompatImageView android:layout_gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/ic_selected_smartphone" />
+            <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginStart="16.0dip">
+                <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Text_16_400" android:textColor="@color/text_accent" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/registration_confirm_change_number_new_phone_number" />
+                <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Text_20_500" android:textColor="@color/text_title" android:id="@id/tv_new_number" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" />
+            </LinearLayout>
+        </LinearLayout>
+        <Space android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0" />
+        <com.google.android.material.button.MaterialButton android:id="@id/b_continue" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_margin="16.0dip" android:text="@string/Continue" />
+    </LinearLayout>
+    <com.taxsee.view.progressbar.TaxseeProgressBar android:id="@id/pb_fullscreen" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" style="@style/TaxseeProgressBar" />
+</FrameLayout>

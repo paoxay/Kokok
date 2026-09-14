@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_margin="16.0dip"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:gravity="center" android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0">
+        <androidx.appcompat.widget.AppCompatImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/img_register_finished" />
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.IllustrationTitle" android:textColor="@color/text_title" android:gravity="center_horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="32.0dip" android:text="@string/registration_finished_title" />
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.IllustrationText" android:textColor="@color/text_subtitle" android:gravity="center_horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:text="@string/registration_finished_title" />
+    </LinearLayout>
+    <com.google.android.material.button.MaterialButton android:id="@id/b_next" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:text="@string/Continue" />
+</LinearLayout>

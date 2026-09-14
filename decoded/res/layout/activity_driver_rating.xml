@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layoutDirection="locale"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <include layout="@layout/view_fragment_appbar" />
+    <ScrollView android:id="@id/ratingContainer" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" android:fillViewport="true">
+        <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <LinearLayout android:orientation="vertical" android:id="@id/llHeader" android:background="@color/top_appbar_background" android:padding="16.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <com.taxsee.driver.TaxseeLinearProgressIndicator android:layout_gravity="center_vertical" android:id="@id/pbRating" android:layout_width="fill_parent" android:layout_height="wrap_content" android:max="99" android:indeterminate="false" app:trackColor="@color/top_appbar_title" />
+                <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="5.0dip">
+                    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/top_appbar_title" android:gravity="start" android:layout_gravity="center_vertical" android:id="@id/tvRatingTitle" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0" />
+                    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/top_appbar_title" android:gravity="center_vertical" android:layout_gravity="center_vertical" android:id="@id/tvRatingValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="5.0dip" />
+                </LinearLayout>
+                <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="5.0dip">
+                    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/top_appbar_title" android:gravity="center_vertical" android:id="@id/tvCompleteOrdersTitle" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0" />
+                    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/top_appbar_title" android:gravity="center_vertical" android:id="@id/tvCompleteOrdersValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="5.0dip" />
+                </LinearLayout>
+                <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="5.0dip">
+                    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/top_appbar_title" android:layout_gravity="center_vertical" android:id="@id/tvDateUpdateTitle" android:layout_width="0.0dip" android:layout_height="wrap_content" android:scrollHorizontally="false" android:layout_weight="1.0" />
+                    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/top_appbar_title" android:gravity="center_vertical" android:layout_gravity="center_vertical" android:id="@id/tvDateUpdateValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="5.0dip" />
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout android:orientation="vertical" android:id="@id/llPositiveParamsContainer" android:layout_width="fill_parent" android:layout_height="wrap_content" android:paddingHorizontal="20.0dip" />
+            <com.google.android.material.divider.MaterialDivider android:layout_width="fill_parent" android:layout_height="wrap_content" app:dividerInsetStart="16.0dip" />
+            <LinearLayout android:orientation="vertical" android:id="@id/llNegativeParamsContainer" android:layout_width="fill_parent" android:layout_height="wrap_content" android:paddingHorizontal="20.0dip" />
+            <com.google.android.material.divider.MaterialDivider android:id="@id/learnMoreDivider" android:layout_width="fill_parent" android:layout_height="wrap_content" app:dividerInsetStart="16.0dip" />
+            <com.google.android.material.button.MaterialButton android:id="@id/bLearnMore" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/DriverDetailsRatingInfoLearnMore" android:layout_marginStart="16.0dip" style="?borderlessButtonStyle" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

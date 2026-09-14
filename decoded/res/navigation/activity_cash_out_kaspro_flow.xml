@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:id="@id/activity_cash_out_kaspro" app:startDestination="@id/cash_out_methods"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <dialog android:name="com.taxsee.feature.kaspro.cash_out.ui.CashOutKasproMethodsFragment" android:id="@id/cash_out_methods">
+        <action android:id="@id/action_methods_to_instructions" app:destination="@id/cash_out_instructions" />
+    </dialog>
+    <fragment android:name="com.taxsee.feature.kaspro.cash_out.ui.CashOutKasproInstructionsFragment" android:id="@id/cash_out_instructions">
+        <action android:id="@id/action_instructions_to_token" app:destination="@id/cash_out_token" />
+    </fragment>
+    <dialog android:name="com.taxsee.feature.kaspro.cash_out.ui.CashOutKasproTokenFragment" android:id="@id/cash_out_token" />
+</navigation>

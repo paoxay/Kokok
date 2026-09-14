@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:background="@color/screen_with_cards_background" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <include layout="@layout/view_fragment_appbar" />
+        <androidx.core.widget.NestedScrollView android:layout_width="fill_parent" android:layout_height="0.0dip" android:fillViewport="true" android:layout_weight="1.0">
+            <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.GroupTitle" android:textColor="@color/text_title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:text="@string/registration_select_duplicate_title" android:layout_marginHorizontal="16.0dip" />
+                <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.GroupSubTitle" android:textColor="@color/text_subtitle" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:text="@string/registration_select_duplicate_subtitle" android:layout_marginHorizontal="16.0dip" />
+                <androidx.recyclerview.widget.RecyclerView android:id="@id/rv_duplicates" android:paddingTop="8.0dip" android:paddingBottom="16.0dip" android:visibility="gone" android:clipToPadding="false" android:layout_width="fill_parent" android:layout_height="wrap_content" android:fadeScrollbars="false" android:nestedScrollingEnabled="false" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
+    <com.taxsee.view.progressbar.TaxseeProgressBar android:id="@id/pb_fullscreen" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" style="@style/TaxseeProgressBar" />
+</FrameLayout>

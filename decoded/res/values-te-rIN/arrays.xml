@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="CountAdditionalOfAddresses">
+        <item>మరొక %d చిరునామా</item>
+        <item>%d మరిన్ని చిరునామాలు</item>
+        <item>%d మరిన్ని చిరునామాలు</item>
+    </string-array>
+    <string-array name="months_short">
+        <item>జనవరి</item>
+        <item>ఫిబ్రవరి</item>
+        <item>మార్చ్</item>
+        <item>ఏప్రిల్</item>
+        <item>మే</item>
+        <item>జూన్</item>
+        <item>జూలై</item>
+        <item>ఆగస్ట్</item>
+        <item>సేన్</item>
+        <item>అక్టోబర్</item>
+        <item>నవంబర్</item>
+        <item>డిసెంబర్</item>
+    </string-array>
+</resources>

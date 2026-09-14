@@ -1,0 +1,482 @@
+.class public Lorg/pjsip/pjsua2/VideoPreviewOpParam;
+.super Ljava/lang/Object;
+.source "r8-map-id-83369e011c7089229a2d93be69079bfb1a01165be964184299498138074a9cc0"
+
+
+# instance fields
+.field protected transient swigCMemOwn:Z
+
+.field private transient swigCPtr:J
+
+
+# direct methods
+.method public constructor <init>()V
+    .locals 3
+
+    .line 4
+    invoke-static {}, Lorg/pjsip/pjsua2/pjsua2JNI;->new_VideoPreviewOpParam()J
+
+    move-result-wide v0
+
+    const/4 v2, 0x1
+
+    invoke-direct {p0, v0, v1, v2}, Lorg/pjsip/pjsua2/VideoPreviewOpParam;-><init>(JZ)V
+
+    return-void
+.end method
+
+.method protected constructor <init>(JZ)V
+    .locals 0
+
+    .line 1
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    .line 2
+    iput-boolean p3, p0, Lorg/pjsip/pjsua2/VideoPreviewOpParam;->swigCMemOwn:Z
+
+    .line 3
+    iput-wide p1, p0, Lorg/pjsip/pjsua2/VideoPreviewOpParam;->swigCPtr:J
+
+    return-void
+.end method
+
+.method protected static getCPtr(Lorg/pjsip/pjsua2/VideoPreviewOpParam;)J
+    .locals 2
+
+    .line 1
+    if-nez p0, :cond_0
+
+    .line 2
+    .line 3
+    const-wide/16 v0, 0x0
+
+    .line 4
+    .line 5
+    return-wide v0
+
+    .line 6
+    :cond_0
+    iget-wide v0, p0, Lorg/pjsip/pjsua2/VideoPreviewOpParam;->swigCPtr:J
+
+    .line 7
+    .line 8
+    return-wide v0
+.end method
+
+.method protected static swigRelease(Lorg/pjsip/pjsua2/VideoPreviewOpParam;)J
+    .locals 3
+
+    .line 1
+    if-eqz p0, :cond_1
+
+    .line 2
+    .line 3
+    iget-boolean v0, p0, Lorg/pjsip/pjsua2/VideoPreviewOpParam;->swigCMemOwn:Z
+
+    .line 4
+    .line 5
+    if-eqz v0, :cond_0
+
+    .line 6
+    .line 7
+    iget-wide v0, p0, Lorg/pjsip/pjsua2/VideoPreviewOpParam;->swigCPtr:J
+
+    .line 8
+    .line 9
+    const/4 v2, 0x0
+
+    .line 10
+    iput-boolean v2, p0, Lorg/pjsip/pjsua2/VideoPreviewOpParam;->swigCMemOwn:Z
+
+    .line 11
+    .line 12
+    invoke-virtual {p0}, Lorg/pjsip/pjsua2/VideoPreviewOpParam;->delete()V
+
+    .line 13
+    .line 14
+    .line 15
+    return-wide v0
+
+    .line 16
+    :cond_0
+    new-instance p0, Ljava/lang/RuntimeException;
+
+    .line 17
+    .line 18
+    const-string v0, "Cannot release ownership as memory is not owned"
+
+    .line 19
+    .line 20
+    invoke-direct {p0, v0}, Ljava/lang/RuntimeException;-><init>(Ljava/lang/String;)V
+
+    .line 21
+    .line 22
+    .line 23
+    throw p0
+
+    .line 24
+    :cond_1
+    const-wide/16 v0, 0x0
+
+    .line 25
+    .line 26
+    return-wide v0
+.end method
+
+
+# virtual methods
+.method public declared-synchronized delete()V
+    .locals 5
+
+    .line 1
+    monitor-enter p0
+
+    .line 2
+    :try_start_0
+    iget-wide v0, p0, Lorg/pjsip/pjsua2/VideoPreviewOpParam;->swigCPtr:J
+
+    .line 3
+    .line 4
+    const-wide/16 v2, 0x0
+
+    .line 5
+    .line 6
+    cmp-long v4, v0, v2
+
+    .line 7
+    .line 8
+    if-eqz v4, :cond_1
+
+    .line 9
+    .line 10
+    iget-boolean v4, p0, Lorg/pjsip/pjsua2/VideoPreviewOpParam;->swigCMemOwn:Z
+
+    .line 11
+    .line 12
+    if-eqz v4, :cond_0
+
+    .line 13
+    .line 14
+    const/4 v4, 0x0
+
+    .line 15
+    iput-boolean v4, p0, Lorg/pjsip/pjsua2/VideoPreviewOpParam;->swigCMemOwn:Z
+
+    .line 16
+    .line 17
+    invoke-static {v0, v1}, Lorg/pjsip/pjsua2/pjsua2JNI;->delete_VideoPreviewOpParam(J)V
+
+    .line 18
+    .line 19
+    .line 20
+    goto :goto_0
+
+    .line 21
+    :catchall_0
+    move-exception v0
+
+    .line 22
+    goto :goto_1
+
+    .line 23
+    :cond_0
+    :goto_0
+    iput-wide v2, p0, Lorg/pjsip/pjsua2/VideoPreviewOpParam;->swigCPtr:J
+    :try_end_0
+    .catchall {:try_start_0 .. :try_end_0} :catchall_0
+
+    .line 24
+    .line 25
+    :cond_1
+    monitor-exit p0
+
+    .line 26
+    return-void
+
+    .line 27
+    :goto_1
+    :try_start_1
+    monitor-exit p0
+    :try_end_1
+    .catchall {:try_start_1 .. :try_end_1} :catchall_0
+
+    .line 28
+    throw v0
+.end method
+
+.method protected finalize()V
+    .locals 0
+
+    .line 1
+    invoke-virtual {p0}, Lorg/pjsip/pjsua2/VideoPreviewOpParam;->delete()V
+
+    .line 2
+    .line 3
+    .line 4
+    return-void
+.end method
+
+.method public getFormat()Lorg/pjsip/pjsua2/MediaFormat;
+    .locals 4
+
+    .line 1
+    iget-wide v0, p0, Lorg/pjsip/pjsua2/VideoPreviewOpParam;->swigCPtr:J
+
+    .line 2
+    .line 3
+    invoke-static {v0, v1, p0}, Lorg/pjsip/pjsua2/pjsua2JNI;->VideoPreviewOpParam_format_get(JLorg/pjsip/pjsua2/VideoPreviewOpParam;)J
+
+    .line 4
+    .line 5
+    .line 6
+    move-result-wide v0
+
+    .line 7
+    const-wide/16 v2, 0x0
+
+    .line 8
+    .line 9
+    cmp-long v2, v0, v2
+
+    .line 10
+    .line 11
+    if-nez v2, :cond_0
+
+    .line 12
+    .line 13
+    const/4 v0, 0x0
+
+    .line 14
+    return-object v0
+
+    .line 15
+    :cond_0
+    new-instance v2, Lorg/pjsip/pjsua2/MediaFormat;
+
+    .line 16
+    .line 17
+    const/4 v3, 0x0
+
+    .line 18
+    invoke-direct {v2, v0, v1, v3}, Lorg/pjsip/pjsua2/MediaFormat;-><init>(JZ)V
+
+    .line 19
+    .line 20
+    .line 21
+    return-object v2
+.end method
+
+.method public getRendId()I
+    .locals 2
+
+    .line 1
+    iget-wide v0, p0, Lorg/pjsip/pjsua2/VideoPreviewOpParam;->swigCPtr:J
+
+    .line 2
+    .line 3
+    invoke-static {v0, v1, p0}, Lorg/pjsip/pjsua2/pjsua2JNI;->VideoPreviewOpParam_rendId_get(JLorg/pjsip/pjsua2/VideoPreviewOpParam;)I
+
+    .line 4
+    .line 5
+    .line 6
+    move-result v0
+
+    .line 7
+    return v0
+.end method
+
+.method public getShow()Z
+    .locals 2
+
+    .line 1
+    iget-wide v0, p0, Lorg/pjsip/pjsua2/VideoPreviewOpParam;->swigCPtr:J
+
+    .line 2
+    .line 3
+    invoke-static {v0, v1, p0}, Lorg/pjsip/pjsua2/pjsua2JNI;->VideoPreviewOpParam_show_get(JLorg/pjsip/pjsua2/VideoPreviewOpParam;)Z
+
+    .line 4
+    .line 5
+    .line 6
+    move-result v0
+
+    .line 7
+    return v0
+.end method
+
+.method public getWindow()Lorg/pjsip/pjsua2/VideoWindowHandle;
+    .locals 4
+
+    .line 1
+    iget-wide v0, p0, Lorg/pjsip/pjsua2/VideoPreviewOpParam;->swigCPtr:J
+
+    .line 2
+    .line 3
+    invoke-static {v0, v1, p0}, Lorg/pjsip/pjsua2/pjsua2JNI;->VideoPreviewOpParam_window_get(JLorg/pjsip/pjsua2/VideoPreviewOpParam;)J
+
+    .line 4
+    .line 5
+    .line 6
+    move-result-wide v0
+
+    .line 7
+    const-wide/16 v2, 0x0
+
+    .line 8
+    .line 9
+    cmp-long v2, v0, v2
+
+    .line 10
+    .line 11
+    if-nez v2, :cond_0
+
+    .line 12
+    .line 13
+    const/4 v0, 0x0
+
+    .line 14
+    return-object v0
+
+    .line 15
+    :cond_0
+    new-instance v2, Lorg/pjsip/pjsua2/VideoWindowHandle;
+
+    .line 16
+    .line 17
+    const/4 v3, 0x0
+
+    .line 18
+    invoke-direct {v2, v0, v1, v3}, Lorg/pjsip/pjsua2/VideoWindowHandle;-><init>(JZ)V
+
+    .line 19
+    .line 20
+    .line 21
+    return-object v2
+.end method
+
+.method public getWindowFlags()J
+    .locals 2
+
+    .line 1
+    iget-wide v0, p0, Lorg/pjsip/pjsua2/VideoPreviewOpParam;->swigCPtr:J
+
+    .line 2
+    .line 3
+    invoke-static {v0, v1, p0}, Lorg/pjsip/pjsua2/pjsua2JNI;->VideoPreviewOpParam_windowFlags_get(JLorg/pjsip/pjsua2/VideoPreviewOpParam;)J
+
+    .line 4
+    .line 5
+    .line 6
+    move-result-wide v0
+
+    .line 7
+    return-wide v0
+.end method
+
+.method public setFormat(Lorg/pjsip/pjsua2/MediaFormat;)V
+    .locals 6
+
+    .line 1
+    iget-wide v0, p0, Lorg/pjsip/pjsua2/VideoPreviewOpParam;->swigCPtr:J
+
+    .line 2
+    .line 3
+    invoke-static {p1}, Lorg/pjsip/pjsua2/MediaFormat;->getCPtr(Lorg/pjsip/pjsua2/MediaFormat;)J
+
+    .line 4
+    .line 5
+    .line 6
+    move-result-wide v3
+
+    .line 7
+    move-object v2, p0
+
+    .line 8
+    move-object v5, p1
+
+    .line 9
+    invoke-static/range {v0 .. v5}, Lorg/pjsip/pjsua2/pjsua2JNI;->VideoPreviewOpParam_format_set(JLorg/pjsip/pjsua2/VideoPreviewOpParam;JLorg/pjsip/pjsua2/MediaFormat;)V
+
+    .line 10
+    .line 11
+    .line 12
+    return-void
+.end method
+
+.method public setRendId(I)V
+    .locals 2
+
+    .line 1
+    iget-wide v0, p0, Lorg/pjsip/pjsua2/VideoPreviewOpParam;->swigCPtr:J
+
+    .line 2
+    .line 3
+    invoke-static {v0, v1, p0, p1}, Lorg/pjsip/pjsua2/pjsua2JNI;->VideoPreviewOpParam_rendId_set(JLorg/pjsip/pjsua2/VideoPreviewOpParam;I)V
+
+    .line 4
+    .line 5
+    .line 6
+    return-void
+.end method
+
+.method public setShow(Z)V
+    .locals 2
+
+    .line 1
+    iget-wide v0, p0, Lorg/pjsip/pjsua2/VideoPreviewOpParam;->swigCPtr:J
+
+    .line 2
+    .line 3
+    invoke-static {v0, v1, p0, p1}, Lorg/pjsip/pjsua2/pjsua2JNI;->VideoPreviewOpParam_show_set(JLorg/pjsip/pjsua2/VideoPreviewOpParam;Z)V
+
+    .line 4
+    .line 5
+    .line 6
+    return-void
+.end method
+
+.method public setWindow(Lorg/pjsip/pjsua2/VideoWindowHandle;)V
+    .locals 6
+
+    .line 1
+    iget-wide v0, p0, Lorg/pjsip/pjsua2/VideoPreviewOpParam;->swigCPtr:J
+
+    .line 2
+    .line 3
+    invoke-static {p1}, Lorg/pjsip/pjsua2/VideoWindowHandle;->getCPtr(Lorg/pjsip/pjsua2/VideoWindowHandle;)J
+
+    .line 4
+    .line 5
+    .line 6
+    move-result-wide v3
+
+    .line 7
+    move-object v2, p0
+
+    .line 8
+    move-object v5, p1
+
+    .line 9
+    invoke-static/range {v0 .. v5}, Lorg/pjsip/pjsua2/pjsua2JNI;->VideoPreviewOpParam_window_set(JLorg/pjsip/pjsua2/VideoPreviewOpParam;JLorg/pjsip/pjsua2/VideoWindowHandle;)V
+
+    .line 10
+    .line 11
+    .line 12
+    return-void
+.end method
+
+.method public setWindowFlags(J)V
+    .locals 2
+
+    .line 1
+    iget-wide v0, p0, Lorg/pjsip/pjsua2/VideoPreviewOpParam;->swigCPtr:J
+
+    .line 2
+    .line 3
+    invoke-static {v0, v1, p0, p1, p2}, Lorg/pjsip/pjsua2/pjsua2JNI;->VideoPreviewOpParam_windowFlags_set(JLorg/pjsip/pjsua2/VideoPreviewOpParam;J)V
+
+    .line 4
+    .line 5
+    .line 6
+    return-void
+.end method

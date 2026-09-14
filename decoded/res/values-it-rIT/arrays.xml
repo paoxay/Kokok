@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="CountAdditionalOfAddresses">
+        <item>Ancora %d indirizzo</item>
+        <item>Ancora %d indirizzi</item>
+        <item>Ancora %d indirizzi</item>
+    </string-array>
+</resources>

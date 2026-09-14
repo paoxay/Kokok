@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout android:id="@id/clRoot" android:background="@color/screen_with_cards_background" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <include android:id="@id/appbar" layout="@layout/view_fragment_appbar" />
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout android:id="@id/srlRefresh" android:layout_width="fill_parent" android:layout_height="fill_parent" app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <androidx.recyclerview.widget.RecyclerView android:id="@id/rvFilters" android:paddingBottom="88.0dip" android:scrollbars="vertical" android:clipToPadding="false" android:layout_width="fill_parent" android:layout_height="wrap_content" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton android:id="@id/fabNewFilter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="@dimen/fab_margin" android:src="@drawable/ic_white_plus" app:layout_anchor="@id/srlRefresh" app:layout_anchorGravity="end|bottom|center" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView android:id="@id/menu_card" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textDirection="locale" android:layoutDirection="locale" app:cardCornerRadius="0.0dip" app:cardUseCompatPadding="false"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:id="@id/menu_group" android:layout_width="fill_parent" android:layout_height="wrap_content" android:paddingHorizontal="@dimen/menu_item_horizontal_padding" android:paddingVertical="@dimen/menu_item_vertical_padding">
+        <androidx.appcompat.widget.AppCompatImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/ic_shield_alert_outline" app:tint="@color/text_error" />
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Text_16_700" android:textColor="@color/text_error" android:gravity="start" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/item_menu_sos_title" android:layout_marginStart="20.0dip" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

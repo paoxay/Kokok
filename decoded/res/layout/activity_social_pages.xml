@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:background="@color/screen_with_cards_background" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <include layout="@layout/view_fragment_appbar" />
+    <androidx.recyclerview.widget.RecyclerView android:id="@id/rv_social_pages" android:paddingTop="8.0dip" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+</LinearLayout>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="48.0dip" android:textDirection="locale" android:layoutDirection="locale" android:paddingHorizontal="@dimen/activity_horizontal_margin"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_title" android:layout_gravity="start|center" android:id="@id/tv_title" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0" />
+    <androidx.appcompat.widget.AppCompatImageView android:layout_gravity="end|center" android:id="@id/iv_move" android:layout_width="24.0dip" android:layout_height="24.0dip" android:src="@drawable/ic_drag_handle_24dp" android:scaleType="center" app:tint="@color/icon_default" />
+</LinearLayout>

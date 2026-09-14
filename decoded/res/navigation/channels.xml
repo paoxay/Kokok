@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:id="@id/channels" app:startDestination="@id/channelList"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <fragment android:name="com.taxsee.feature.chat.channels.ui.ChannelsFragment" android:id="@id/channelList">
+        <action android:id="@id/action_list_to_chat" app:destination="@id/chat" />
+    </fragment>
+    <fragment android:name="com.taxsee.feature.chat.general.ui.GeneralChatFragment" android:id="@id/generalChat">
+        <argument android:name="id" app:argType="string" />
+        <argument android:name="name" app:argType="string" />
+        <argument android:name="limit_messages" app:argType="integer" />
+        <argument android:name="allow_send_location" app:argType="boolean" />
+    </fragment>
+    <fragment android:name="com.feature.chat_list.chat.ChatFragment" android:id="@id/chat">
+        <argument android:name="id" app:argType="string" />
+        <argument android:name="name" app:argType="string" />
+        <argument android:name="limit_messages" app:argType="integer" />
+        <argument android:name="allow_send_location" app:argType="boolean" />
+        <argument android:name="is_chat_with_client" app:argType="boolean" />
+    </fragment>
+</navigation>

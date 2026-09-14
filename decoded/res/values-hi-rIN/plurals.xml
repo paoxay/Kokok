@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="confirmation_code_attempts_left">
+        <item quantity="other">यह कोड अमान्य है। शेष प्रयासों की कुल संख्या %d है।</item>
+        <item quantity="one">यह कोड अमान्य है। शेष प्रयासों की कुल संख्या %d है।</item>
+    </plurals>
+    <plurals name="confirmation_code_attempts_left_short">
+        <item quantity="other">%d प्रयास शेष।</item>
+        <item quantity="one">%d प्रयास शेष।</item>
+    </plurals>
+    <plurals name="next_order_accepted_countdown_message">
+        <item quantity="other">Order will be accepted in %1$s second</item>
+        <item quantity="one">Order will be accepted in %1$s second</item>
+    </plurals>
+    <plurals name="next_order_countdown_message">
+        <item quantity="other">The order will be canceled in %1$s seconds</item>
+        <item quantity="one">The order will be canceled in %1$s second</item>
+    </plurals>
+</resources>

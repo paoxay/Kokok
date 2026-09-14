@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:background="@color/screen_with_cards_background" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <include layout="@layout/view_fragment_appbar" />
+        <include android:id="@id/v_duplicate" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:layout_marginHorizontal="16.0dip" layout="@layout/item_duplicate" />
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Text_18_500" android:textColor="@color/text_title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="24.0dip" android:text="@string/registration_restore_access_title" android:layout_marginHorizontal="16.0dip" />
+        <com.google.android.material.card.MaterialCardView android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:layout_marginHorizontal="16.0dip" app:cardCornerRadius="16.0dip">
+            <LinearLayout android:orientation="vertical" android:id="@id/v_send_pass" android:padding="16.0dip" android:layout_width="fill_parent" android:layout_height="fill_parent">
+                <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/registration_restore_access_send_password_title" />
+                <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.SubTitle" android:textColor="@color/text_subtitle" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:text="@string/registration_restore_access_send_password_subtitle" />
+                <LinearLayout android:gravity="center" android:orientation="horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8.0dip">
+                    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Text_14_500" android:textColor="@color/text_accent" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/registration_restore_access_send_password_action" />
+                    <androidx.appcompat.widget.AppCompatImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/ic_details" android:layout_marginStart="4.0dip" app:tint="@color/icon_accent" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+        <com.google.android.material.card.MaterialCardView android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:layout_marginHorizontal="16.0dip" app:cardCornerRadius="16.0dip">
+            <LinearLayout android:orientation="vertical" android:id="@id/v_change_phone" android:padding="16.0dip" android:layout_width="fill_parent" android:layout_height="fill_parent">
+                <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/registration_restore_access_change_phone_title" />
+                <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.SubTitle" android:textColor="@color/text_subtitle" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:text="@string/registration_restore_access_change_phone_subtitle" />
+                <LinearLayout android:gravity="center" android:orientation="horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8.0dip">
+                    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Text_14_500" android:textColor="@color/text_accent" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/registration_restore_access_change_phone_action" />
+                    <androidx.appcompat.widget.AppCompatImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/ic_details" android:layout_marginStart="4.0dip" app:tint="@color/icon_accent" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+        <Space android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0" />
+        <com.google.android.material.button.MaterialButton android:id="@id/b_not_my_profile" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_margin="16.0dip" android:text="@string/registration_restore_access_is_not_my_profile" style="@style/Widget.OutlinedButton" />
+    </LinearLayout>
+    <com.taxsee.view.progressbar.TaxseeProgressBar android:id="@id/pb_fullscreen" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" style="@style/TaxseeProgressBar" />
+</FrameLayout>

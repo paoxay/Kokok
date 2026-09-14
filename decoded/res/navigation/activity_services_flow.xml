@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:id="@id/activity_services_flow" app:startDestination="@id/services"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <fragment android:name="com.taxsee.feature.services.services_list.ui.ServiceListFragment" android:id="@id/services">
+        <action android:id="@id/navigate_to_change_priority" app:destination="@id/change_priority" />
+        <action android:id="@id/navigate_to_service" app:destination="@id/service" />
+    </fragment>
+    <fragment android:name="com.taxsee.feature.services.change_priority.ui.ChangePriorityFragment" android:id="@id/change_priority" />
+    <fragment android:name="com.taxsee.feature.services.service_detail.ui.ServiceFragment" android:id="@id/service">
+        <argument android:name="service_id" app:argType="long" />
+    </fragment>
+</navigation>

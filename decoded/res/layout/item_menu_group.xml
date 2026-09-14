@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView android:id="@id/menu_card" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textDirection="locale" android:layoutDirection="locale" app:cardCornerRadius="0.0dip" app:cardUseCompatPadding="false"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:orientation="vertical" android:id="@id/menu_group" android:layout_width="fill_parent" android:layout_height="wrap_content" android:paddingVertical="4.0dip">
+        <FrameLayout android:id="@id/title_content" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.BoldTitle" android:textColor="@color/text_title" android:id="@id/title" android:padding="@dimen/activity_horizontal_margin" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+            <androidx.appcompat.widget.AppCompatImageView android:layout_gravity="end|center" android:id="@id/icon_drop_up" android:layout_width="24.0dip" android:layout_height="24.0dip" android:layout_margin="8.0dip" android:src="@drawable/ic_arrow_drop_up_black_24dp" app:tint="@color/icon_default" />
+        </FrameLayout>
+        <FrameLayout android:id="@id/collapse_title_content" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.BoldTitle" android:textColor="@color/text_title" android:id="@id/collapse_title" android:padding="@dimen/activity_horizontal_margin" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+            <androidx.appcompat.widget.AppCompatImageView android:layout_gravity="end|center" android:id="@id/icon_drop_down" android:layout_width="24.0dip" android:layout_height="24.0dip" android:layout_margin="8.0dip" android:src="@drawable/ic_arrow_drop_down_black_24dp" app:tint="@color/icon_default" />
+        </FrameLayout>
+        <LinearLayout android:orientation="vertical" android:id="@id/items_container" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

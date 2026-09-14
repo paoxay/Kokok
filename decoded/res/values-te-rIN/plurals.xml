@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="confirmation_code_attempts_left">
+        <item quantity="other">కోడ్ తప్పు. %d ఇన్‌పుట్ ప్రయత్నాలు మిగిలి ఉన్నాయి.</item>
+        <item quantity="one">కోడ్ తప్పు. %d ఇన్‌పుట్ ప్రయత్నాలు మిగిలి ఉన్నాయి.</item>
+    </plurals>
+    <plurals name="confirmation_code_attempts_left_short">
+        <item quantity="other">%d ఇన్‌పుట్ ప్రయత్నాలు మిగిలి ఉన్నాయి.</item>
+        <item quantity="one">%d ఇన్‌పుట్ ప్రయత్నాలు మిగిలి ఉన్నాయి.</item>
+    </plurals>
+    <plurals name="next_order_accepted_countdown_message">
+        <item quantity="other">Order will be accepted in %1$s second</item>
+        <item quantity="one">Order will be accepted in %1$s second</item>
+    </plurals>
+    <plurals name="next_order_countdown_message">
+        <item quantity="other">The order will be canceled in %1$s seconds</item>
+        <item quantity="one">The order will be canceled in %1$s second</item>
+    </plurals>
+</resources>

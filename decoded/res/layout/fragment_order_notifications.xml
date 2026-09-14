@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:background="@color/screen_with_cards_background" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <include android:id="@id/fragment_appbar" layout="@layout/view_fragment_appbar" />
+    <androidx.core.widget.NestedScrollView android:layout_width="fill_parent" android:layout_height="0.0dip" android:fillViewport="true" android:layout_weight="1.0">
+        <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.SubTitle" android:textColor="@color/text_subtitle" android:id="@id/tv_subtitle" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="24.0dip" android:layout_marginHorizontal="16.0dip" />
+            <androidx.recyclerview.widget.RecyclerView android:id="@id/rv_notifications" android:paddingTop="24.0dip" android:paddingBottom="4.0dip" android:clipToPadding="false" android:layout_width="fill_parent" android:layout_height="wrap_content" android:nestedScrollingEnabled="false" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+    <com.google.android.material.button.MaterialButton android:layout_gravity="bottom" android:id="@id/btn_add_direction" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_margin="16.0dip" android:text="@string/intercity_direction_button" />
+</LinearLayout>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="CountAdditionalOfAddresses">
+        <item>Еще %d адрес</item>
+        <item>Еще %d адреса</item>
+        <item>Еще %d адресов</item>
+    </string-array>
+    <string-array name="EmptyArray">
+        <item>-</item>
+    </string-array>
+    <string-array name="days_short">
+        <item>@string/day_short_monday</item>
+        <item>@string/day_short_tuesday</item>
+        <item>@string/day_short_wednesday</item>
+        <item>@string/day_short_thursday</item>
+        <item>@string/day_short_friday</item>
+        <item>@string/day_short_saturday</item>
+        <item>@string/day_short_sunday</item>
+    </string-array>
+    <string-array name="months_short">
+        <item>Янв</item>
+        <item>Фев</item>
+        <item>Мар</item>
+        <item>Апр</item>
+        <item>Май</item>
+        <item>Июн</item>
+        <item>Июл</item>
+        <item>Авг</item>
+        <item>Сен</item>
+        <item>Окт</item>
+        <item>Ноя</item>
+        <item>Дек</item>
+    </string-array>
+</resources>

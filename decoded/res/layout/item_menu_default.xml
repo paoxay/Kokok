@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:background="?selectableItemBackground" android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="@dimen/list_item_height" android:paddingHorizontal="@dimen/menu_item_horizontal_padding" android:paddingVertical="@dimen/menu_item_vertical_padding"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.appcompat.widget.AppCompatImageView android:id="@id/icon" android:visibility="gone" android:layout_width="24.0dip" android:layout_height="24.0dip" android:scaleType="centerInside" android:layout_marginEnd="@dimen/menu_item_horizontal_padding" app:tint="@color/icon_default" />
+    <LinearLayout android:layout_gravity="center_vertical" android:orientation="vertical" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0">
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_title" android:gravity="start" android:id="@id/title" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.SubTitle" android:textColor="@color/text_title" android:gravity="start" android:id="@id/subTitle" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+    </LinearLayout>
+    <androidx.appcompat.widget.AppCompatImageView android:id="@id/infoHint" android:visibility="gone" android:layout_width="24.0dip" android:layout_height="24.0dip" android:src="@drawable/ic_length_out_info" app:tint="@color/icon_accent_variant" />
+    <com.taxsee.driver.TaxseeCircularProgressIndicator android:id="@id/pbActionProgress" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:indeterminate="true" app:indicatorSize="24.0dip" />
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.BadgeText" android:textColor="@color/badge_text" android:gravity="center" android:id="@id/badge" android:background="@drawable/chat_counter" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+</LinearLayout>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layoutDirection="locale" android:paddingHorizontal="16.0dip"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.google.android.material.radiobutton.MaterialRadioButton android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_title" android:ellipsize="end" android:id="@id/bCancelOrderReason" android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="@dimen/single_item_height" android:maxLines="2" android:paddingStart="12.0dip" android:paddingEnd="0.0dip" android:layout_marginStart="-6.0dip" />
+    <com.google.android.material.button.MaterialButton android:id="@id/bEditOptions" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4.0dip" android:layout_marginBottom="16.0dip" android:minHeight="40.0dip" android:text="@string/AddPrices" app:icon="@drawable/ic_plus" app:iconPadding="6.0dip" style="?materialButtonOutlinedStyle" />
+    <com.google.android.material.textfield.TextInputLayout android:id="@id/tilReasonComment" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:hint="@string/Comment">
+        <com.google.android.material.textfield.TextInputEditText android:layout_gravity="start" android:id="@id/etReasonComment" android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="0.0dip" android:maxLines="4" android:minLines="1" android:inputType="textAutoCorrect|textCapSentences|textMultiLine" android:imeOptions="actionSend" />
+    </com.google.android.material.textfield.TextInputLayout>
+</LinearLayout>

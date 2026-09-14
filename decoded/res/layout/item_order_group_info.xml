@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:id="@id/item_tariff" android:layout_width="fill_parent" android:layout_height="wrap_content"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <View android:layout_gravity="start" android:id="@id/left_marker" android:layout_width="@dimen/marker_in_card" android:layout_height="fill_parent" android:layout_marginStart="1.0dip" android:layout_marginEnd="@dimen/activity_horizontal_margin" />
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_title" android:ellipsize="end" android:gravity="start" android:id="@id/title_category" android:layout_width="0.0dip" android:layout_height="wrap_content" android:maxLines="3" android:ems="3" android:layout_weight="1.0" android:layout_marginVertical="14.0dip" />
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Text_20_400" android:textColor="@color/text_accent_variant" android:id="@id/tv_orders_count" android:background="@null" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:layout_marginStart="8.0dip" android:layout_marginEnd="@dimen/activity_horizontal_margin" />
+    <View android:id="@id/right_marker" android:layout_width="@dimen/marker_in_card" android:layout_height="fill_parent" android:layout_marginEnd="1.0dip" />
+</LinearLayout>

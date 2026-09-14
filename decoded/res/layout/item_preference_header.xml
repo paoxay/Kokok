@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView android:layout_width="fill_parent" android:layout_height="wrap_content" app:cardCornerRadius="0.0dip" app:cardUseCompatPadding="true"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:padding="16.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.GroupTitle" android:textColor="@color/text_title" android:id="@id/tv_title" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

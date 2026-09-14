@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:orientation="vertical" android:background="@color/screen_with_cards_background" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <include layout="@layout/view_fragment_appbar" />
+        <androidx.recyclerview.widget.RecyclerView android:id="@id/rv_orders" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0" android:layout_marginHorizontal="8.0dip" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        <com.google.android.material.button.MaterialButton android:id="@id/btn_passing_orders" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_margin="16.0dip" android:text="@string/assigned_orders_add_passed_order_button_text" />
+    </LinearLayout>
+    <com.taxsee.view.progressbar.TaxseeProgressBar android:id="@id/v_fullscreen_progressbar" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" style="@style/TaxseeProgressBar" />
+</FrameLayout>

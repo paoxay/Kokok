@@ -1,0 +1,49 @@
+.class public abstract Lr9/h;
+.super Ljava/lang/Object;
+.source "r8-map-id-83369e011c7089229a2d93be69079bfb1a01165be964184299498138074a9cc0"
+
+
+# static fields
+.field private static final a:Lr9/e;
+
+.field private static volatile b:Lr9/e;
+
+
+# direct methods
+.method static constructor <clinit>()V
+    .locals 2
+
+    .line 1
+    new-instance v0, Lr9/g;
+
+    .line 2
+    .line 3
+    const/4 v1, 0x0
+
+    .line 4
+    invoke-direct {v0, v1}, Lr9/g;-><init>(Lr9/f;)V
+
+    .line 5
+    .line 6
+    .line 7
+    sput-object v0, Lr9/h;->a:Lr9/e;
+
+    .line 8
+    .line 9
+    sput-object v0, Lr9/h;->b:Lr9/e;
+
+    .line 10
+    .line 11
+    return-void
+.end method
+
+.method public static a()Lr9/e;
+    .locals 1
+
+    .line 1
+    sget-object v0, Lr9/h;->b:Lr9/e;
+
+    .line 2
+    .line 3
+    return-object v0
+.end method

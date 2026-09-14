@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="confirmation_code_attempts_left">
+        <item quantity="other">Կոդը սխալ է։ Մնաց մուտքի %d փորձ։</item>
+        <item quantity="one">Կոդը սխալ է։ Մնաց մուտքի %d փորձ։</item>
+    </plurals>
+    <plurals name="confirmation_code_attempts_left_short">
+        <item quantity="other">Մնաց մուտքի %d փորձ։</item>
+        <item quantity="one">Մնաց մուտքի %d փորձ։</item>
+    </plurals>
+    <plurals name="next_order_accepted_countdown_message">
+        <item quantity="other">Պատվերը կընդունվի %1$s վայրկյանից</item>
+        <item quantity="one">Պատվերը կընդունվի %1$s վայրկյանից</item>
+    </plurals>
+    <plurals name="next_order_countdown_message">
+        <item quantity="other">Պատվերը կչեղարկվի %1$s վայրկյանից</item>
+        <item quantity="one">Պատվերը կչեղարկվի %1$s վայրկյանից</item>
+    </plurals>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/bg_profile_change_photo_outer" />
+    <item android:drawable="@drawable/bg_profile_change_photo_inner" android:left="3.0dip" android:top="3.0dip" android:right="3.0dip" android:bottom="3.0dip" />
+    <item android:drawable="@drawable/ic_camera" android:left="8.0dip" android:top="9.0dip" android:right="8.0dip" android:bottom="7.0dip" />
+</layer-list>

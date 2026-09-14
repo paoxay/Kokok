@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.google.android.material.imageview.ShapeableImageView android:id="@id/ivPreview" android:layout_width="fill_parent" android:layout_height="200.0dip" android:layout_marginTop="16.0dip" android:scaleType="centerCrop" android:layout_marginHorizontal="16.0dip" app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.ImageCard" />
+    <com.taxsee.stepindicator.StepIndicator android:layout_gravity="center_horizontal" android:id="@id/vStepIndicator" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" app:activeStepColor="@color/step_indicator_active" app:inactiveStepColor="@color/step_indicator_inactive" app:stepHeight="@dimen/step_indicator_height" app:stepWidth="@dimen/step_indicator_width" app:stepsSpacing="@dimen/step_indicator_spacing" />
+    <include android:id="@id/layout_about_auto_step_text" layout="@layout/layout_about_auto_step_text" />
+</LinearLayout>

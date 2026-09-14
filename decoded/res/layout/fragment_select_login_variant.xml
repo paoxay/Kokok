@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:minHeight="150.0dip"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.BottomSheetTitle" android:textColor="@color/text_title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:text="@string/select_an_account" android:layout_marginHorizontal="16.0dip" />
+    <androidx.recyclerview.widget.RecyclerView android:id="@id/rv_variants" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+</LinearLayout>

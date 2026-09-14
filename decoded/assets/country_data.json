@@ -1,0 +1,197 @@
+[
+  {
+    "CountryCode": "AZ",
+    "BoundingBox": [[44.77, 38.39, 50.38, 41.90]],
+    "Language": ["az", "ru"],
+    "MCC": 400,
+    "Timezone": ["Asia/Baku"]
+  },
+  {
+    "CountryCode": "AR",
+    "BoundingBox": [[-73.42, -55.25, -53.63, -21.83]],
+    "Language": ["es"],
+    "MCC": 722,
+    "Timezone": ["America/Argentina/Buenos_Aires"]
+  },
+  {
+    "CountryCode": "BD",
+    "BoundingBox": [[88.03, 20.74, 92.67, 26.63]],
+    "Language": ["bn"],
+    "MCC": 470,
+    "Timezone": ["Asia/Dhaka"]
+  },
+  {
+    "CountryCode": "BY",
+    "BoundingBox": [[23.18, 51.26, 32.77, 56.17]],
+    "Language": ["be", "ru"],
+    "MCC": 257,
+    "Timezone": ["Europe/Minsk"]
+  },
+  {
+    "CountryCode": "BG",
+    "BoundingBox": [[22.35, 41.24, 28.61, 44.22]],
+    "Language": ["bg"],
+    "MCC": 284,
+    "Timezone": ["Europe/Sofia"]
+  },
+  {
+    "CountryCode": "BR",
+    "BoundingBox": [[-74.02, -33.75, -34.79, 5.27]],
+    "Language": ["pt"],
+    "MCC": 724,
+    "Timezone": ["America/Sao_Paulo", "America/Manaus", "America/Fortaleza"]
+  },
+  {
+    "CountryCode": "VU",
+    "BoundingBox": [[166.79, -20.82, 170.13, -13.14]],
+    "Language": ["bi", "fr", "en"],
+    "MCC": 541,
+    "Timezone": ["Pacific/Efate"]
+  },
+  {
+    "CountryCode": "VN",
+    "BoundingBox": [[102.14, 8.55, 109.47, 23.39]],
+    "Language": ["vi"],
+    "MCC": 452,
+    "Timezone": ["Asia/Ho_Chi_Minh"]
+  },
+  {
+    "CountryCode": "GE",
+    "BoundingBox": [[40.95, 41.05, 46.66, 43.59]],
+    "Language": ["ka", "ru"],
+    "MCC": 282,
+    "Timezone": ["Asia/Tbilisi"]
+  },
+  {
+    "CountryCode": "DO",
+    "BoundingBox": [[-72.01, 17.54, -68.33, 19.95]],
+    "Language": ["es"],
+    "MCC": 370,
+    "Timezone": ["America/Santo_Domingo"]
+  },
+  {
+    "CountryCode": "ID",
+    "BoundingBox": [[95.00, -11.00, 141.00, 6.00]],
+    "Language": ["id"],
+    "MCC": 510,
+    "Timezone": ["Asia/Jakarta", "Asia/Makassar", "Asia/Jayapura"]
+  },
+  {
+    "CountryCode": "IR",
+    "BoundingBox": [[44.03, 25.06, 63.32, 39.78]],
+    "Language": ["fa"],
+    "MCC": 432,
+    "Timezone": ["Asia/Tehran"]
+  },
+  {
+    "CountryCode": "KZ",
+    "BoundingBox": [[46.50, 40.70, 87.31, 55.42]],
+    "Language": ["kk", "ru"],
+    "MCC": 401,
+    "Timezone": ["Asia/Almaty", "Asia/Aqtobe", "Asia/Aqtau", "Asia/Oral", "Asia/Qyzylorda"]
+  },
+  {
+    "CountryCode": "KH",
+    "BoundingBox": [[102.34, 10.41, 107.61, 14.68]],
+    "Language": ["km"],
+    "MCC": 456,
+    "Timezone": ["Asia/Phnom_Penh"]
+  },
+  {
+    "CountryCode": "CO",
+    "BoundingBox": [[-78.99, -4.23, -66.87, 12.44]],
+    "Language": ["es"],
+    "MCC": 732,
+    "Timezone": ["America/Bogota"]
+  },
+  {
+    "CountryCode": "KG",
+    "BoundingBox": [[69.22, 39.25, 80.26, 43.26]],
+    "Language": ["ky", "ru"],
+    "MCC": 437,
+    "Timezone": ["Asia/Bishkek"]
+  },
+  {
+    "CountryCode": "LA",
+    "BoundingBox": [[100.09, 13.89, 107.63, 22.51]],
+    "Language": ["lo"],
+    "MCC": 457,
+    "Timezone": ["Asia/Vientiane"]
+  },
+  {
+    "CountryCode": "MY",
+    "BoundingBox": [[99.64, 0.86, 119.26, 7.36]],
+    "Language": ["ms"],
+    "MCC": 502,
+    "Timezone": ["Asia/Kuala_Lumpur", "Asia/Kuching"]
+  },
+  {
+    "CountryCode": "PE",
+    "BoundingBox": [[-81.34, -18.35, -68.65, -0.03]],
+    "Language": ["es"],
+    "MCC": 716,
+    "Timezone": ["America/Lima"]
+  },
+  {
+    "CountryCode": "RU",
+    "BoundingBox": [[19.64, 41.19, 180.00, 81.86]],
+    "Language": ["ru"],
+    "MCC": 250,
+    "Timezone": [
+      "Europe/Kaliningrad",
+      "Europe/Moscow",
+      "Europe/Samara",
+      "Asia/Yekaterinburg",
+      "Asia/Omsk",
+      "Asia/Novosibirsk",
+      "Asia/Krasnoyarsk",
+      "Asia/Irkutsk",
+      "Asia/Yakutsk",
+      "Asia/Vladivostok",
+      "Asia/Magadan",
+      "Asia/Kamchatka"
+    ]
+  },
+  {
+    "CountryCode": "TJ",
+    "BoundingBox": [[67.33, 36.66, 75.14, 41.04]],
+    "Language": ["tg", "ru"],
+    "MCC": 436,
+    "Timezone": ["Asia/Dushanbe"]
+  },
+  {
+    "CountryCode": "TH",
+    "BoundingBox": [[97.35, 5.61, 105.64, 20.47]],
+    "Language": ["th"],
+    "MCC": 520,
+    "Timezone": ["Asia/Bangkok"]
+  },
+  {
+    "CountryCode": "TZ",
+    "BoundingBox": [[29.34, -11.75, 40.45, -0.98]],
+    "Language": ["sw", "en"],
+    "MCC": 640,
+    "Timezone": ["Africa/Dar_es_Salaam"]
+  },
+  {
+    "CountryCode": "PH",
+    "BoundingBox": [[116.00, 4.60, 126.60, 21.25]],
+    "Language": ["en", "tl"],
+    "MCC": 515,
+    "Timezone": ["Asia/Manila"]
+  },
+  {
+    "CountryCode": "UZ",
+    "BoundingBox": [[55.97, 37.19, 73.13, 45.55]],
+    "Language": ["uz", "ru"],
+    "MCC": 434,
+    "Timezone": ["Asia/Tashkent"]
+  },
+  {
+    "CountryCode": "ZA",
+    "BoundingBox": [[16.45, -34.84, 32.83, -22.13]],
+    "Language": ["af", "en", "zu", "xh"],
+    "MCC": 655,
+    "Timezone": ["Africa/Johannesburg"]
+  }
+]

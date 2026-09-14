@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layoutDirection="locale"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <include layout="@layout/view_fragment_appbar" />
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.GroupTitle" android:textColor="@color/text_title" android:id="@id/tvSelectReason" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_margin="16.0dip" android:text="@string/SelectReason" />
+    <androidx.recyclerview.widget.RecyclerView android:id="@id/rvCancelOrderReasons" android:descendantFocusability="beforeDescendants" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+    <LinearLayout android:orientation="horizontal" android:id="@id/descriptionContainer" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_margin="16.0dip">
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.InfoBlock" android:textColor="@color/text_title" android:layout_gravity="center_vertical" android:id="@id/tvDescription" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0" />
+        <com.google.android.material.button.MaterialButton android:id="@id/bCallToClient" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="40.0dip" android:text="@string/Client" android:layout_marginStart="16.0dip" app:icon="@drawable/ic_call_24dp" app:iconPadding="6.0dip" style="?materialButtonOutlinedStyle" />
+    </LinearLayout>
+    <com.google.android.material.button.MaterialButton android:id="@id/bCancelOrder" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="16.0dip" android:text="@string/Send" android:layout_marginHorizontal="16.0dip" />
+</LinearLayout>

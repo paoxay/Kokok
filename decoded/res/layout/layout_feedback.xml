@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:paddingTop="8.0dip" android:paddingBottom="16.0dip" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:paddingHorizontal="16.0dip"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.GroupTitle" android:textColor="@color/text_title" android:id="@id/tvTitle" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/commission_info_help_title" />
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.GroupSubTitle" android:textColor="@color/text_subtitle" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:text="@string/commission_info_help_description" />
+    <com.google.android.material.button.MaterialButton android:id="@id/bWrite" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:text="@string/write" style="?materialButtonOutlinedStyle" />
+</LinearLayout>

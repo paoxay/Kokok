@@ -1,0 +1,32 @@
+.class public final Ltw/a;
+.super Lpz/c;
+.source "r8-map-id-83369e011c7089229a2d93be69079bfb1a01165be964184299498138074a9cc0"
+
+
+# direct methods
+.method public constructor <init>()V
+    .locals 3
+
+    .line 1
+    invoke-static {}, Ltw/e0;->a()Lpz/d$c;
+
+    .line 2
+    .line 3
+    .line 4
+    move-result-object v0
+
+    .line 5
+    const/4 v1, -0x1
+
+    .line 6
+    const-string v2, "mic_permission_status"
+
+    .line 7
+    .line 8
+    invoke-direct {p0, v2, v0, v1}, Lpz/c;-><init>(Ljava/lang/String;Lpz/d$c;I)V
+
+    .line 9
+    .line 10
+    .line 11
+    return-void
+.end method

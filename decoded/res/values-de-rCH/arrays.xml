@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="CountAdditionalOfAddresses">
+        <item>%d Mehr Adresse</item>
+        <item>%d Mehr Adressen</item>
+        <item>%d Mehr Adressen</item>
+    </string-array>
+    <string-array name="months_short">
+        <item>Jan</item>
+        <item>Feb</item>
+        <item>Mär</item>
+        <item>Apr</item>
+        <item>Mai</item>
+        <item>Juni</item>
+        <item>Juli</item>
+        <item>Aug</item>
+        <item>Sep</item>
+        <item>Okt</item>
+        <item>Nov</item>
+        <item>Dez</item>
+    </string-array>
+</resources>

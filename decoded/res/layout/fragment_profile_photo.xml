@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.taxsee.feature.profile_photo.ui.DraggableCoordinatorLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.google.android.material.card.MaterialCardView android:gravity="center" android:layout_gravity="center" android:id="@id/photoContainer" android:focusable="true" android:clickable="true" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minWidth="350.0dip" android:minHeight="450.0dip">
+        <LinearLayout android:gravity="center" android:layout_gravity="center" android:orientation="vertical" android:focusable="true" android:clickable="true" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minWidth="350.0dip" android:minHeight="450.0dip">
+            <androidx.appcompat.widget.AppCompatImageView android:id="@id/ivAvatar" android:layout_width="fill_parent" android:layout_height="0.0dip" android:src="@drawable/ic_profile" android:scaleType="centerCrop" android:layout_weight="1.0" app:tint="@color/icon_default" />
+            <com.google.android.material.button.MaterialButton android:gravity="center" android:id="@id/bChangePhoto" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/Edit" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</com.taxsee.feature.profile_photo.ui.DraggableCoordinatorLayout>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:id="@id/activity_activate_kaspro" app:startDestination="@id/startActivate"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <fragment android:name="com.taxsee.feature.kaspro.activate.onboarding_step.ui.ActivateKasproFragment" android:id="@id/startActivate">
+        <action android:id="@id/action_start_to_code" app:destination="@id/enterCode" />
+    </fragment>
+    <fragment android:name="com.taxsee.feature.kaspro.activate.enter_code_step.ui.EnterKasproCodeFragment" android:id="@id/enterCode">
+        <argument android:name="phone" app:argType="string" />
+        <argument android:name="enterCodeTimeout" app:argType="long" />
+        <action android:id="@id/action_code_to_info" app:destination="@id/enterInfo" />
+    </fragment>
+    <fragment android:name="com.taxsee.feature.kaspro.activate.enter_driver_info_step.ui.KasproDriverInfoFragment" android:id="@id/enterInfo">
+        <argument android:name="phone" app:argType="string" />
+        <action android:id="@id/action_info_to_finish" app:destination="@id/activateFinish" app:popUpTo="@id/startActivate" app:popUpToInclusive="true" />
+    </fragment>
+    <fragment android:name="com.taxsee.feature.kaspro.activate.finished_step.ui.ActivatedKasproFragment" android:id="@id/activateFinish" />
+</navigation>

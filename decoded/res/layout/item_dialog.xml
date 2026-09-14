@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:ellipsize="marquee" android:gravity="center_vertical" android:orientation="horizontal" android:background="?selectableItemBackground" android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="48.0dip"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_title" android:id="@id/itemTitleView" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+</LinearLayout>

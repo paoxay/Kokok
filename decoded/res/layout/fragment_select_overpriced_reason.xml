@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.appcompat.widget.AppCompatImageView android:layout_gravity="center_horizontal" android:id="@id/ivSlideDown" android:layout_width="wrap_content" android:layout_height="10.0dip" android:layout_marginTop="@dimen/padding" android:src="@drawable/ic_slide_to_bottom_arrow_black" app:tint="@color/icon_default" />
+    <androidx.core.widget.NestedScrollView android:id="@id/change_types_scroll" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginVertical="@dimen/padding">
+        <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent">
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.BottomSheetTitle" android:textColor="@color/text_title" android:id="@id/title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:text="@string/CompleteOrderOverpriceTitle" android:layout_marginHorizontal="@dimen/activity_horizontal_margin" />
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.BottomSheetSubTitle" android:textColor="@color/text_subtitle" android:id="@id/sub_title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="@dimen/padding_small" android:text="@string/CompleteOrderOverpriceSubTitle" android:layout_marginHorizontal="@dimen/activity_horizontal_margin" />
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Text_20_500" android:textColor="@color/text_title" android:id="@id/price" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="@dimen/padding" android:textAllCaps="true" android:layout_marginHorizontal="@dimen/activity_horizontal_margin" />
+            <RadioGroup android:id="@id/change_types" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginStart="@dimen/activity_horizontal_margin" />
+            <com.google.android.material.button.MaterialButton android:id="@id/complete_button" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/Complete" android:layout_marginHorizontal="@dimen/activity_horizontal_margin" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

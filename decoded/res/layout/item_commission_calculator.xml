@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView android:layout_width="fill_parent" android:layout_height="wrap_content" android:textDirection="locale" android:layoutDirection="locale" android:layout_marginHorizontal="16.0dip" app:cardCornerRadius="0.0dip" app:cardUseCompatPadding="false"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.google.android.material.button.MaterialButton android:id="@id/bCalculator" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/how_reduce_commission" android:layout_marginHorizontal="16.0dip" />
+</com.google.android.material.card.MaterialCardView>

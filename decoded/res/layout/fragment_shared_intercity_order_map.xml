@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <include android:id="@id/appbar" layout="@layout/view_fragment_appbar" />
+    <androidx.fragment.app.FragmentContainerView android:id="@id/mapContainer" android:layout_width="fill_parent" android:layout_height="fill_parent" />
+    <LinearLayout android:layout_gravity="bottom" android:orientation="vertical" android:id="@id/bottomPanel" android:background="@color/card_background" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <com.google.android.material.divider.MaterialDivider android:id="@id/bottomDivider" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+        <com.google.android.material.button.MaterialButton android:id="@id/btnMainAction" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_margin="16.0dip" android:text="@string/shared_intercity_start" />
+    </LinearLayout>
+    <FrameLayout android:id="@id/contentScrim" android:background="@color/shared_intercity_scrim_background" android:layout_width="fill_parent" android:layout_height="fill_parent" android:alpha="0.6">
+        <com.google.android.material.progressindicator.CircularProgressIndicator android:layout_gravity="center" android:id="@id/progressFragmentLoad" android:layout_width="wrap_content" android:layout_height="wrap_content" android:indeterminate="true" />
+    </FrameLayout>
+</FrameLayout>

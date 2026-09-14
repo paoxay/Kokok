@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:background="@color/screen_with_cards_background" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <include layout="@layout/view_fragment_appbar" />
+        <ScrollView android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0">
+            <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.GroupTitle" android:textColor="@color/text_title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:text="@string/start_registration_text_title" android:layout_marginHorizontal="16.0dip" />
+                <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.GroupSubTitle" android:textColor="@color/text_subtitle" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:text="@string/start_registration_text_subtitle" android:layout_marginHorizontal="16.0dip" />
+                <include android:id="@id/vForm" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="24.0dip" android:layout_marginBottom="40.0dip" android:layout_marginHorizontal="16.0dip" layout="@layout/layout_start_registration_card" />
+                <com.google.android.material.button.MaterialButton android:id="@id/b_create_order" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="16.0dip" android:text="@string/start_registration_create_order_text" android:layout_marginHorizontal="16.0dip" style="?materialButtonOutlinedStyle" />
+                <com.google.android.material.button.MaterialButton android:enabled="false" android:id="@id/b_next" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="8.0dip" android:text="@string/Next" android:layout_marginHorizontal="16.0dip" />
+                <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.InfoBlock" android:textColor="@color/text_subtitle" android:gravity="center" android:id="@id/tv_confidentiality" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginHorizontal="16.0dip" />
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+    <com.taxsee.view.progressbar.TaxseeProgressBar android:id="@id/pb_fullscreen" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" style="@style/TaxseeProgressBar" />
+</FrameLayout>

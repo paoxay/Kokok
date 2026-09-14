@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="confirmation_code_attempts_left">
+        <item quantity="other">ကုဒ်မမှန်ကန်ပါ၊ ကြိုးစားခွင့် %d ကျန်ရှိပါသည်။</item>
+    </plurals>
+    <plurals name="confirmation_code_attempts_left_short">
+        <item quantity="other">ကြိုးစားခွင့် %d ကျန်ရှိပါသည်။</item>
+    </plurals>
+    <plurals name="next_order_accepted_countdown_message">
+        <item quantity="other">အခြား အော်ဒါကို %1$s စက္ကန့်တွင် လက်ခံပါမည်</item>
+    </plurals>
+    <plurals name="next_order_countdown_message">
+        <item quantity="other">အခြား အော်ဒါကို %1$s စက္ကန့်တွင် ပယ်ဖျက်ပါမည်</item>
+    </plurals>
+</resources>

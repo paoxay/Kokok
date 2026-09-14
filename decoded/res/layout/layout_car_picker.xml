@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_title" android:id="@id/tv_description" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/shared_intercity_select_car_description" />
+    <ScrollView android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_marginTop="20.0dip" android:layout_weight="1.0">
+        <RadioGroup android:id="@id/rg_car_list" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+    </ScrollView>
+</LinearLayout>

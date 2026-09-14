@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <ScrollView android:paddingBottom="88.0dip" android:scrollbars="none" android:clipToPadding="false" android:layout_width="fill_parent" android:layout_height="fill_parent" android:overScrollMode="never">
+        <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <FrameLayout android:id="@id/v_picture" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <androidx.appcompat.widget.AppCompatImageView android:id="@id/iv_picture" android:layout_width="fill_parent" android:layout_height="wrap_content" android:scaleType="centerCrop" android:minHeight="128.0dip" />
+                <com.taxsee.driver.TaxseeCircularProgressIndicator android:layout_gravity="center" android:id="@id/pb_picture" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:indeterminate="true" />
+            </FrameLayout>
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.IllustrationTitle" android:textColor="@color/text_title" android:gravity="center" android:layout_gravity="center" android:id="@id/tv_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:layout_marginBottom="8.0dip" android:layout_marginHorizontal="32.0dip" />
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.IllustrationText" android:textColor="@color/text_subtitle" android:gravity="center" android:layout_gravity="center" android:id="@id/tv_description" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="32.0dip" android:layout_marginHorizontal="32.0dip" />
+        </LinearLayout>
+    </ScrollView>
+    <com.google.android.material.button.MaterialButton android:layout_gravity="bottom" android:id="@id/b_action" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_margin="16.0dip" />
+</FrameLayout>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:id="@id/activity_start" app:startDestination="@id/splash"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <fragment android:name="com.feature.login.splash.SplashFragment" android:id="@id/splash">
+        <action android:id="@id/action_splash_to_enter_callsign" app:destination="@id/enter_callsign" app:popUpTo="@id/splash" app:popUpToInclusive="true" />
+        <action android:id="@id/action_splash_to_enter_phone" app:destination="@id/enter_phone" app:popUpTo="@id/splash" app:popUpToInclusive="true" />
+    </fragment>
+    <fragment android:name="com.taxsee.screen.login.login_by_callsign.EnterCallsignFragment" android:id="@id/enter_callsign">
+        <argument android:name="is_first_screen" android:defaultValue="true" app:argType="boolean" />
+        <argument android:name="login_by_phone_enabled" app:argType="boolean" />
+        <action android:id="@id/action_enter_callsign_to_enter_phone" app:destination="@id/enter_phone" app:enterAnim="@animator/nav_show_next" app:exitAnim="@animator/nav_hide_prev" app:popEnterAnim="@animator/nav_show_prev" app:popExitAnim="@animator/nav_hide_next" app:popUpTo="@id/enter_callsign" app:popUpToInclusive="true" />
+    </fragment>
+    <fragment android:name="com.taxsee.screen.login.login_by_phone.enter_phone.EnterPhoneFragmentNew" android:id="@id/enter_phone">
+        <action android:id="@id/action_enter_phone_to_enter_callsign" app:destination="@id/enter_callsign" app:enterAnim="@animator/nav_show_next" app:exitAnim="@animator/nav_hide_prev" app:popEnterAnim="@animator/nav_show_prev" app:popExitAnim="@animator/nav_hide_next">
+            <argument android:name="is_first_screen" android:defaultValue="false" app:argType="boolean" />
+        </action>
+        <action android:id="@id/action_enter_phone_to_enter_code" app:destination="@id/enter_code" app:enterAnim="@animator/nav_show_next" app:exitAnim="@animator/nav_hide_prev" app:popEnterAnim="@animator/nav_show_prev" app:popExitAnim="@animator/nav_hide_next" />
+        <action android:id="@id/action_enter_phone_to_select_login_variant" app:destination="@id/select_login_variant" />
+    </fragment>
+    <fragment android:name="com.taxsee.screen.login.login_by_phone.enter_code.EnterCodeFragmentNew" android:id="@id/enter_code">
+        <argument android:name="phone" app:argType="string" />
+        <argument android:name="code_sent_description" app:argType="string" />
+        <argument android:name="next_resent_code_time_ms" app:argType="long" />
+        <action android:id="@id/action_enter_phone_to_select_login_variant" app:destination="@id/select_login_variant" />
+    </fragment>
+    <dialog android:name="com.taxsee.screen.login.login_by_phone.select_login_variant.SelectLoginVariantFragment" android:id="@id/select_login_variant" />
+</navigation>

@@ -1,0 +1,17 @@
+.class public interface abstract Lla/b;
+.super Ljava/lang/Object;
+.source "r8-map-id-83369e011c7089229a2d93be69079bfb1a01165be964184299498138074a9cc0"
+
+
+# virtual methods
+.method public abstract a(Ld/g;)V
+.end method
+
+.method public abstract b()V
+.end method
+
+.method public abstract c(Ld/g;)V
+.end method
+
+.method public abstract d()V
+.end method

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.appcompat.widget.AppCompatImageView android:layout_gravity="center_horizontal" android:id="@id/ivSlideDown" android:layout_width="wrap_content" android:layout_height="10.0dip" android:layout_marginTop="10.0dip" android:src="@drawable/ic_slide_to_bottom_arrow_black" app:tint="@color/icon_default" />
+    <com.taxsee.driver.TaxseeCircularProgressIndicator android:layout_gravity="center_horizontal" android:id="@id/emptyProgress" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:layout_marginBottom="8.0dip" android:indeterminate="true" />
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.BottomSheetTitle" android:textColor="@color/text_title" android:id="@id/tvChangeMethod" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:text="@string/change_top_up_kaspro_method" android:layout_marginHorizontal="16.0dip" />
+    <androidx.recyclerview.widget.RecyclerView android:id="@id/rvMethods" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+    <include android:id="@id/vEmptyError" layout="@layout/view_empty_error" />
+</LinearLayout>

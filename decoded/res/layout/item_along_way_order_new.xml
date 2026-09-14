@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView android:id="@id/cvAlongWayOrder" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layoutDirection="locale" android:layout_marginHorizontal="16.0dip"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <com.google.android.material.radiobutton.MaterialRadioButton android:layout_gravity="center_vertical" android:id="@id/rbFilter" android:background="@null" android:clickable="false" android:layout_width="48.0dip" android:layout_height="48.0dip" android:layout_marginStart="16.0dip" />
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_title" android:id="@id/tvFilterName" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0" android:layout_marginEnd="4.0dip" android:layout_marginVertical="16.0dip" />
+        <androidx.appcompat.widget.AppCompatImageView android:layout_gravity="center_vertical" android:id="@id/ivDelete" android:background="?selectableItemBackgroundBorderless" android:layout_width="48.0dip" android:layout_height="48.0dip" android:src="@drawable/ic_delete_24" android:scaleType="center" android:layout_marginEnd="4.0dip" app:tint="@color/icon_default" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:id="@id/activity_gas_stations_flow" app:startDestination="@id/stations_map"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <fragment android:name="com.taxsee.feature.gas_stations.stations_map.ui.GasStationsMapFragment" android:id="@id/stations_map">
+        <action android:id="@id/navigate_to_station" app:destination="@id/station" />
+    </fragment>
+    <fragment android:name="com.taxsee.feature.gas_stations.station.ui.GasStationFragment" android:id="@id/station">
+        <argument android:name="uid" app:argType="string" />
+        <argument android:name="name" app:argType="string" />
+        <argument android:name="refuel_order_procedure" app:argType="com.taxsee.feature.gas_stations.model.RefuelOrderingProcedure" />
+        <argument android:name="latitude" app:argType="float" />
+        <argument android:name="longitude" app:argType="float" />
+        <action android:id="@id/navigate_to_refuel" app:destination="@id/refuel" app:popUpTo="@id/stations_map" app:popUpToInclusive="false" />
+    </fragment>
+    <fragment android:name="com.taxsee.feature.gas_stations.refuel.ui.RefuelFragment" android:id="@id/refuel">
+        <argument android:name="refuelId" app:argType="string" />
+        <argument android:name="fuelId" app:argType="string" />
+    </fragment>
+</navigation>

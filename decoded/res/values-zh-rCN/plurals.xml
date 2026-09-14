@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="confirmation_code_attempts_left">
+        <item quantity="other">密码错误。还有%d次尝试机会。</item>
+    </plurals>
+    <plurals name="confirmation_code_attempts_left_short">
+        <item quantity="other">还有%d尝试机会。</item>
+    </plurals>
+    <plurals name="mtrl_badge_content_description">
+        <item quantity="other">%d 条新通知</item>
+        <item quantity="one">%d 条新通知</item>
+    </plurals>
+    <plurals name="next_order_accepted_countdown_message">
+        <item quantity="other">订单将在 %1$s 秒钟后接受</item>
+    </plurals>
+    <plurals name="next_order_countdown_message">
+        <item quantity="other">订单将在 %1$s 秒钟后取消</item>
+    </plurals>
+</resources>

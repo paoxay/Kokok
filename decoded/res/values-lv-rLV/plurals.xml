@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="confirmation_code_attempts_left">
+        <item quantity="other">Код неверный. Осталось %d попыток ввода.</item>
+        <item quantity="zero">Код неверный. Осталось %d попыток ввода.</item>
+        <item quantity="one">Код неверный. Осталась %d попытка ввода.</item>
+    </plurals>
+    <plurals name="confirmation_code_attempts_left_short">
+        <item quantity="other">Осталось %d попыток ввода.</item>
+        <item quantity="zero">Осталось %d попыток ввода.</item>
+        <item quantity="one">Осталась %d попытка ввода.</item>
+    </plurals>
+</resources>

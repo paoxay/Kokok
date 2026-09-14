@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:paddingTop="10.0dip" android:paddingBottom="8.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.appcompat.widget.AppCompatImageView android:layout_gravity="center_horizontal" android:id="@id/iv_slide_down" android:layout_width="wrap_content" android:layout_height="10.0dip" android:layout_marginBottom="8.0dip" android:src="@drawable/ic_slide_to_bottom_arrow_black" app:tint="@color/icon_default" />
+    <androidx.recyclerview.widget.RecyclerView android:id="@id/rv_actions" android:layout_width="fill_parent" android:layout_height="wrap_content" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+</LinearLayout>

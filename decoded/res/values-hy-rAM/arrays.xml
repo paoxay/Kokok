@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="CountAdditionalOfAddresses">
+        <item>Եվս %d հասցե</item>
+        <item>Եվս %d հասցե</item>
+        <item>Եվս %d հասցեների</item>
+    </string-array>
+    <string-array name="months_short">
+        <item>Հունվ․</item>
+        <item>Փետր․</item>
+        <item>Մարտ</item>
+        <item>Ապր․</item>
+        <item>Մայ․</item>
+        <item>Հուն․</item>
+        <item>Հուլ․</item>
+        <item>Օգոս․</item>
+        <item>Սեպտ․</item>
+        <item>Հոկտ․</item>
+        <item>Նոյ․</item>
+        <item>Դեկտ․</item>
+    </string-array>
+</resources>

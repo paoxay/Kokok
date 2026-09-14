@@ -1,0 +1,321 @@
+.class final Lcom/taxsee/driver/feature/notifications/b$b;
+.super Lbd0/m;
+.source "r8-map-id-83369e011c7089229a2d93be69079bfb1a01165be964184299498138074a9cc0"
+
+# interfaces
+.implements Lkotlin/jvm/functions/Function2;
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingMethod;
+    value = Lcom/taxsee/driver/feature/notifications/b;->Q(Lcom/taxsee/remote/dto/push/PushMessageParams$CustomHeader;Lkotlin/jvm/functions/Function2;)V
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x18
+    name = null
+.end annotation
+
+
+# instance fields
+.field r:I
+
+.field final synthetic s:Lcom/taxsee/driver/feature/notifications/b;
+
+.field final synthetic t:Lcom/taxsee/remote/dto/push/PushMessageParams$CustomHeader;
+
+.field final synthetic u:Lkotlin/jvm/functions/Function2;
+
+
+# direct methods
+.method constructor <init>(Lcom/taxsee/driver/feature/notifications/b;Lcom/taxsee/remote/dto/push/PushMessageParams$CustomHeader;Lkotlin/jvm/functions/Function2;Lzc0/b;)V
+    .locals 0
+
+    .line 1
+    iput-object p1, p0, Lcom/taxsee/driver/feature/notifications/b$b;->s:Lcom/taxsee/driver/feature/notifications/b;
+
+    .line 2
+    .line 3
+    iput-object p2, p0, Lcom/taxsee/driver/feature/notifications/b$b;->t:Lcom/taxsee/remote/dto/push/PushMessageParams$CustomHeader;
+
+    .line 4
+    .line 5
+    iput-object p3, p0, Lcom/taxsee/driver/feature/notifications/b$b;->u:Lkotlin/jvm/functions/Function2;
+
+    .line 6
+    .line 7
+    const/4 p1, 0x2
+
+    .line 8
+    invoke-direct {p0, p1, p4}, Lbd0/m;-><init>(ILzc0/b;)V
+
+    .line 9
+    .line 10
+    .line 11
+    return-void
+.end method
+
+
+# virtual methods
+.method public final B(Ljava/lang/Object;)Ljava/lang/Object;
+    .locals 6
+
+    .line 1
+    invoke-static {}, Lad0/b;->g()Ljava/lang/Object;
+
+    .line 2
+    .line 3
+    .line 4
+    move-result-object v0
+
+    .line 5
+    iget v1, p0, Lcom/taxsee/driver/feature/notifications/b$b;->r:I
+
+    .line 6
+    .line 7
+    const/4 v2, 0x1
+
+    .line 8
+    if-eqz v1, :cond_1
+
+    .line 9
+    .line 10
+    if-ne v1, v2, :cond_0
+
+    .line 11
+    .line 12
+    invoke-static {p1}, Lvc0/u;->b(Ljava/lang/Object;)V
+
+    .line 13
+    .line 14
+    .line 15
+    goto :goto_0
+
+    .line 16
+    :cond_0
+    new-instance p1, Ljava/lang/IllegalStateException;
+
+    .line 17
+    .line 18
+    const-string v0, "call to \'resume\' before \'invoke\' with coroutine"
+
+    .line 19
+    .line 20
+    invoke-direct {p1, v0}, Ljava/lang/IllegalStateException;-><init>(Ljava/lang/String;)V
+
+    .line 21
+    .line 22
+    .line 23
+    throw p1
+
+    .line 24
+    :cond_1
+    invoke-static {p1}, Lvc0/u;->b(Ljava/lang/Object;)V
+
+    .line 25
+    .line 26
+    .line 27
+    iget-object p1, p0, Lcom/taxsee/driver/feature/notifications/b$b;->s:Lcom/taxsee/driver/feature/notifications/b;
+
+    .line 28
+    .line 29
+    invoke-static {p1}, Lcom/taxsee/driver/feature/notifications/b;->A(Lcom/taxsee/driver/feature/notifications/b;)Lz4/h;
+
+    .line 30
+    .line 31
+    .line 32
+    move-result-object p1
+
+    .line 33
+    new-instance v1, Lj5/h$a;
+
+    .line 34
+    .line 35
+    iget-object v3, p0, Lcom/taxsee/driver/feature/notifications/b$b;->s:Lcom/taxsee/driver/feature/notifications/b;
+
+    .line 36
+    .line 37
+    invoke-virtual {v3}, Lcom/taxsee/driver/feature/notifications/a;->f()Landroid/content/Context;
+
+    .line 38
+    .line 39
+    .line 40
+    move-result-object v3
+
+    .line 41
+    const-string v4, "<get-appContext>(...)"
+
+    .line 42
+    .line 43
+    invoke-static {v3, v4}, Lkotlin/jvm/internal/Intrinsics;->checkNotNullExpressionValue(Ljava/lang/Object;Ljava/lang/String;)V
+
+    .line 44
+    .line 45
+    .line 46
+    invoke-direct {v1, v3}, Lj5/h$a;-><init>(Landroid/content/Context;)V
+
+    .line 47
+    .line 48
+    .line 49
+    iget-object v3, p0, Lcom/taxsee/driver/feature/notifications/b$b;->t:Lcom/taxsee/remote/dto/push/PushMessageParams$CustomHeader;
+
+    .line 50
+    .line 51
+    invoke-virtual {v3}, Lcom/taxsee/remote/dto/push/PushMessageParams$CustomHeader;->d()Ljava/lang/String;
+
+    .line 52
+    .line 53
+    .line 54
+    move-result-object v3
+
+    .line 55
+    invoke-virtual {v1, v3}, Lj5/h$a;->b(Ljava/lang/Object;)Lj5/h$a;
+
+    .line 56
+    .line 57
+    .line 58
+    move-result-object v1
+
+    .line 59
+    iget-object v3, p0, Lcom/taxsee/driver/feature/notifications/b$b;->u:Lkotlin/jvm/functions/Function2;
+
+    .line 60
+    .line 61
+    iget-object v4, p0, Lcom/taxsee/driver/feature/notifications/b$b;->s:Lcom/taxsee/driver/feature/notifications/b;
+
+    .line 62
+    .line 63
+    new-instance v5, Lcom/taxsee/driver/feature/notifications/b$b$a;
+
+    .line 64
+    .line 65
+    invoke-direct {v5, v3, v3, v4}, Lcom/taxsee/driver/feature/notifications/b$b$a;-><init>(Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lcom/taxsee/driver/feature/notifications/b;)V
+
+    .line 66
+    .line 67
+    .line 68
+    invoke-virtual {v1, v5}, Lj5/h$a;->j(Lj5/h$b;)Lj5/h$a;
+
+    .line 69
+    .line 70
+    .line 71
+    move-result-object v1
+
+    .line 72
+    invoke-virtual {v1}, Lj5/h$a;->a()Lj5/h;
+
+    .line 73
+    .line 74
+    .line 75
+    move-result-object v1
+
+    .line 76
+    iput v2, p0, Lcom/taxsee/driver/feature/notifications/b$b;->r:I
+
+    .line 77
+    .line 78
+    invoke-interface {p1, v1, p0}, Lz4/h;->c(Lj5/h;Lzc0/b;)Ljava/lang/Object;
+
+    .line 79
+    .line 80
+    .line 81
+    move-result-object p1
+
+    .line 82
+    if-ne p1, v0, :cond_2
+
+    .line 83
+    .line 84
+    return-object v0
+
+    .line 85
+    :cond_2
+    :goto_0
+    sget-object p1, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 86
+    .line 87
+    return-object p1
+.end method
+
+.method public final E(Lud0/n0;Lzc0/b;)Ljava/lang/Object;
+    .locals 0
+
+    .line 1
+    invoke-virtual {p0, p1, p2}, Lcom/taxsee/driver/feature/notifications/b$b;->x(Ljava/lang/Object;Lzc0/b;)Lzc0/b;
+
+    .line 2
+    .line 3
+    .line 4
+    move-result-object p1
+
+    .line 5
+    check-cast p1, Lcom/taxsee/driver/feature/notifications/b$b;
+
+    .line 6
+    .line 7
+    sget-object p2, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 8
+    .line 9
+    invoke-virtual {p1, p2}, Lcom/taxsee/driver/feature/notifications/b$b;->B(Ljava/lang/Object;)Ljava/lang/Object;
+
+    .line 10
+    .line 11
+    .line 12
+    move-result-object p1
+
+    .line 13
+    return-object p1
+.end method
+
+.method public bridge synthetic s(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+    .locals 0
+
+    .line 1
+    check-cast p1, Lud0/n0;
+
+    .line 2
+    .line 3
+    check-cast p2, Lzc0/b;
+
+    .line 4
+    .line 5
+    invoke-virtual {p0, p1, p2}, Lcom/taxsee/driver/feature/notifications/b$b;->E(Lud0/n0;Lzc0/b;)Ljava/lang/Object;
+
+    .line 6
+    .line 7
+    .line 8
+    move-result-object p1
+
+    .line 9
+    return-object p1
+.end method
+
+.method public final x(Ljava/lang/Object;Lzc0/b;)Lzc0/b;
+    .locals 3
+
+    .line 1
+    new-instance p1, Lcom/taxsee/driver/feature/notifications/b$b;
+
+    .line 2
+    .line 3
+    iget-object v0, p0, Lcom/taxsee/driver/feature/notifications/b$b;->s:Lcom/taxsee/driver/feature/notifications/b;
+
+    .line 4
+    .line 5
+    iget-object v1, p0, Lcom/taxsee/driver/feature/notifications/b$b;->t:Lcom/taxsee/remote/dto/push/PushMessageParams$CustomHeader;
+
+    .line 6
+    .line 7
+    iget-object v2, p0, Lcom/taxsee/driver/feature/notifications/b$b;->u:Lkotlin/jvm/functions/Function2;
+
+    .line 8
+    .line 9
+    invoke-direct {p1, v0, v1, v2, p2}, Lcom/taxsee/driver/feature/notifications/b$b;-><init>(Lcom/taxsee/driver/feature/notifications/b;Lcom/taxsee/remote/dto/push/PushMessageParams$CustomHeader;Lkotlin/jvm/functions/Function2;Lzc0/b;)V
+
+    .line 10
+    .line 11
+    .line 12
+    return-object p1
+.end method

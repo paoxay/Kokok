@@ -1,0 +1,53 @@
+{
+  "AR": [
+    "https://wds-br.taximaxim.com/Services/Driver.svc/"
+  ],
+  "BR": [
+    "https://wds-br.taximaxim.com/Services/Driver.svc/"
+  ],
+  "BY": [
+    "https://wds.taximaxim.by/Services/Driver.svc/"
+  ],
+  "BG": [
+    "https://wds.taximaxim.by/Services/Driver.svc/"
+  ],
+  "BO": [
+    "https://wds-br.taximaxim.com/Services/Driver.svc/"
+  ],
+  "CO": [
+    "https://wds-br.taximaxim.com/Services/Driver.svc/"
+  ],
+  "CL": [
+    "https://wds-br.taximaxim.com/Services/Driver.svc/"
+  ],
+  "VN": [
+    "https://wds-sea.taximaxim.com/Services/Driver.svc/"
+  ],
+  "ID": [
+    "https://wds-sea.taximaxim.com/Services/Driver.svc/"
+  ],
+  "IR": [
+    "https://wds.taximaxim.ir/Services/Driver.svc/"
+  ],
+  "MY": [
+    "https://wds-sea.taximaxim.com/Services/Driver.svc/"
+  ],
+  "MX": [
+    "https://wds-br.taximaxim.com/Services/Driver.svc/"
+  ],
+  "UA": [
+    "https://s01.taxsee.id/Services/Driver.svc/"
+  ],
+  "SG": [
+    "https://wds-sea.taximaxim.com/Services/Driver.svc/"
+  ],
+  "PE": [
+    "https://wds-br.taximaxim.com/Services/Driver.svc/"
+  ],
+  "PH": [
+    "https://wds-sea.taximaxim.com/Services/Driver.svc/"
+  ],
+  "PY": [
+    "https://wds-br.taximaxim.com/Services/Driver.svc/"
+  ]
+}

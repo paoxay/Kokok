@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:background="@color/screen_with_cards_background" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <include android:id="@id/appbar" layout="@layout/view_fragment_appbar" />
+    <androidx.recyclerview.widget.RecyclerView android:id="@id/rvReduceCommission" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+    <androidx.constraintlayout.widget.ConstraintLayout android:id="@id/bottomContainer" android:background="@color/screen_background" android:paddingBottom="5.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:elevation="6.0dip" android:paddingHorizontal="16.0dip">
+        <LinearLayout android:orientation="vertical" android:id="@id/commissionContainer" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginVertical="12.0dip" app:layout_constraintBottom_toTopOf="@id/bAction" app:layout_constraintTop_toTopOf="parent" />
+        <com.taxsee.driver.TaxseeCircularProgressIndicator android:id="@id/pbCommission" android:layout_width="wrap_content" android:layout_height="wrap_content" android:indeterminate="true" android:layout_marginVertical="8.0dip" app:indicatorSize="32.0dip" app:layout_constraintBottom_toTopOf="@id/bAction" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent" app:trackThickness="3.0dip" />
+        <com.google.android.material.button.MaterialButton android:id="@id/bAction" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:text="@string/commission_calculator_button" app:layout_constraintBottom_toBottomOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

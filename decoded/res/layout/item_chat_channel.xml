@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:background="?selectableItemBackground" android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="48.0dip" android:paddingHorizontal="16.0dip" android:paddingVertical="10.0dip"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:orientation="vertical" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0" android:layout_marginEnd="16.0dip">
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_title" android:ellipsize="end" android:gravity="start|center" android:id="@id/tv_title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:maxLines="2" android:minLines="1" android:singleLine="false" />
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.SubTitle" android:textColor="@color/text_subtitle" android:ellipsize="none" android:id="@id/tv_subtitle" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="6.0dip" />
+    </LinearLayout>
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.BadgeText" android:textColor="@color/badge_text" android:gravity="center" android:layout_gravity="center_vertical" android:id="@id/tv_count" android:background="@drawable/chat_counter" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+</LinearLayout>

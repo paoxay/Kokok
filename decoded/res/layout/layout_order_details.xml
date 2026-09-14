@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout android:layout_gravity="bottom" android:layout_width="fill_parent" android:layout_height="wrap_content"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.core.widget.NestedScrollView android:id="@id/order_details_content" android:background="@drawable/bg_bottom_sheet_dialog" android:paddingTop="24.0dip" android:focusable="true" android:clickable="true" android:clipToPadding="true" android:layout_width="fill_parent" android:layout_height="wrap_content" app:behavior_fitToContents="false" app:behavior_hideable="false" app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+        <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <include android:id="@id/layout_order_info" android:layout_width="fill_parent" android:layout_height="wrap_content" layout="@layout/layout_order_info" />
+            <View android:id="@id/addBg" android:background="@color/screen_with_cards_background" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+    <androidx.appcompat.widget.AppCompatImageView android:layout_gravity="center_horizontal" android:id="@id/ivSlideDown" android:layout_width="wrap_content" android:layout_height="10.0dip" android:src="@drawable/ic_slide_to_bottom_arrow_black" android:translationY="18.0dip" app:layout_anchor="@id/order_details_content" app:layout_anchorGravity="top|center" app:tint="@color/icon_default" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

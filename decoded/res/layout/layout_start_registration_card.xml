@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView android:layout_width="fill_parent" android:layout_height="wrap_content" app:cardCornerRadius="16.0dip"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:paddingHorizontal="16.0dip" android:paddingVertical="24.0dip">
+        <com.google.android.material.textfield.TextInputLayout android:id="@id/il_enter_country" android:layout_width="wrap_content" android:layout_height="wrap_content" android:hint="@string/country" android:layout_marginHorizontal="16.0dip" app:endIconDrawable="@drawable/ic_action_day" app:endIconMode="custom" app:endIconTint="@color/icon_default" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" app:startIconTint="@null">
+            <com.google.android.material.textfield.TextInputEditText android:id="@id/et_enter_country" android:focusable="false" android:focusableInTouchMode="false" android:layout_width="fill_parent" android:layout_height="wrap_content" android:cursorVisible="false" android:inputType="textNoSuggestions" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout android:id="@id/il_enter_place" android:layout_width="0.0dip" android:layout_height="wrap_content" android:hint="@string/Place" android:layout_marginHorizontal="16.0dip" app:endIconDrawable="@drawable/ic_action_day" app:endIconMode="custom" app:endIconTint="@color/icon_default" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toEndOf="@id/il_enter_country" app:layout_constraintTop_toTopOf="parent" app:startIconTint="@null">
+            <com.google.android.material.textfield.TextInputEditText android:id="@id/et_enter_place" android:focusable="false" android:focusableInTouchMode="false" android:layout_width="fill_parent" android:layout_height="wrap_content" android:cursorVisible="false" android:inputType="textNoSuggestions" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout android:id="@id/il_phone" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:hint="@string/phone_number_hint" android:layout_marginHorizontal="16.0dip" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toBottomOf="@id/il_enter_country">
+            <com.taxsee.shared.feature.formated_edit_text.ui.FormatEditText android:layout_gravity="start" android:id="@id/iet_phone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:maxLines="1" android:imeOptions="actionDone|flagNoExtractUi|flagNoFullscreen" app:formatType="phone" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

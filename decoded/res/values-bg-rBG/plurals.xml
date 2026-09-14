@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="confirmation_code_attempts_left">
+        <item quantity="other">Грешен код. Останаха %d опита за въвеждане.</item>
+        <item quantity="one">Грешен код. Остана %d опит за въвеждане.</item>
+    </plurals>
+    <plurals name="confirmation_code_attempts_left_short">
+        <item quantity="other">Останаха %d опита за въвеждане.</item>
+        <item quantity="one">Остана %d опит за въвеждане.</item>
+    </plurals>
+    <plurals name="next_order_accepted_countdown_message">
+        <item quantity="other">Поръчката ще бъде приета след %1$s секунди</item>
+        <item quantity="one">Поръчката ще бъде приета след %1$s секунда</item>
+    </plurals>
+    <plurals name="next_order_countdown_message">
+        <item quantity="other">Поръчката ще бъде отменена след %1$s секунди</item>
+        <item quantity="one">Поръчката ще бъде отменена след %1$s секунда</item>
+    </plurals>
+</resources>

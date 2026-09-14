@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="56.0dip"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.GroupTitle" android:textColor="@color/text_title" android:id="@id/tvTitle" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/auto_check" android:layout_marginHorizontal="16.0dip" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toStartOf="@id/tvSettings" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" />
+    <com.google.android.material.button.MaterialButton android:id="@id/tvSettings" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/AndroidSettings" android:layout_marginEnd="8.0dip" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent" style="?borderlessButtonStyle" />
+</androidx.constraintlayout.widget.ConstraintLayout>

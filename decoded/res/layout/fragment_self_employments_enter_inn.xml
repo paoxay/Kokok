@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:background="@color/screen_with_cards_background" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <include android:id="@id/appbar" layout="@layout/view_fragment_appbar" />
+    <ScrollView android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content" android:paddingVertical="16.0dip">
+            <com.google.android.material.card.MaterialCardView android:id="@id/v_cancelled_request" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="16.0dip" android:layout_marginHorizontal="16.0dip" app:cardBackgroundColor="@color/self_employment_cancelled_request_background" app:cardCornerRadius="16.0dip">
+                <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/self_employment_cancelled_request_text" android:padding="16.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/self_employment_enter_inn_cancelled_request" />
+            </com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.GroupTitle" android:textColor="@color/text_title" android:id="@id/tv_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginHorizontal="16.0dip" />
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.GroupSubTitle" android:textColor="@color/text_subtitle" android:id="@id/tv_subtitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:layout_marginHorizontal="16.0dip" />
+            <com.google.android.material.card.MaterialCardView android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="24.0dip" android:layout_marginHorizontal="16.0dip" app:cardCornerRadius="16.0dip">
+                <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_margin="16.0dip">
+                    <com.google.android.material.textfield.TextInputLayout android:id="@id/il_inn" android:layout_width="fill_parent" android:layout_height="wrap_content" android:hint="@string/self_employment_enter_inn_field_hint">
+                        <com.taxsee.shared.feature.formated_edit_text.ui.FormatEditText android:id="@id/iet_inn" android:layout_width="fill_parent" android:layout_height="wrap_content" android:maxLength="12" app:formatType="integerNumber" app:trimStartZero="false" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.FieldError" android:textColor="@color/text_accent" android:id="@id/tv_find_out_inn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4.0dip" android:text="@string/self_employment_enter_inn_field_description" android:layout_marginStart="16.0dip" />
+                    <com.google.android.material.button.MaterialButton android:id="@id/b_continue" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:text="@string/Continue" />
+                    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.InfoBlock" android:textColor="@color/text_subtitle" android:id="@id/tv_continue_description" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="4.0dip" android:text="@string/self_employment_enter_inn_button_description" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.GroupTitle" android:textColor="@color/text_title" android:id="@id/tv_benefits_title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:text="@string/self_employment_enjoy_benefits_title" android:layout_marginHorizontal="16.0dip" />
+            <include android:id="@id/v_benefits" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:layout_marginHorizontal="16.0dip" layout="@layout/item_benefits_self_employed" />
+            <com.google.android.material.button.MaterialButton android:id="@id/b_details" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/self_employment_details_action" android:layout_marginHorizontal="16.0dip" android:layout_marginVertical="16.0dip" style="?materialButtonOutlinedStyle" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

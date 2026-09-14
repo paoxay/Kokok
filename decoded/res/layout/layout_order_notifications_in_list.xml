@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginHorizontal="8.0dip" android:layout_marginVertical="16.0dip" app:cardCornerRadius="16.0dip" app:contentPadding="8.0dip"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <FrameLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
+            <androidx.appcompat.widget.AppCompatImageView android:layout_gravity="center" android:layout_width="40.0dip" android:layout_height="40.0dip" android:src="@drawable/ic_circle" android:tint="@color/background_11" />
+            <androidx.appcompat.widget.AppCompatImageView android:layout_gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/ic_notifications_active" android:tint="@color/icon_accent" />
+        </FrameLayout>
+        <LinearLayout android:orientation="vertical" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0" android:layout_marginStart="10.0dip">
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Text_14_500" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/order_notifications_in_list_title" />
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Text_14_400" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/order_notifications_in_list_subtitle" />
+        </LinearLayout>
+        <androidx.appcompat.widget.AppCompatImageView android:layout_gravity="center_vertical" android:id="@id/iv_warning" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/ic_circle_warning_24" android:tint="@color/icon_error" android:layout_marginEnd="12.0dip" />
+        <androidx.appcompat.widget.AppCompatImageView android:layout_gravity="center_vertical" android:layout_width="24.0dip" android:layout_height="24.0dip" android:src="@drawable/ic_chevron_right" android:tint="@color/icon_accent" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

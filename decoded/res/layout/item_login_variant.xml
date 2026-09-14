@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:gravity="center_vertical" android:orientation="vertical" android:background="?selectableItemBackground" android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="72.0dip" android:paddingHorizontal="16.0dip"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_title" android:id="@id/tv_name" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.SubTitle" android:textColor="@color/text_title" android:id="@id/tv_description" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="4.0dip" />
+</LinearLayout>

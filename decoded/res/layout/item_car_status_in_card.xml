@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <androidx.appcompat.widget.AppCompatImageView android:layout_gravity="center" android:id="@id/iv_color" android:visibility="visible" android:layout_width="8.0dip" android:layout_height="8.0dip" android:src="@drawable/ic_status_car" />
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.SubTitle" android:textColor="@color/text_title" android:ellipsize="end" android:id="@id/tv_car_name" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:layout_marginStart="8.0dip" />
+</LinearLayout>

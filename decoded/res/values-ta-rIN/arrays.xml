@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="CountAdditionalOfAddresses">
+        <item>%d மேலதிக முகவரி</item>
+        <item>%d மேலதிக முகவரிகள்</item>
+        <item>%d மேலதிக முகவரிகள்</item>
+    </string-array>
+    <string-array name="months_short">
+        <item>ஜன</item>
+        <item>பிப்</item>
+        <item>மார்</item>
+        <item>ஏப்</item>
+        <item>மே</item>
+        <item>மே</item>
+        <item>ஜூலை</item>
+        <item>ஆக</item>
+        <item>சென்</item>
+        <item>அக்</item>
+        <item>நவம்பர்</item>
+        <item>டிச</item>
+    </string-array>
+</resources>

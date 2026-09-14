@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="confirmation_code_attempts_left">
+        <item quantity="other">Код неправильний. Залишилося %d спроб вводу.</item>
+        <item quantity="one">Код неправильний. Залишилася %d спроба вводу.</item>
+        <item quantity="few">Код неправильний. Залишилася %d спроби вводу.</item>
+        <item quantity="many">Код неправильний. Залишилося %d спроб вводу.</item>
+    </plurals>
+    <plurals name="confirmation_code_attempts_left_short">
+        <item quantity="other">Залишилося %d спроб вводу.</item>
+        <item quantity="one">Залишилася %d спроба вводу.</item>
+        <item quantity="few">Залишилося %d спроби вводу.</item>
+        <item quantity="many">Залишилося %d спроб вводу.</item>
+    </plurals>
+    <plurals name="next_order_countdown_message">
+        <item quantity="other">Замовлення будет скасовано через %1$s секунд</item>
+        <item quantity="one">Замовлення будет скасовано через %1$s секунду</item>
+        <item quantity="few">Замовлення будет скасовано через %1$s секунди</item>
+        <item quantity="many">Замовлення будет скасовано через %1$s секунд</item>
+    </plurals>
+</resources>

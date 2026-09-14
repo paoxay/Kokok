@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="CountAdditionalOfAddresses">
+        <item>Yana %d manzil</item>
+        <item>Yana %d manzillar</item>
+        <item>Yana %d manzillar</item>
+    </string-array>
+    <string-array name="months_short">
+        <item>Yan</item>
+        <item>Fev</item>
+        <item>Mar</item>
+        <item>Apr</item>
+        <item>May</item>
+        <item>Iyn</item>
+        <item>Iyl</item>
+        <item>Avg</item>
+        <item>Sen</item>
+        <item>Okt</item>
+        <item>Noy</item>
+        <item>Dek</item>
+    </string-array>
+</resources>

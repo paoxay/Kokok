@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:background="@color/screen_with_cards_background" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <include android:id="@id/appbar" layout="@layout/view_fragment_appbar" />
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout android:id="@id/srlRefresh" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0" app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <androidx.recyclerview.widget.RecyclerView android:id="@id/rvFilters" android:scrollbars="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    <FrameLayout android:background="@color/card_background" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <com.google.android.material.button.MaterialButton android:id="@id/bNewFilter" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_margin="16.0dip" android:text="@string/add_filter" />
+    </FrameLayout>
+</LinearLayout>

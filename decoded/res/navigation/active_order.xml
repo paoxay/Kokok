@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:id="@id/active_order" app:startDestination="@id/active_orders_place_holder"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <fragment android:name="com.taxsee.driver.feature.main.ActiveOrdersPlaceholderFragment" android:id="@id/active_orders_place_holder" />
+    <fragment android:name="com.taxsee.driver.feature.order.CurrentOrderFragment" android:id="@id/default_flow">
+        <argument android:name="isFromAssignedOrder" android:defaultValue="false" app:argType="boolean" />
+        <argument android:name="isFromOrderDetails" android:defaultValue="false" app:argType="boolean" />
+        <action android:id="@id/action_return_to_assigned_orders" app:destination="@id/assigned_orders_flow" app:popUpTo="@id/assigned_orders_flow" app:popUpToInclusive="true" />
+    </fragment>
+    <fragment android:name="com.taxsee.shared.feature.shared_intercity.order.current.ui.SharedIntercityCurrentOrderDetailsFragment" android:id="@id/shared_intercity_current_order">
+        <argument android:name="isFromAssignedOrder" android:defaultValue="false" app:argType="boolean" />
+        <action android:id="@id/action_return_to_assigned_orders" app:destination="@id/assigned_orders_flow" app:popUpTo="@id/assigned_orders_flow" app:popUpToInclusive="true" />
+    </fragment>
+    <include app:graph="@navigation/activity_order_detail" />
+    <include app:graph="@navigation/shared_intercity_flow" />
+    <fragment android:name="com.taxsee.shared.feature.active_orders.assigned_orders.ui.AssignedOrdersFragment" android:id="@id/assigned_orders_flow">
+        <action android:id="@id/action_passed_orders" app:destination="@id/passed_orders" />
+        <action android:id="@id/action_current_order" app:destination="@id/default_flow" />
+        <action android:id="@id/action_shared_current_order" app:destination="@id/shared_intercity_current_order">
+            <argument android:name="isFromAssignedOrder" app:argType="boolean" />
+        </action>
+        <action android:id="@id/action_shared_order_detail" app:destination="@id/shared_intercity_flow">
+            <argument android:name="isFromAssignedOrder" app:argType="boolean" />
+            <argument android:name="order_id" app:argType="long" />
+        </action>
+        <action android:id="@id/action_order_detail_with_map" app:destination="@id/activity_order_detail">
+            <argument android:name="order_id" app:argType="long" />
+            <argument android:name="zone_id" app:argType="string" app:nullable="true" />
+            <argument android:name="source" app:argType="string" />
+            <argument android:name="offerOrderSource" app:argType="string" />
+            <argument android:name="isFromSearch" app:argType="boolean" />
+            <argument android:name="supportCancelRequest" app:argType="boolean" />
+            <argument android:name="needRequest" app:argType="boolean" />
+            <argument android:name="isFromAssignedOrders" android:defaultValue="false" app:argType="boolean" />
+            <argument android:name="isAddToPassing" android:defaultValue="false" app:argType="boolean" />
+        </action>
+    </fragment>
+    <fragment android:name="com.taxsee.shared.feature.active_orders.passed_orders.ui.PassedOrdersFragment" android:id="@id/passed_orders">
+        <action android:id="@id/action_multi_orders_onboarding" app:destination="@id/multi_orders_onboarding" />
+        <action android:id="@id/action_order_detail_with_map" app:destination="@id/activity_order_detail">
+            <argument android:name="order_id" app:argType="long" />
+            <argument android:name="zone_id" app:argType="string" app:nullable="true" />
+            <argument android:name="source" app:argType="string" />
+            <argument android:name="offerOrderSource" app:argType="string" />
+            <argument android:name="isFromSearch" app:argType="boolean" />
+            <argument android:name="supportCancelRequest" app:argType="boolean" />
+            <argument android:name="needRequest" app:argType="boolean" />
+            <argument android:name="isAddToPassing" android:defaultValue="false" app:argType="boolean" />
+        </action>
+    </fragment>
+    <fragment android:name="com.taxsee.shared.feature.active_orders.onboarding.ui.MultiOrdersOnboardingFragment" android:id="@id/multi_orders_onboarding">
+        <argument android:name="canClose" app:argType="boolean" />
+    </fragment>
+</navigation>

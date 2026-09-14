@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:background="@color/screen_with_cards_background" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <include layout="@layout/view_fragment_appbar" />
+        <ScrollView android:id="@id/content" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0">
+            <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <com.google.android.material.card.MaterialCardView android:id="@id/v_item_dialer" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:layout_marginHorizontal="16.0dip" app:cardCornerRadius="16.0dip">
+                    <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:padding="16.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                        <LinearLayout android:orientation="vertical" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0" android:layout_marginEnd="8.0dip">
+                            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/sos_item_dialer_title" />
+                            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.SubTitle" android:textColor="@color/text_subtitle" android:id="@id/tv_dialer_subtitle" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="4.0dip" />
+                        </LinearLayout>
+                        <androidx.appcompat.widget.AppCompatImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/ic_details" app:tint="@color/icon_default" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+                <com.google.android.material.card.MaterialCardView android:id="@id/v_item_notify" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:layout_marginHorizontal="16.0dip" app:cardCornerRadius="16.0dip">
+                    <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:padding="16.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                        <LinearLayout android:orientation="vertical" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0" android:layout_marginEnd="8.0dip">
+                            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/sos_item_emergency_contact_title" />
+                            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.SubTitle" android:textColor="@color/text_subtitle" android:id="@id/tv_notify_subtitle" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="4.0dip" android:text="@string/sos_item_emergency_contact_subtitle" />
+                        </LinearLayout>
+                        <androidx.appcompat.widget.AppCompatImageView android:id="@id/iv_contact_navigate" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/ic_details" app:tint="@color/icon_default" />
+                        <androidx.appcompat.widget.AppCompatImageView android:id="@id/iv_edit_contact" android:background="?selectableItemBackgroundBorderless" android:visibility="gone" android:layout_width="36.0dip" android:layout_height="36.0dip" android:src="@drawable/ic_action_edit_n" android:scaleType="center" app:tint="@color/icon_default" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+                <com.google.android.material.card.MaterialCardView android:id="@id/v_item_panic_mode" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_margin="16.0dip" app:cardCornerRadius="16.0dip">
+                    <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:padding="16.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                        <LinearLayout android:orientation="vertical" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0" android:layout_marginEnd="8.0dip">
+                            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/sos_item_notify_nearby_drivers_title" />
+                            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.SubTitle" android:textColor="@color/text_subtitle" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="4.0dip" android:text="@string/sos_item_notify_nearby_drivers_subtitle" />
+                        </LinearLayout>
+                        <com.google.android.material.switchmaterial.SwitchMaterial android:id="@id/v_switch_panic_mode" android:focusable="false" android:clickable="false" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+        </ScrollView>
+        <include android:id="@id/v_enable_panic" android:visibility="gone" layout="@layout/layout_enable_panic" />
+    </LinearLayout>
+    <com.taxsee.view.progressbar.TaxseeProgressBar android:id="@id/pb_full_screen" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" style="@style/TaxseeProgressBar" />
+</FrameLayout>

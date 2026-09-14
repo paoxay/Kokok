@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge android:orientation="vertical"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.google.android.material.textfield.TextInputLayout android:gravity="center_vertical" android:id="@id/tilCode" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="12.0dip" android:hint="@string/confirmation_code_source_title">
+        <com.taxsee.shared.feature.formated_edit_text.ui.FormatEditText android:layout_gravity="start" android:id="@id/etCode" android:layout_width="fill_parent" android:layout_height="wrap_content" android:maxLines="1" android:imeOptions="actionSend|flagNoExtractUi|flagNoFullscreen" android:imeActionId="4" android:importantForAutofill="no" app:formatType="integerNumber" app:trimStartZero="false" />
+    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.FieldError" android:textColor="@color/text_error" android:id="@id/tvErrorConfirmTitle" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="4.0dip" />
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.FieldError" android:textColor="@color/text_error" android:id="@id/tvErrorConfirmDescription" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/confirmation_code_source_description" />
+</merge>

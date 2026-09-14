@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:background="?selectableItemBackground" android:clipToPadding="false" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layoutDirection="locale"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <androidx.appcompat.widget.AppCompatImageView android:id="@id/image_preview" android:layout_width="56.0dip" android:layout_height="56.0dip" android:layout_margin="16.0dip" android:scaleType="centerCrop" />
+    <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginEnd="16.0dip" android:layout_marginVertical="16.0dip">
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_title" android:id="@id/type" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="6.0dip" />
+        <com.taxsee.driver.TaxseeLinearProgressIndicator android:id="@id/progress" android:layout_width="fill_parent" android:layout_height="wrap_content" android:indeterminate="true" />
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.SubTitle" android:textColor="@color/text_title" android:id="@id/status" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.SubTitle" android:textColor="@color/text_title" android:id="@id/comment" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.SubTitle" android:textColor="@color/text_title" android:id="@id/date" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+    </LinearLayout>
+</LinearLayout>

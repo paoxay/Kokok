@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView android:background="@color/screen_with_cards_background" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <HorizontalScrollView android:scrollbarSize="1.0dip" android:scrollbarStyle="outsideOverlay" android:id="@id/services_prices" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:fadeScrollbars="false">
+            <LinearLayout android:orientation="horizontal" android:id="@id/prices_container" android:layout_width="0.0dip" android:layout_height="wrap_content" />
+        </HorizontalScrollView>
+        <com.google.android.material.divider.MaterialDivider android:id="@id/prices_divider" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+        <com.taxsee.feature.complete_order.ui.ConfirmCodeView android:id="@id/vConfirmCode" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:layout_marginStart="16.0dip" android:layout_marginEnd="16.0dip" />
+        <androidx.recyclerview.widget.RecyclerView android:orientation="vertical" android:id="@id/order_options" android:visibility="gone" android:clipToPadding="false" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0" android:overScrollMode="never" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

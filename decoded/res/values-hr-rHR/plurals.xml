@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="confirmation_code_attempts_left">
+        <item quantity="other">Neispravan kod. Preostalo %d pokušaja.</item>
+        <item quantity="one">Neispravan kod. Još %d pokušaj.</item>
+        <item quantity="few">Neispravan kod. Preostalo %d pokušaja.</item>
+    </plurals>
+    <plurals name="confirmation_code_attempts_left_short">
+        <item quantity="other">Preostalo %d pokušaja.</item>
+        <item quantity="one">Još %d pokušaj.</item>
+        <item quantity="few">Preostalo %d pokušaja.</item>
+    </plurals>
+</resources>

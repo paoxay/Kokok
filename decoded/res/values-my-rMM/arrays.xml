@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="CountAdditionalOfAddresses">
+        <item>နောက်ထပ်လိပ်စာ %d ခု</item>
+        <item>နောက်ထပ်လိပ်စာ %d ခု</item>
+        <item>နောက်ထပ်လိပ်စာ %d ခု</item>
+    </string-array>
+    <string-array name="months_short">
+        <item>ရီ</item>
+        <item>ဖေ</item>
+        <item>မတ်</item>
+        <item>ဧ</item>
+        <item>မေလ</item>
+        <item>ဇွန်</item>
+        <item>ဇူ</item>
+        <item>သြ</item>
+        <item>စက်</item>
+        <item>အောက်</item>
+        <item>နို</item>
+        <item>ဒီ</item>
+    </string-array>
+</resources>

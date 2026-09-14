@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:clipToPadding="false" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layoutDirection="locale"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <View android:background="@android:color/black" android:layout_width="fill_parent" android:layout_height="fill_parent" android:alpha="0.3" />
+    <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <androidx.coordinatorlayout.widget.CoordinatorLayout android:id="@id/infoLayout" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0">
+            <androidx.core.widget.NestedScrollView android:id="@id/content" android:background="@drawable/bg_bottom_sheet_dialog" android:paddingTop="24.0dip" android:focusable="true" android:clickable="true" android:clipToPadding="true" android:layout_width="fill_parent" android:layout_height="fill_parent" android:fillViewport="true" app:behavior_fitToContents="false" app:behavior_hideable="false" app:behavior_peekHeight="0.0dip" app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+                <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent">
+                    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.BottomSheetTitle" android:textColor="@color/text_subtitle" android:id="@id/tvAssignTitle" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:text="@string/OrderAssignedExcl" android:layout_marginHorizontal="16.0dip" />
+                    <LinearLayout android:orientation="vertical" android:id="@id/v_order_title" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:layout_marginHorizontal="16.0dip">
+                        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_subtitle" android:id="@id/tv_organization" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textDirection="locale" />
+                        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/urgent_text" android:id="@id/tv_tariff" android:background="@drawable/bg_urgent" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textDirection="locale" />
+                    </LinearLayout>
+                    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_accent_variant" android:id="@id/tvDateStart" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="4.0dip" android:layout_marginHorizontal="16.0dip" />
+                    <include android:id="@id/layout_order_info" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" layout="@layout/layout_order_info" />
+                    <View android:id="@id/addBg" android:background="@color/screen_with_cards_background" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0" />
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+            <androidx.appcompat.widget.AppCompatImageView android:layout_gravity="center_horizontal" android:id="@id/ivSlideDown" android:layout_width="wrap_content" android:layout_height="10.0dip" android:src="@drawable/ic_slide_to_bottom_arrow_black" android:translationY="18.0dip" app:layout_anchor="@id/content" app:layout_anchorGravity="top|center" app:tint="@color/icon_default" />
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <include android:id="@id/statusPanel" layout="@layout/bubble_order_screen_old_bottom_panel" />
+    </LinearLayout>
+</FrameLayout>

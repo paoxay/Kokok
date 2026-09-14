@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:textDirection="ltr" android:layoutDirection="ltr"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.google.android.material.textfield.TextInputLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <com.taxsee.shared.feature.formated_edit_text.ui.FormatEditText android:id="@id/et_sum" android:layout_width="fill_parent" android:layout_height="wrap_content" android:lines="1" android:imeOptions="actionNext|flagNoExtractUi|flagNoFullscreen" android:imeActionId="5" app:formatType="money" />
+    </com.google.android.material.textfield.TextInputLayout>
+</LinearLayout>

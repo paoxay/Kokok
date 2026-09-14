@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.appcompat.widget.AppCompatImageView android:id="@id/iv_icon" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="16.0dip" app:tint="@color/order_option_icon" />
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.SubTitle" android:textColor="@color/text_title" android:gravity="center_vertical" android:id="@id/tv_text" android:layout_width="0.0dip" android:layout_height="wrap_content" android:minHeight="24.0dip" android:layout_weight="1.0" android:layout_marginHorizontal="16.0dip" />
+</LinearLayout>

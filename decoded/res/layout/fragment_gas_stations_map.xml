@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <include android:id="@id/layout_map" layout="@layout/layout_map" />
+    <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <include layout="@layout/view_fragment_appbar" />
+        <androidx.recyclerview.widget.RecyclerView android:orientation="horizontal" android:id="@id/rv_gas_filters" android:background="@color/card_background" android:clipToPadding="false" android:layout_width="fill_parent" android:layout_height="wrap_content" android:paddingHorizontal="8.0dip" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+    </LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView android:orientation="horizontal" android:id="@id/rv_gas_stations" android:background="@drawable/bg_gas_stations_panel" android:padding="12.0dip" android:clipToPadding="false" android:layout_width="fill_parent" android:layout_height="wrap_content" app:behavior_hideable="true" app:behavior_peekHeight="60.0dip" app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <FrameLayout android:padding="16.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <com.google.android.material.textfield.TextInputLayout android:id="@id/ilValue" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" app:endIconMode="custom">
+            <com.google.android.material.textfield.TextInputEditText android:id="@id/etValue" android:layout_width="fill_parent" android:layout_height="wrap_content" android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout android:id="@id/ilExpandableValue" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" style="?exposedDropdownMenuStyle">
+            <androidx.appcompat.widget.AppCompatAutoCompleteTextView android:id="@id/etExpandableValue" android:focusable="false" android:focusableInTouchMode="false" android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="56.0dip" android:cursorVisible="false" android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </FrameLayout>
+    <com.google.android.material.checkbox.MaterialCheckBox android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_title" android:id="@id/cbLifetimeValidity" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:layout_marginBottom="16.0dip" android:text="@string/lifetime_validity" android:layout_marginStart="10.0dip" android:layout_marginEnd="16.0dip" />
+</LinearLayout>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="confirmation_code_attempts_left">
+        <item quantity="other">Yanlış kod. Kodu daxil etmək üçün %d cəhd qalıb.</item>
+        <item quantity="one">Yanlış kod. Kodu daxil etmək üçün %d cəhd qalıb.</item>
+    </plurals>
+    <plurals name="confirmation_code_attempts_left_short">
+        <item quantity="other">Kodu daxil etmək üçün %d cəhd qalıb.</item>
+        <item quantity="one">Kodu daxil etmək üçün %d cəhd qalıb.</item>
+    </plurals>
+    <plurals name="next_order_accepted_countdown_message">
+        <item quantity="other">Sifariş %1$s saniyə sonra qəbul ediləcək</item>
+        <item quantity="one">Sifariş %1$s saniyə sonra qəbul ediləcək</item>
+    </plurals>
+    <plurals name="next_order_countdown_message">
+        <item quantity="other">Sifariş %1$s saniyədən sonra ləğv olunacaq</item>
+        <item quantity="one">Sifariş %1$s saniyədən sonra ləğv olunacaq</item>
+    </plurals>
+</resources>

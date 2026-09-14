@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout android:id="@id/root" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layoutDirection="locale"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.taxsee.driver.TaxseeCircularProgressIndicator android:id="@id/vEmptyProgress" android:layout_width="wrap_content" android:layout_height="wrap_content" android:indeterminate="true" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" />
+    <androidx.coordinatorlayout.widget.CoordinatorLayout android:id="@id/nav_host_container" android:layout_width="0.0dip" android:layout_height="0.0dip" app:layout_constraintBottom_toTopOf="@id/navBar" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent">
+        <androidx.fragment.app.FragmentContainerView android:name="androidx.navigation.fragment.NavHostFragment" android:id="@id/main_nav_host" android:layout_width="fill_parent" android:layout_height="fill_parent" app:defaultNavHost="true" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <com.google.android.material.bottomnavigation.BottomNavigationView android:id="@id/navBar" android:layout_width="fill_parent" android:layout_height="wrap_content" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent" app:menu="@menu/activity_main" />
+    <com.taxsee.view.progressbar.TaxseeProgressBar android:id="@id/v_fullscreen_progressbar" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" style="@style/TaxseeProgressBar" />
+    <com.taxsee.view.progressbar.TaxseeProgressBar android:id="@id/pb_nav_calculation_progress" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" style="@style/TaxseeProgressBar" />
+</androidx.constraintlayout.widget.ConstraintLayout>

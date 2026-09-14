@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:id="@id/auto_assign_filters_flow" app:startDestination="@id/filterList"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <fragment android:name="com.taxsee.shared.feature.auto_assign_order.list.ui.FilterListFragment" android:id="@id/filterList">
+        <action android:id="@id/action_filter_list_to_edit_filters" app:destination="@id/editFiltersList" />
+        <action android:id="@id/action_filter_list_to_edit_filter" app:destination="@id/editFilter" />
+        <action android:id="@id/action_filter_list_to_select_default_filter" app:destination="@id/selectDefaultFilter" />
+        <action android:id="@id/action_filter_list_to_along_way_order" app:destination="@id/alongWayOrder" />
+    </fragment>
+    <fragment android:name="com.taxsee.shared.feature.auto_assign_order.edit_list.ui.EditFiltersListFragment" android:id="@id/editFiltersList" />
+    <fragment android:name="com.taxsee.shared.feature.auto_assign_order.edit.edit_filter.ui.EditFilterFragment" android:id="@id/editFilter">
+        <argument android:name="filterId" app:argType="integer" />
+        <argument android:name="isReadOnly" app:argType="boolean" />
+        <action android:id="@id/action_edit_filter_to_edit_number_option" app:destination="@id/editNumberOption" />
+        <action android:id="@id/action_edit_filter_to_select_option_items" app:destination="@id/selectOptionItems" />
+    </fragment>
+    <fragment android:name="com.taxsee.shared.feature.auto_assign_order.edit.select_options_items.ui.SelectOptionItemsFragment" android:id="@id/selectOptionItems">
+        <argument android:name="optionName" app:argType="string" />
+        <argument android:name="optionCode" app:argType="string" />
+    </fragment>
+    <dialog android:name="com.taxsee.shared.feature.auto_assign_order.edit.edit_number_option.ui.EditNumberOptionFragment" android:id="@id/editNumberOption">
+        <argument android:name="optionCode" app:argType="string" />
+    </dialog>
+    <dialog android:name="com.taxsee.shared.feature.auto_assign_order.select.active_filter.ui.SelectActiveFilterFragment" android:id="@id/selectActiveFilter">
+        <argument android:name="fromAutoAdvertisingOnboarding" android:defaultValue="false" app:argType="boolean" />
+        <action android:id="@id/action_select_active_filter_to_filter_list" app:destination="@id/filterList" app:popUpTo="@id/auto_assign_filters_flow" app:popUpToInclusive="true" />
+    </dialog>
+    <dialog android:name="com.taxsee.shared.feature.auto_assign_order.select.default_filter.ui.SelectDefaultFilterFragment" android:id="@id/selectDefaultFilter" />
+    <fragment android:name="com.taxsee.shared.feature.auto_assign_order.onboarding.ui.AutoAdvertisingOnboardingFragment" android:id="@id/autoAdvertisingOnboarding">
+        <action android:id="@id/action_auto_advertising_onboarding_to_select_active_filter" app:destination="@id/selectActiveFilter" />
+    </fragment>
+    <fragment android:name="com.taxsee.shared.feature.auto_assign_order.alongwayorder.ui.AlongWayOrderFragment" android:id="@id/alongWayOrder" />
+</navigation>

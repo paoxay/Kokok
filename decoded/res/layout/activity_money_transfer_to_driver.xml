@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:textDirection="locale" android:layoutDirection="locale"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <include layout="@layout/view_fragment_appbar" />
+    <ScrollView android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0">
+        <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content" android:paddingHorizontal="16.0dip">
+            <com.google.android.material.textfield.TextInputLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:hint="@string/login">
+                <com.taxsee.shared.feature.formated_edit_text.ui.FormatEditText android:id="@id/etLogin" android:layout_width="fill_parent" android:layout_height="wrap_content" android:imeOptions="actionNext|flagNoExtractUi|flagNoFullscreen" android:imeActionId="5" app:formatType="integerNumber" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip">
+                <com.taxsee.shared.feature.formated_edit_text.ui.FormatEditText android:id="@id/etAmount" android:layout_width="fill_parent" android:layout_height="wrap_content" android:hint="@string/LabelSum" android:imeOptions="actionSend|flagNoExtractUi|flagNoFullscreen" android:imeActionId="4" app:formatType="money" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.GroupTitle" android:textColor="@color/text_title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:text="@string/transferFrom" />
+            <androidx.appcompat.widget.AppCompatSpinner android:id="@id/spinnerOrganizations" android:layout_width="fill_parent" android:layout_height="wrap_content" style="@style/Widget.Spinner" />
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.InfoBlock" android:textColor="@color/text_title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:text="@string/MoneyTransferToDriverDescription" />
+            <com.google.android.material.button.MaterialButton android:id="@id/bSend" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="32.0dip" android:layout_marginBottom="16.0dip" android:text="@string/DoTransfer" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

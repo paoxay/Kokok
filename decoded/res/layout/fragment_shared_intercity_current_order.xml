@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:textDirection="locale" android:layoutDirection="locale"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <include layout="@layout/layout_shared_intercity_timer_auto_assignment" />
+    <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <include android:id="@id/appbar" layout="@layout/view_fragment_appbar" />
+        <FrameLayout android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0">
+            <androidx.core.widget.NestedScrollView android:id="@id/content" android:layout_width="fill_parent" android:layout_height="fill_parent">
+                <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                    <include android:id="@id/orderHeader" layout="@layout/layout_shared_intercity_order_header" />
+                    <com.google.android.material.divider.MaterialDivider android:id="@id/topDivider" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="26.0dip" />
+                    <com.google.android.material.tabs.TabLayout android:id="@id/tabLayout" android:layout_width="fill_parent" android:layout_height="wrap_content" style="@style/Widget.AppTheme.TabLayout.SharedInterCity">
+                        <com.google.android.material.tabs.TabItem android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/shared_intercity_passengers_tab_title" />
+                    </com.google.android.material.tabs.TabLayout>
+                    <androidx.recyclerview.widget.RecyclerView android:id="@id/passengerList" android:clipToPadding="false" android:layout_width="fill_parent" android:layout_height="wrap_content" android:overScrollMode="never" android:paddingVertical="4.0dip" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.IllustrationText" android:textColor="@color/text_title" android:gravity="center" android:id="@id/tvEmptyPassengers" android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="100.0dip" android:text="@string/shared_intercity_no_passengers" />
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+            <com.taxsee.driver.TaxseeCircularProgressIndicator android:layout_gravity="center" android:id="@id/progressFragmentLoad" android:layout_width="wrap_content" android:layout_height="wrap_content" android:indeterminate="true" />
+        </FrameLayout>
+        <include android:id="@id/statusPanel" layout="@layout/layout_current_order_status_panel" />
+    </LinearLayout>
+    <com.taxsee.view.progressbar.TaxseeProgressBar android:id="@id/v_fullscreen_progressbar" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" style="@style/TaxseeProgressBar" />
+</FrameLayout>

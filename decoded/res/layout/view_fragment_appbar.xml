@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.appbar.AppBarLayout android:id="@id/fragment_appbar" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_alignParentTop="true" android:elevation="4.0dip"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <FrameLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <include layout="@layout/toolbar_layout_without_shadow" />
+        <com.taxsee.driver.TaxseeLinearProgressIndicator android:layout_gravity="bottom" android:id="@id/progress_loading" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:indeterminate="true" />
+    </FrameLayout>
+</com.google.android.material.appbar.AppBarLayout>

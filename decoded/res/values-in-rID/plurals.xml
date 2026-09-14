@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="confirmation_code_attempts_left">
+        <item quantity="other">Kode salah. Hanya tersisa %d percobaan lagi.</item>
+    </plurals>
+    <plurals name="confirmation_code_attempts_left_short">
+        <item quantity="other">Hanya tersisa %d percobaan lagi.</item>
+    </plurals>
+    <plurals name="next_order_accepted_countdown_message">
+        <item quantity="other">Order akan diterima dalam %1$s detik</item>
+    </plurals>
+    <plurals name="next_order_countdown_message">
+        <item quantity="other">Order akan dibatalkan dalam %1$s detik</item>
+    </plurals>
+</resources>

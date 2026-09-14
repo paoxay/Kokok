@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView android:id="@id/vText" android:scrollbars="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:fadeScrollbars="false"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.IllustrationTitle" android:textColor="@color/text_title" android:gravity="center" android:id="@id/tvTitle" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:text="@string/activate_kaspro_title" android:layout_marginHorizontal="16.0dip" />
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.IllustrationText" android:textColor="@color/text_subtitle" android:gravity="center" android:id="@id/tvDescription" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_margin="16.0dip" android:text="@string/activate_kaspro_description" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

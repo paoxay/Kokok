@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="CountAdditionalOfAddresses">
+        <item>អាសយដ្ឋាន %d ទៀត។</item>
+        <item>អាសយដ្ឋាន %d ទៀត។</item>
+        <item>អាសយដ្ឋាន %d ទៀត។</item>
+    </string-array>
+    <string-array name="months_short">
+        <item>មករា</item>
+        <item>ខែកុម្ភៈ</item>
+        <item>ខែមីនា</item>
+        <item>មេសា</item>
+        <item>ឧសភា</item>
+        <item>ខែមិថុនា</item>
+        <item>ខែកក្កដា</item>
+        <item>សីហា</item>
+        <item>កញ្ញា</item>
+        <item>តុលា</item>
+        <item>ខែវិច្ឆិកា</item>
+        <item>ខែធ្នូ</item>
+    </string-array>
+</resources>

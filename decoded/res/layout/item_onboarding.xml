@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <ScrollView android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0">
+        <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <com.google.android.material.imageview.ShapeableImageView android:id="@id/iv_preview" android:layout_width="fill_parent" android:layout_height="320.0dip" android:layout_marginTop="16.0dip" android:scaleType="centerCrop" android:layout_marginHorizontal="16.0dip" app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.ImageCard" />
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.IllustrationTitle" android:textColor="@color/text_title" android:gravity="center" android:id="@id/tv_title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:layout_marginHorizontal="16.0dip" />
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.IllustrationText" android:textColor="@color/text_subtitle" android:gravity="center" android:id="@id/tv_subtitle" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:layout_marginHorizontal="16.0dip" />
+        </LinearLayout>
+    </ScrollView>
+    <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_margin="16.0dip">
+        <com.google.android.material.button.MaterialButton android:id="@id/btn_close" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0" app:autoSizeMinTextSize="1.0sp" app:autoSizeTextType="uniform" style="?materialButtonOutlinedStyle" />
+        <com.google.android.material.button.MaterialButton android:id="@id/btn_action" android:layout_width="0.0dip" android:layout_height="wrap_content" android:maxHeight="48.0dip" android:layout_weight="1.0" android:layout_marginStart="16.0dip" app:autoSizeMinTextSize="1.0sp" app:autoSizeTextType="uniform" />
+    </LinearLayout>
+</LinearLayout>

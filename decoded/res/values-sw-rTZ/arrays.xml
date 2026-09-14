@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="CountAdditionalOfAddresses">
+        <item>Anwani %d zaidi</item>
+        <item>Anwani %d zaidi</item>
+        <item>Anwani %d zaidi</item>
+    </string-array>
+    <string-array name="months_short">
+        <item>Januari</item>
+        <item>Febuari</item>
+        <item>Machi</item>
+        <item>Aprili</item>
+        <item>Mei</item>
+        <item>Juni</item>
+        <item>Julai</item>
+        <item>Agosti</item>
+        <item>Septemba</item>
+        <item>Oktoba</item>
+        <item>Novemba</item>
+        <item>Desemba</item>
+    </string-array>
+</resources>

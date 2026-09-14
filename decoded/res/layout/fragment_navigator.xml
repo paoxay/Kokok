@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <include android:id="@id/appbarLayout" layout="@layout/view_fragment_appbar" />
+    <include android:id="@id/layout_map" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginTop="?actionBarSize" layout="@layout/layout_map" />
+    <LinearLayout android:gravity="bottom" android:layout_gravity="bottom" android:orientation="vertical" android:id="@id/v_full_panel" android:clipChildren="false" android:clipToPadding="false" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginTop="?actionBarSize">
+        <include android:id="@id/layout_order_details" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0" layout="@layout/layout_order_details" />
+        <include android:id="@id/status_panel" android:layout_width="fill_parent" android:layout_height="wrap_content" layout="@layout/layout_current_order_status_panel" />
+    </LinearLayout>
+    <LinearLayout android:layout_gravity="bottom" android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <androidx.coordinatorlayout.widget.CoordinatorLayout android:layout_width="fill_parent" android:layout_height="fill_parent">
+            <androidx.recyclerview.widget.RecyclerView android:orientation="horizontal" android:id="@id/rv_order_cards" android:visibility="gone" android:clipToPadding="false" android:layout_width="fill_parent" android:layout_height="wrap_content" android:paddingHorizontal="8.0dip" app:behavior_hideable="true" app:behavior_peekHeight="60.0dip" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior" />
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <com.google.android.material.button.MaterialButton android:id="@id/bNavigateToNearestOrder" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="16.0dip" android:text="@string/navigate_to_nearest_order" android:layout_marginHorizontal="16.0dip" />
+        <include android:layout_gravity="bottom" android:id="@id/in_line_indicator" android:layout_width="fill_parent" android:layout_height="wrap_content" layout="@layout/layout_in_line_indicator" />
+    </LinearLayout>
+    <include android:id="@id/enable_in_line" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginTop="?actionBarSize" layout="@layout/layout_enable_in_line" />
+    <LinearLayout android:orientation="vertical" android:id="@id/problems_view" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="?actionBarSize">
+        <include android:id="@id/system_problem_warning" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" layout="@layout/system_problem_warning" />
+        <include android:id="@id/connectivity_conditions" layout="@layout/layout_connectivity_conditions" />
+    </LinearLayout>
+    <include layout="@layout/layout_timer_auto_assignment" />
+    <include android:id="@id/maneuver_panel" layout="@layout/layout_maneuver_panel" />
+    <com.taxsee.view.progressbar.TaxseeProgressBar android:id="@id/v_fullscreen_progressbar" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" style="@style/TaxseeProgressBar" />
+</FrameLayout>

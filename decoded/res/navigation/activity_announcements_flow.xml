@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:id="@id/announcements_flow" app:startDestination="@id/start_flow"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <fragment android:name="com.taxsee.feature.announcements.StartFlowFragment" android:id="@id/start_flow">
+        <action android:id="@id/action_start_to_organizations" app:destination="@id/organizationList" app:popUpTo="@id/announcements_flow" app:popUpToInclusive="true" />
+        <action android:id="@id/action_start_to_announcements" app:destination="@id/announcementList" app:popUpTo="@id/announcements_flow" app:popUpToInclusive="true" />
+        <action android:id="@id/action_start_to_announcement" app:destination="@id/announcement" app:popUpTo="@id/announcements_flow" app:popUpToInclusive="true" />
+    </fragment>
+    <fragment android:name="com.taxsee.feature.announcements.organizations.ui.AnnouncementsOrganizationsFragment" android:id="@id/organizationList">
+        <action android:id="@id/action_organizations_to_announcements" app:destination="@id/announcementList" />
+    </fragment>
+    <fragment android:name="com.taxsee.feature.announcements.list.ui.AnnouncementsFragment" android:id="@id/announcementList">
+        <argument android:name="organizationId" app:argType="long" app:nullable="false" />
+        <argument android:name="organizationName" app:argType="string" app:nullable="false" />
+        <argument android:name="isOneOrganization" android:defaultValue="false" app:argType="boolean" />
+        <action android:id="@id/action_announcements_to_announcement" app:destination="@id/announcement" />
+    </fragment>
+    <fragment android:name="com.taxsee.feature.announcements.details.ui.AnnouncementDetailsFragment" android:id="@id/announcement">
+        <argument android:name="organizationId" app:argType="long" app:nullable="false" />
+        <argument android:name="announcementId" app:argType="long" />
+        <argument android:name="announcementTitle" app:argType="string" app:nullable="false" />
+    </fragment>
+</navigation>

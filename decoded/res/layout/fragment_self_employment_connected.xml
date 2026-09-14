@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:background="@color/screen_with_cards_background" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <include android:id="@id/appbar" layout="@layout/view_fragment_appbar" />
+    <ScrollView android:layout_width="wrap_content" android:layout_height="wrap_content">
+        <LinearLayout android:orientation="vertical" android:layout_width="wrap_content" android:layout_height="wrap_content">
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.GroupTitle" android:textColor="@color/text_title" android:id="@id/tv_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:text="@string/self_employment_connected_title" android:layout_marginHorizontal="16.0dip" />
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.GroupSubTitle" android:textColor="@color/text_title" android:id="@id/tv_your_inn" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:layout_marginHorizontal="16.0dip" />
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.GroupTitle" android:textColor="@color/text_title" android:id="@id/tv_you_participant" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="24.0dip" android:text="@string/self_employment_connected_you_participant" android:layout_marginHorizontal="16.0dip" />
+            <include android:id="@id/v_association_self_employment" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:layout_marginHorizontal="16.0dip" layout="@layout/item_association_self_employed" />
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.GroupTitle" android:textColor="@color/text_title" android:id="@id/tv_enjoy_benefits" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="24.0dip" android:text="@string/self_employment_enjoy_benefits_title" android:layout_marginHorizontal="16.0dip" />
+            <include android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16.0sp" android:layout_marginHorizontal="16.0dip" layout="@layout/item_benefits_self_employed" />
+            <com.google.android.material.button.MaterialButton android:id="@id/b_disconnect" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:text="@string/self_employment_connected_disconnect_from_fns" android:layout_marginHorizontal="16.0dip" style="?materialButtonOutlinedStyle" />
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.InfoBlock" android:textColor="@color/text_subtitle" android:gravity="center_horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4.0dip" android:layout_marginBottom="16.0dip" android:text="@string/self_employment_connected_disconnect_from_fns_description" android:layout_marginHorizontal="16.0dip" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

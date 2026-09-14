@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:background="@color/screen_with_cards_background" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layoutDirection="locale"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <include android:id="@id/appbar" layout="@layout/view_fragment_appbar" />
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout android:id="@id/refreshLayout" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <FrameLayout android:layout_width="fill_parent" android:layout_height="fill_parent">
+            <androidx.recyclerview.widget.RecyclerView android:id="@id/rvOrders" android:layout_width="fill_parent" android:layout_height="fill_parent" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            <include android:id="@id/vEmptyError" layout="@layout/view_empty_error" />
+        </FrameLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+</LinearLayout>

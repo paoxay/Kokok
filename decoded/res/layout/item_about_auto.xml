@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView android:layout_width="fill_parent" android:layout_height="wrap_content" app:cardCornerRadius="0.0dip"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="50.0dip">
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_title" android:ellipsize="end" android:gravity="start" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_margin="16.0dip" android:text="@string/what_is_auto_title" android:maxLines="1" android:minLines="1" android:layout_weight="1.0" android:textAlignment="viewStart" />
+        <androidx.appcompat.widget.AppCompatImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/ic_details" android:scaleType="center" android:layout_marginEnd="24.0dip" app:tint="@color/icon_accent" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView android:layout_width="fill_parent" android:layout_height="wrap_content" android:textDirection="locale" android:layoutDirection="locale" app:cardCornerRadius="0.0dip" app:cardUseCompatPadding="false"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginVertical="4.0dip">
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.BoldTitle" android:textColor="@color/text_title" android:id="@id/tvTitle" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/system_notifications" android:layout_marginHorizontal="@dimen/activity_horizontal_margin" android:layout_marginVertical="16.0dip" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toStartOf="@id/tvBadge" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" />
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.BadgeText" android:textColor="@color/badge_text" android:gravity="center" android:id="@id/tvBadge" android:background="@drawable/chat_counter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginEnd="16.0dip" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

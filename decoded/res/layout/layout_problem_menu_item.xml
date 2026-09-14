@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:layoutDirection="ltr"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.appcompat.widget.AppCompatImageView android:id="@id/ivNotification" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/ic_warning_rectangle" android:layout_marginHorizontal="12.0dip" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" app:tint="@color/top_appbar_icon" />
+    <FrameLayout android:id="@id/badge" android:layout_width="18.0dip" android:layout_height="18.0dip" android:layout_marginBottom="16.0dip" android:layout_marginStart="12.0dip" app:layout_constraintBottom_toBottomOf="@id/ivNotification" app:layout_constraintEnd_toEndOf="@id/ivNotification" app:layout_constraintStart_toStartOf="@id/ivNotification" app:layout_constraintTop_toTopOf="@id/ivNotification">
+        <androidx.appcompat.widget.AppCompatImageView android:layout_gravity="center" android:id="@id/ivBadge" android:layout_width="fill_parent" android:layout_height="fill_parent" android:src="@drawable/ic_circle" app:tint="@color/badge_background" />
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.BadgeText" android:textColor="@color/badge_text" android:gravity="center" android:layout_gravity="center" android:id="@id/tvCount" android:layout_width="fill_parent" android:layout_height="fill_parent" />
+    </FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

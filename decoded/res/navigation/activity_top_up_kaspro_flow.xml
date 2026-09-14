@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:id="@id/activity_top_up_kaspro" app:startDestination="@id/methods"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <dialog android:name="com.taxsee.feature.kaspro.topup.ui.TopUpKasproMethodsFragment" android:id="@id/methods">
+        <action android:id="@id/action_methods_to_types" app:destination="@id/types" />
+        <action android:id="@id/action_methods_to_instructions" app:destination="@id/instructions" />
+    </dialog>
+    <fragment android:name="com.taxsee.feature.kaspro.topup.ui.TopUpKasproTypesFragment" android:id="@id/types">
+        <action android:id="@id/action_types_to_instructions" app:destination="@id/instructions" />
+    </fragment>
+    <fragment android:name="com.taxsee.feature.kaspro.topup.ui.TopUpKasproInstructionsFragment" android:id="@id/instructions" />
+</navigation>

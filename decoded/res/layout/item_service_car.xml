@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="horizontal" android:background="?selectableItemBackground" android:layout_width="fill_parent" android:layout_height="wrap_content" android:paddingHorizontal="16.0dip" android:paddingVertical="8.0dip"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.google.android.material.imageview.ShapeableImageView android:id="@id/iv_preview" android:background="@drawable/bg_rounded" android:layout_width="44.0dip" android:layout_height="44.0dip" android:src="@drawable/ic_car_taxi" android:scaleType="center" app:shapeAppearance="@style/ShapeAppearanceOverlay.CornerSize50Percent" />
+    <LinearLayout android:orientation="vertical" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0" android:layout_marginHorizontal="16.0dip">
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_title" android:ellipsize="end" android:gravity="start" android:id="@id/tv_car_name" android:layout_width="fill_parent" android:layout_height="wrap_content" android:maxLines="1" />
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.SubTitle" android:textColor="@color/text_subtitle" android:ellipsize="end" android:id="@id/tv_description" android:layout_width="fill_parent" android:layout_height="wrap_content" android:maxLines="1" />
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.SubTitle" android:ellipsize="end" android:id="@id/tv_status" android:layout_width="fill_parent" android:layout_height="wrap_content" android:maxLines="1" android:textAllCaps="true" />
+    </LinearLayout>
+</LinearLayout>

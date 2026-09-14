@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="confirmation_code_attempts_left">
+        <item quantity="other">Code ungültig. %d Versuche übrig.</item>
+        <item quantity="one">Ungültiger Code. %d Versuch übrig.</item>
+    </plurals>
+    <plurals name="confirmation_code_attempts_left_short">
+        <item quantity="other">Code ungültig. %d Versuche übrig.</item>
+        <item quantity="one">Code ungültig. %d Versuche übrig.</item>
+    </plurals>
+</resources>

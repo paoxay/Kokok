@@ -1,0 +1,20 @@
+.class public abstract Landroidx/vectordrawable/graphics/drawable/d;
+.super Ljava/lang/Object;
+.source "r8-map-id-83369e011c7089229a2d93be69079bfb1a01165be964184299498138074a9cc0"
+
+
+# direct methods
+.method public static a(Landroid/content/Context;I)Landroid/view/animation/Interpolator;
+    .locals 0
+
+    .line 1
+    invoke-static {p0, p1}, Landroid/view/animation/AnimationUtils;->loadInterpolator(Landroid/content/Context;I)Landroid/view/animation/Interpolator;
+
+    .line 2
+    .line 3
+    .line 4
+    move-result-object p0
+
+    .line 5
+    return-object p0
+.end method

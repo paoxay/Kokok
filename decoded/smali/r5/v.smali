@@ -1,0 +1,56 @@
+.class public final Lr5/v;
+.super Ljava/lang/RuntimeException;
+.source "r8-map-id-83369e011c7089229a2d93be69079bfb1a01165be964184299498138074a9cc0"
+
+
+# instance fields
+.field private final d:Lr5/c0;
+
+
+# direct methods
+.method public constructor <init>(Ljava/lang/String;Lr5/c0;)V
+    .locals 1
+
+    .line 1
+    const-string v0, "message"
+
+    .line 2
+    .line 3
+    invoke-static {p1, v0}, Lkotlin/jvm/internal/Intrinsics;->checkNotNullParameter(Ljava/lang/Object;Ljava/lang/String;)V
+
+    .line 4
+    .line 5
+    .line 6
+    const-string v0, "type"
+
+    .line 7
+    .line 8
+    invoke-static {p2, v0}, Lkotlin/jvm/internal/Intrinsics;->checkNotNullParameter(Ljava/lang/Object;Ljava/lang/String;)V
+
+    .line 9
+    .line 10
+    .line 11
+    invoke-direct {p0, p1}, Ljava/lang/RuntimeException;-><init>(Ljava/lang/String;)V
+
+    .line 12
+    .line 13
+    .line 14
+    iput-object p2, p0, Lr5/v;->d:Lr5/c0;
+
+    .line 15
+    .line 16
+    return-void
+.end method
+
+
+# virtual methods
+.method public final a()Lr5/c0;
+    .locals 1
+
+    .line 1
+    iget-object v0, p0, Lr5/v;->d:Lr5/c0;
+
+    .line 2
+    .line 3
+    return-object v0
+.end method

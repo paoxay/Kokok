@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.textfield.TextInputLayout android:layout_width="fill_parent" android:layout_height="wrap_content"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.taxsee.shared.feature.formated_edit_text.ui.FormatEditText android:id="@id/etPhoneNumber" android:layout_width="fill_parent" android:layout_height="wrap_content" android:maxLines="1" android:lines="1" android:minLines="1" android:imeOptions="actionSend|flagNoExtractUi|flagNoFullscreen" android:imeActionId="5" android:textDirection="ltr" android:layoutDirection="ltr" app:formatType="phone" />
+</com.google.android.material.textfield.TextInputLayout>

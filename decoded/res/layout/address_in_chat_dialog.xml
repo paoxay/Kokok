@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:layout_width="fill_parent" android:layout_height="wrap_content" android:layoutDirection="locale"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Text_20_400" android:textColor="@color/text_title" android:gravity="center" android:id="@id/toNickNameView" android:background="?selectableItemBackground" android:padding="@dimen/padding" android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="56.0dip" />
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Text_20_400" android:textColor="@color/text_title" android:gravity="center" android:id="@id/toCallSignView" android:background="?selectableItemBackground" android:padding="@dimen/padding" android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="56.0dip" />
+        <com.google.android.material.checkbox.MaterialCheckBox android:textAppearance="@style/TextAppearance.Text_20_400" android:layout_gravity="center" android:id="@id/remember" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/Remember" />
+    </LinearLayout>
+</ScrollView>

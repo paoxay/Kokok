@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@id/action_connect_all" android:visible="false" android:title="@string/actionAllJoin" app:iconTint="@color/top_appbar_icon" app:showAsAction="always" />
+    <item android:id="@id/action_disconnect_all" android:visible="false" android:title="@string/actionAllAbandon" app:iconTint="@color/top_appbar_icon" app:showAsAction="always" />
+</menu>

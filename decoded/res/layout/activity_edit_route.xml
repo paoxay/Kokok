@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:background="@color/screen_with_cards_background" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layoutDirection="locale"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <include layout="@layout/view_fragment_appbar" />
+    <androidx.core.widget.NestedScrollView android:id="@id/addressesContainer" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0">
+        <LinearLayout android:orientation="vertical" android:background="@color/card_background" android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.InfoBlock" android:textColor="@color/text_subtitle" android:gravity="center_vertical" android:id="@id/descriptionView" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/EditRouteActivityDescriptionText" android:drawablePadding="18.0dip" android:drawableStart="@drawable/ic_length_out_info" android:paddingStart="12.0dip" android:paddingEnd="@dimen/padding" android:paddingVertical="@dimen/padding" app:drawableTint="@color/icon_accent_variant" />
+            <androidx.recyclerview.widget.RecyclerView android:id="@id/addressesList" android:scrollbars="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content" android:fadeScrollbars="true" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            <com.google.android.material.button.MaterialButton android:gravity="start|center" android:id="@id/addAddressContainer" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="8.0dip" android:text="@string/EditRouteActivityAddAddressButtonText" android:layout_marginHorizontal="6.0dip" app:icon="@drawable/ic_plus" app:iconGravity="start" app:iconPadding="16.0dip" style="?borderlessButtonStyle" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+    <LinearLayout android:orientation="vertical" android:id="@id/saveAddressContainer" android:background="@color/card_background" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <com.google.android.material.divider.MaterialDivider android:layout_width="fill_parent" android:layout_height="wrap_content" />
+        <com.google.android.material.button.MaterialButton android:id="@id/saveRouteButton" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_margin="16.0dip" android:text="@string/Save" />
+    </LinearLayout>
+</LinearLayout>

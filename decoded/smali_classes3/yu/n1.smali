@@ -1,0 +1,149 @@
+.class public final Lyu/n1;
+.super Ljava/lang/Object;
+.source "r8-map-id-83369e011c7089229a2d93be69079bfb1a01165be964184299498138074a9cc0"
+
+# interfaces
+.implements Lyu/m1;
+
+
+# instance fields
+.field private final d:Lyv/d;
+
+.field private final e:Lyu/d;
+
+.field private final i:Lyu/e;
+
+
+# direct methods
+.method public constructor <init>(Lyv/d;Lyu/d;Lyu/e;)V
+    .locals 1
+
+    .line 1
+    const-string v0, "toolingObserveBaseId"
+
+    .line 2
+    .line 3
+    invoke-static {p1, v0}, Lkotlin/jvm/internal/Intrinsics;->checkNotNullParameter(Ljava/lang/Object;Ljava/lang/String;)V
+
+    .line 4
+    .line 5
+    .line 6
+    const-string v0, "localRepository"
+
+    .line 7
+    .line 8
+    invoke-static {p2, v0}, Lkotlin/jvm/internal/Intrinsics;->checkNotNullParameter(Ljava/lang/Object;Ljava/lang/String;)V
+
+    .line 9
+    .line 10
+    .line 11
+    const-string v0, "memoryRepository"
+
+    .line 12
+    .line 13
+    invoke-static {p3, v0}, Lkotlin/jvm/internal/Intrinsics;->checkNotNullParameter(Ljava/lang/Object;Ljava/lang/String;)V
+
+    .line 14
+    .line 15
+    .line 16
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    .line 17
+    .line 18
+    .line 19
+    iput-object p1, p0, Lyu/n1;->d:Lyv/d;
+
+    .line 20
+    .line 21
+    iput-object p2, p0, Lyu/n1;->e:Lyu/d;
+
+    .line 22
+    .line 23
+    iput-object p3, p0, Lyu/n1;->i:Lyu/e;
+
+    .line 24
+    .line 25
+    return-void
+.end method
+
+.method public static final synthetic a(Lyu/n1;)Lyu/d;
+    .locals 0
+
+    .line 1
+    iget-object p0, p0, Lyu/n1;->e:Lyu/d;
+
+    .line 2
+    .line 3
+    return-object p0
+.end method
+
+.method public static final synthetic b(Lyu/n1;)Lyu/e;
+    .locals 0
+
+    .line 1
+    iget-object p0, p0, Lyu/n1;->i:Lyu/e;
+
+    .line 2
+    .line 3
+    return-object p0
+.end method
+
+
+# virtual methods
+.method public c()Lxd0/g;
+    .locals 3
+
+    .line 1
+    iget-object v0, p0, Lyu/n1;->d:Lyv/d;
+
+    .line 2
+    .line 3
+    invoke-interface {v0}, Lkotlin/jvm/functions/Function0;->invoke()Ljava/lang/Object;
+
+    .line 4
+    .line 5
+    .line 6
+    move-result-object v0
+
+    .line 7
+    check-cast v0, Lxd0/g;
+
+    .line 8
+    .line 9
+    new-instance v1, Lyu/n1$a;
+
+    .line 10
+    .line 11
+    const/4 v2, 0x0
+
+    .line 12
+    invoke-direct {v1, v2, p0}, Lyu/n1$a;-><init>(Lzc0/b;Lyu/n1;)V
+
+    .line 13
+    .line 14
+    .line 15
+    invoke-static {v0, v1}, Lxd0/i;->c0(Lxd0/g;Ljd0/n;)Lxd0/g;
+
+    .line 16
+    .line 17
+    .line 18
+    move-result-object v0
+
+    .line 19
+    return-object v0
+.end method
+
+.method public bridge synthetic invoke()Ljava/lang/Object;
+    .locals 1
+
+    .line 1
+    invoke-virtual {p0}, Lyu/n1;->c()Lxd0/g;
+
+    .line 2
+    .line 3
+    .line 4
+    move-result-object v0
+
+    .line 5
+    return-object v0
+.end method

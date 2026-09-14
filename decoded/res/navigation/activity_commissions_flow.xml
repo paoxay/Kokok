@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:id="@id/activity_commissions" app:startDestination="@id/commissions"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <fragment android:name="com.taxsee.feature.commission.list.ui.CommissionListFragment" android:id="@id/commissions">
+        <action android:id="@id/action_open_change_driver_auto" app:destination="@id/change_driver_auto" />
+        <action android:id="@id/action_open_change_tariff" app:destination="@id/change_tariff" />
+        <action android:id="@id/action_open_calculator" app:destination="@id/commissionCalculator" />
+    </fragment>
+    <dialog android:name="com.taxsee.feature.commission.change_driver.ui.ChangeDriverAutoFragment" android:id="@id/change_driver_auto" />
+    <dialog android:name="com.taxsee.feature.commission.change_tariff.ui.ChangeTariffFragment" android:id="@id/change_tariff" />
+    <fragment android:name="com.taxsee.feature.commission.calculator.ui.CommissionCalculatorFragment" android:id="@id/commissionCalculator">
+        <argument android:name="autoId" app:argType="integer" />
+        <argument android:name="tariffId" app:argType="integer" />
+        <argument android:name="autoName" app:argType="string" />
+        <argument android:name="tariffName" app:argType="string" />
+        <action android:id="@id/action_commissionCalculator_to_commissionInfo" app:destination="@id/commissionInfo" />
+    </fragment>
+    <fragment android:name="com.taxsee.feature.commission.calculator_info.ui.CommissionInfoFragment" android:id="@id/commissionInfo">
+        <argument android:name="autoId" app:argType="integer" />
+        <argument android:name="commissionAuto" android:defaultValue="@null" app:argType="string" app:nullable="true" />
+        <argument android:name="commissionList" android:defaultValue="@null" app:argType="string" app:nullable="true" />
+        <argument android:name="addedKeys" app:argType="string[]" />
+    </fragment>
+</navigation>

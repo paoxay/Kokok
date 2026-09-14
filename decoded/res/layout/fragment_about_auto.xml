@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <include android:id="@id/appBar" layout="@layout/view_fragment_appbar" />
+    <androidx.viewpager2.widget.ViewPager2 android:id="@id/vPager" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0" />
+    <com.google.android.material.button.MaterialButton android:id="@id/bBack" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/back" android:layout_marginHorizontal="16.0dip" style="?materialButtonOutlinedStyle" />
+    <com.google.android.material.button.MaterialButton android:id="@id/bNext" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_margin="16.0dip" android:text="@string/Next" />
+</LinearLayout>

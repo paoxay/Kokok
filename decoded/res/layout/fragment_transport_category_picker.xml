@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.appcompat.widget.AppCompatImageView android:layout_gravity="center_horizontal" android:id="@id/ivSlideDown" android:layout_width="wrap_content" android:layout_height="10.0dip" android:layout_marginTop="8.0dip" android:src="@drawable/ic_slide_to_bottom_arrow_black" app:tint="@color/icon_default" />
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Text_20_500" android:textColor="@color/text_title" android:id="@id/tv_title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:layout_marginBottom="8.0dip" android:text="@string/registration_transport_category_picker_title" android:layout_marginHorizontal="16.0dip" />
+    <androidx.recyclerview.widget.RecyclerView android:id="@id/rv_items" android:layout_width="fill_parent" android:layout_height="wrap_content" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+</LinearLayout>

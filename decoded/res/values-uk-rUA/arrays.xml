@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="CountAdditionalOfAddresses">
+        <item>Ще %d адреса</item>
+        <item>Ще %d адреси</item>
+        <item>Ще %d адрес</item>
+    </string-array>
+    <string-array name="months_short">
+        <item>Січ</item>
+        <item>Лют</item>
+        <item>Бер</item>
+        <item>Кві</item>
+        <item>Тра</item>
+        <item>Чер</item>
+        <item>Лип</item>
+        <item>Сер</item>
+        <item>Вер</item>
+        <item>Жов</item>
+        <item>Лис</item>
+        <item>Гру</item>
+    </string-array>
+</resources>

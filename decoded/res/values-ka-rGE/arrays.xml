@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="CountAdditionalOfAddresses">
+        <item>კიდევ %d მისამართი</item>
+        <item>კიდევ %d მისამართი</item>
+        <item>კიდევ %d მისამართი</item>
+    </string-array>
+    <string-array name="months_short">
+        <item>იან</item>
+        <item>თებ</item>
+        <item>მარტ</item>
+        <item>აპრ</item>
+        <item>მაისი</item>
+        <item>ივნ</item>
+        <item>ივლ</item>
+        <item>აგვ</item>
+        <item>სექ</item>
+        <item>ოქტ</item>
+        <item>ნოემ</item>
+        <item>დეკ</item>
+    </string-array>
+</resources>

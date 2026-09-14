@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <androidx.appcompat.widget.AppCompatImageView android:id="@id/iv_photo_overlay" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_margin="12.0dip" android:scaleType="fitCenter" android:alpha="0.5" />
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Text_20_500" android:textColor="@android:color/white" android:layout_gravity="bottom|center" android:id="@id/tv_inspection_text" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="12.0dip" android:textAlignment="center" />
+</FrameLayout>

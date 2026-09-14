@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginHorizontal="16.0dip" android:layout_marginVertical="8.0dip" app:cardCornerRadius="16.0dip"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:orientation="horizontal" android:padding="16.0dip" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <LinearLayout android:orientation="vertical" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0">
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Text_18_500" android:textColor="@color/text_title" android:id="@id/tv_name" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+            <LinearLayout android:orientation="horizontal" android:id="@id/v_phone" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Text_14_400" android:textColor="@color/text_subtitle" android:id="@id/tv_phone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/registration_select_duplicate_phone_number" />
+                <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Text_16_400" android:textColor="@color/text_title" android:id="@id/tv_phone_value" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginStart="8.0dip" />
+            </LinearLayout>
+            <LinearLayout android:orientation="horizontal" android:id="@id/v_login" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Text_14_400" android:textColor="@color/text_subtitle" android:id="@id/tv_login" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/registration_select_duplicate_login" />
+                <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Text_16_400" android:textColor="@color/text_title" android:id="@id/tv_login_value" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginStart="8.0dip" />
+            </LinearLayout>
+        </LinearLayout>
+        <androidx.appcompat.widget.AppCompatImageView android:layout_gravity="center" android:id="@id/iv_action" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/ic_chevron_right_black_24dp" android:tint="@color/icon_default" android:layout_marginStart="8.0dip" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

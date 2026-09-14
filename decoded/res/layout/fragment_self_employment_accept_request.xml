@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:background="@color/screen_with_cards_background" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <include android:id="@id/appbar" layout="@layout/view_fragment_appbar" />
+    <ScrollView android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <LinearLayout android:orientation="vertical" android:layout_width="wrap_content" android:layout_height="wrap_content">
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.GroupTitle" android:textColor="@color/text_title" android:id="@id/tv_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:text="@string/self_employment_accept_request_title" android:layout_marginHorizontal="16.0dip" />
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.GroupSubTitle" android:textColor="@color/text_subtitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:text="@string/self_employment_accept_request_subtitle" android:layout_marginHorizontal="16.0dip" />
+            <include android:id="@id/v_your_inn" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="24.0dip" android:layout_marginHorizontal="16.0dip" layout="@layout/item_your_inn" />
+            <com.google.android.material.card.MaterialCardView android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="24.0dip" android:layout_marginHorizontal="16.0dip" app:cardCornerRadius="16.0dip">
+                <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_margin="16.0dip">
+                    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/self_employment_accept_request_step_one" />
+                    <com.google.android.material.button.MaterialButton android:id="@id/b_open_fns" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:text="@string/self_employment_accept_request_step_one_action" />
+                    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="24.0dip" android:text="@string/self_employment_accept_request_step_two" />
+                    <androidx.appcompat.widget.AppCompatImageView android:layout_gravity="center" android:id="@id/iv_partner_offers" android:layout_width="wrap_content" android:layout_height="120.0dip" android:layout_marginTop="16.0dip" android:layout_marginHorizontal="36.0dip" />
+                    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="24.0dip" android:layout_marginBottom="16.0dip" android:text="@string/self_employment_accept_request_step_three" />
+                    <androidx.appcompat.widget.AppCompatImageView android:layout_gravity="center" android:id="@id/iv_offers_to_connect" android:layout_width="wrap_content" android:layout_height="48.0dip" android:layout_marginBottom="16.0dip" android:layout_marginHorizontal="36.0dip" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.button.MaterialButton android:id="@id/b_details" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="24.0dip" android:layout_marginBottom="16.0dip" android:text="@string/self_employment_details_action" android:layout_marginHorizontal="16.0dip" style="?materialButtonOutlinedStyle" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

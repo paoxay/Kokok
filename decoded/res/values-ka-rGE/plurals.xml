@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="confirmation_code_attempts_left">
+        <item quantity="other">კოდი არასწორია. დარჩა შეყვანის %d მცდელობა.</item>
+        <item quantity="one">კოდი არასწორია. დარჩა შეყვანის %d მცდელობა.</item>
+    </plurals>
+    <plurals name="confirmation_code_attempts_left_short">
+        <item quantity="other">დარჩა შეყვანის %d მცდელობა.</item>
+        <item quantity="one">დარჩა შეყვანის %d მცდელობა.</item>
+    </plurals>
+    <plurals name="next_order_accepted_countdown_message">
+        <item quantity="other">შეკვეთა იქნება მიღებული %1$s წამში</item>
+        <item quantity="one">შეკვეთა იქნება მიღებული %1$s წამში</item>
+    </plurals>
+    <plurals name="next_order_countdown_message">
+        <item quantity="other">შეკვეთა გაუქმდება %1$s წამში</item>
+        <item quantity="one">შეკვეთა გაუქმდება %1$s წამში</item>
+    </plurals>
+</resources>

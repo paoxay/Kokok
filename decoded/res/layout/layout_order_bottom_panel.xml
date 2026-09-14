@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:background="@color/card_background" android:layout_width="fill_parent" android:layout_height="wrap_content"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <include android:id="@id/layout_auction_buttons" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" layout="@layout/layout_order_auction" />
+    <com.google.android.material.divider.MaterialDivider android:id="@id/auction_divider" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+    <com.google.android.material.button.MaterialButton android:id="@id/bStatistics" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="10.0dip" android:layout_marginBottom="2.0dip" android:text="@string/order_statistics" android:layout_marginHorizontal="10.0dip" style="?materialButtonOutlinedStyle" />
+    <include android:id="@id/layout_request_buttons" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" layout="@layout/layout_order_request_buttons" />
+    <include android:id="@id/layout_actions_buttons" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" layout="@layout/control_button" />
+</LinearLayout>

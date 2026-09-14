@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:id="@id/feedback_flow" app:startDestination="@id/feedbacks"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <fragment android:name="com.taxsee.feature.feedback.feedbacks.container.ui.FeedbackListsContainerFragment" android:id="@id/feedbacks">
+        <action android:id="@id/action_feedbacks_to_organizations" app:destination="@id/organizations" />
+        <action android:id="@id/action_feedbacks_to_types" app:destination="@id/types" />
+        <action android:id="@id/action_feedbacks_to_chat" app:destination="@id/chat" />
+    </fragment>
+    <fragment android:name="com.taxsee.feature.feedback.organizations.ui.FeedbackOrganizationsFragment" android:id="@id/organizations">
+        <action android:id="@id/action_organizations_to_types" app:destination="@id/types" />
+        <action android:id="@id/action_organizations_to_create" app:destination="@id/create" />
+    </fragment>
+    <dialog android:name="com.taxsee.feature.feedback.types.ui.FeedbackTypesFragment" android:id="@id/types">
+        <argument android:name="entry" app:argType="com.taxsee.feature.support.FeedbackEntry" />
+        <argument android:name="baseId" android:defaultValue="0L" app:argType="long" />
+        <argument android:name="organizationId" app:argType="long" />
+        <argument android:name="organizationName" android:defaultValue="@null" app:argType="string" app:nullable="true" />
+        <argument android:name="orderId" android:defaultValue="0L" app:argType="long" />
+        <action android:id="@id/action_types_to_create" app:destination="@id/create" />
+    </dialog>
+    <fragment android:name="com.taxsee.feature.feedback.create_feedback.ui.CreateFeedbackFragment" android:id="@id/create">
+        <argument android:name="entry" app:argType="com.taxsee.feature.support.FeedbackEntry" />
+        <argument android:name="baseId" android:defaultValue="0L" app:argType="long" />
+        <argument android:name="organizationId" app:argType="long" />
+        <argument android:name="organizationName" android:defaultValue="@null" app:argType="string" app:nullable="true" />
+        <argument android:name="typeId" app:argType="long" />
+        <argument android:name="canAttachOrder" android:defaultValue="true" app:argType="boolean" />
+        <argument android:name="title" android:defaultValue="@null" app:argType="string" app:nullable="true" />
+        <argument android:name="message" android:defaultValue="@null" app:argType="string" app:nullable="true" />
+        <argument android:name="orderId" android:defaultValue="0L" app:argType="long" />
+        <action android:id="@id/action_create_to_orders" app:destination="@id/orders" />
+        <action android:id="@id/action_create_to_chat" app:destination="@id/chat" app:popUpTo="@id/feedbacks" app:popUpToInclusive="false" />
+    </fragment>
+    <fragment android:name="com.taxsee.feature.feedback.feedback_chat.ui.FeedbackChatFragment" android:id="@id/chat">
+        <argument android:name="feedbackId" app:argType="long" />
+        <action android:id="@id/action_chat_to_orders" app:destination="@id/orders" />
+    </fragment>
+    <fragment android:name="com.taxsee.feature.feedback.orders.ui.FeedbackOrdersFragment" android:id="@id/orders">
+        <argument android:name="organizationId" app:argType="long" />
+    </fragment>
+</navigation>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:orientation="vertical" android:id="@id/v_inn_info" android:layout_width="fill_parent" android:layout_height="wrap_content" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent">
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.BoldTitle" android:id="@id/tv_your_inn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/self_employment_accept_request_your_inn_title" />
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.SubTitle" android:id="@id/tv_inn" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+    </LinearLayout>
+    <com.google.android.material.button.MaterialButton android:id="@id/b_edit" android:layout_width="40.0dip" android:layout_height="40.0dip" android:insetLeft="0.0dip" android:insetRight="0.0dip" app:cornerRadius="8.0dip" app:icon="@drawable/ic_action_edit_n" app:iconGravity="textStart" app:iconPadding="0.0dip" app:iconSize="24.0dip" app:layout_constraintBottom_toBottomOf="@id/v_inn_info" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="@id/v_inn_info" app:strokeWidth="2.0dip" style="?materialButtonOutlinedStyle" />
+</androidx.constraintlayout.widget.ConstraintLayout>

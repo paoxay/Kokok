@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.taxsee.map.TaxseeMapView android:id="@id/v_map" android:layout_width="fill_parent" android:layout_height="fill_parent" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton android:id="@id/btn_action" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="8.0dip" style="@style/Widget.Map.Button" />
+    <LinearLayout android:gravity="center_vertical" android:layout_gravity="end" android:orientation="vertical" android:id="@id/buttons_container" android:layout_width="wrap_content" android:layout_height="fill_parent">
+        <com.google.android.material.floatingactionbutton.FloatingActionButton android:id="@id/btn_send_nav_log" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="32.0dip" android:src="@drawable/ic_share" android:layout_marginStart="8.0dip" android:layout_marginEnd="8.0dip" style="@style/Widget.Map.Button" />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton android:id="@id/btn_zoom_in" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="8.0dip" android:src="@drawable/ic_plus_map" style="@style/Widget.Map.Button" />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton android:id="@id/btn_zoom_out" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="8.0dip" android:src="@drawable/ic_minus" style="@style/Widget.Map.Button" />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton android:id="@id/btn_compass" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="8.0dip" android:src="@drawable/ic_north" style="@style/Widget.Map.Button" />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton android:id="@id/btn_track_location" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="8.0dip" android:src="@drawable/ic_my_location" style="@style/Widget.Map.Button" />
+    </LinearLayout>
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Text_14_400" android:textColor="@color/text_title" android:textColorLink="@color/text_accent_variant" android:layout_gravity="end|bottom|center" android:id="@id/tv_copyright" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="8.0dip" android:text="@string/open_street_map_copyright" />
+</FrameLayout>

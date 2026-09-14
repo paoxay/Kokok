@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="confirmation_code_attempts_left">
+        <item quantity="other">Код нодуруст аст. %d кӯшиши ворид боқӣ монд.</item>
+        <item quantity="one">Код нодуруст аст. %d кӯшиши ворид боқӣ монд.</item>
+    </plurals>
+    <plurals name="confirmation_code_attempts_left_short">
+        <item quantity="other">%d кӯшиши ворид боқӣ монд.</item>
+        <item quantity="one">%d кӯшиши ворид боқӣ монд.</item>
+    </plurals>
+    <plurals name="next_order_accepted_countdown_message">
+        <item quantity="other">Фармоиш баъд аз %1$s сония қабул карда мешавад</item>
+        <item quantity="one">Фармоиш баъд аз %1$s сония қабул карда мешавад</item>
+    </plurals>
+    <plurals name="next_order_countdown_message">
+        <item quantity="other">Фармоиш баъд аз %1$s сония бекор карда мешавад</item>
+        <item quantity="one">Фармоиш баъд аз %1$s сония бекор карда мешавад</item>
+    </plurals>
+</resources>

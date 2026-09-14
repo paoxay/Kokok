@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="CountAdditionalOfAddresses">
+        <item>Тағы %d мекенжай</item>
+        <item>Тағы %d мекенжай</item>
+        <item>Тағы %d мекенжай</item>
+    </string-array>
+    <string-array name="months_short">
+        <item>Қаң</item>
+        <item>Ақп</item>
+        <item>Нау</item>
+        <item>Сәу</item>
+        <item>Мам</item>
+        <item>Мау</item>
+        <item>Шіл</item>
+        <item>Там</item>
+        <item>Қыр</item>
+        <item>Қаз</item>
+        <item>Қар</item>
+        <item>Жел</item>
+    </string-array>
+</resources>

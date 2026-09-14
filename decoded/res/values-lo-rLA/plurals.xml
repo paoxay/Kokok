@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="confirmation_code_attempts_left">
+        <item quantity="other">ລະຫັດບໍ່ຖືກຕ້ອງ. ສາມາດລອງໄດ້ອີກ %d ຄັ້ງ.</item>
+    </plurals>
+    <plurals name="confirmation_code_attempts_left_short">
+        <item quantity="other">ສາມາດລອງໄດ້ອີກ %d ຄັ້ງ.</item>
+    </plurals>
+    <plurals name="next_order_accepted_countdown_message">
+        <item quantity="other">ອໍເດີ້ຈະຖືກຮັບພາຍໃນ %1$s ວິນາທີ</item>
+    </plurals>
+    <plurals name="next_order_countdown_message">
+        <item quantity="other">ອໍເດີ້ຈະຖືກຍົກເລີກໃນ %1$s ວິນາທີ</item>
+    </plurals>
+</resources>

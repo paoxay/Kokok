@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="confirmation_code_attempts_left">
+        <item quantity="other">رمز خاطئ. تبقى %d محاولة إدخال.</item>
+        <item quantity="zero">رمز خاطئ. تبقى %d محاولة إدخال.</item>
+        <item quantity="one">رمز خاطئ. تبقى %d محاولة إدخال.</item>
+        <item quantity="two">رمز خاطئ. تبقى %d محاولة إدخال.</item>
+        <item quantity="few">رمز خاطئ. تبقى %d محاولة إدخال.</item>
+        <item quantity="many">رمز خاطئ. تبقى %d محاولة إدخال.</item>
+    </plurals>
+    <plurals name="confirmation_code_attempts_left_short">
+        <item quantity="other">تبقى %d محاولة إدخال.</item>
+        <item quantity="zero">تبقى %d محاولة إدخال.</item>
+        <item quantity="one">تبقى %d محاولة إدخال.</item>
+        <item quantity="two">تبقى %d محاولة إدخال.</item>
+        <item quantity="few">تبقى %d محاولة إدخال.</item>
+        <item quantity="many">تبقى %d محاولة إدخال.</item>
+    </plurals>
+    <plurals name="next_order_accepted_countdown_message">
+        <item quantity="other">سيتم قبول الطلب خلال %1$s ثانية</item>
+        <item quantity="zero">سيتم قبول الطلب خلال %1$s ثانية</item>
+        <item quantity="one">سيتم قبول الطلب خلال %1$s ثانية</item>
+        <item quantity="two">سيتم قبول الطلب خلال %1$s ثانية</item>
+        <item quantity="few">سيتم قبول الطلب خلال %1$s ثانية</item>
+        <item quantity="many">سيتم قبول الطلب خلال %1$s ثانية</item>
+    </plurals>
+    <plurals name="next_order_countdown_message">
+        <item quantity="other">سيتم إلغاء الطلب بعد %1$s ثواني</item>
+        <item quantity="zero">سيتم إلغاء الطلب بعد %1$s ثانية</item>
+        <item quantity="one">سيتم إلغاء الطلب بعد %1$s ثانية</item>
+        <item quantity="two">سيتم إلغاء الطلب بعد %1$s ثانية</item>
+        <item quantity="few">سيتم إلغاء الطلب بعد %1$s ثواني</item>
+        <item quantity="many">سيتم إلغاء الطلب بعد %1$s ثواني</item>
+    </plurals>
+</resources>

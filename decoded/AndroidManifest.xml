@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?><manifest xmlns:android="http://schemas.android.com/apk/res/android" android:compileSdkVersion="36" android:compileSdkVersionCodename="16" android:installLocation="auto" android:requiredSplitTypes="base__abi,base__density" android:splitTypes="" package="com.taxsee.driver" platformBuildVersionCode="36" platformBuildVersionName="16">
+    <queries>
+        <package android:name="com.gnivts.selfemployed"/>
+        <intent>
+            <action android:name="com.appsflyer.referrer.INSTALL_PROVIDER"/>
+        </intent>
+        <package android:name="com.facebook.katana"/>
+        <package android:name="com.instagram.android"/>
+        <package android:name="com.facebook.lite"/>
+        <package android:name="com.samsung.android.mapsagent"/>
+    </queries>
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL"/>
+    <uses-permission android:name="android.permission.MANAGE_OWN_CALLS"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
+    <supports-screens android:largeScreens="true" android:normalScreens="true" android:smallScreens="true" android:xlargeScreens="true"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <uses-permission android:name="android.permission.GET_TASKS"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-feature android:name="android.hardware.location" android:required="false"/>
+    <uses-feature android:name="android.hardware.location.network" android:required="false"/>
+    <uses-feature android:name="android.hardware.location.gps" android:required="false"/>
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
+    <uses-feature android:name="android.hardware.wifi" android:required="false"/>
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
+    <uses-permission android:name="com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE"/>
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+    <uses-permission android:name="com.samsung.android.mapsagent.permission.READ_APP_INFO"/>
+    <uses-permission android:name="com.huawei.appmarket.service.commondata.permission.GET_COMMON_DATA"/>
+    <uses-permission android:name="android.permission.ACCESS_ADSERVICES_ATTRIBUTION"/>
+    <uses-permission android:name="android.permission.ACCESS_ADSERVICES_AD_ID"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+    <permission android:name="com.taxsee.driver.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" android:protectionLevel="signature"/>
+    <uses-permission android:name="com.taxsee.driver.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"/>
+    <application android:allowBackup="false" android:appComponentFactory="androidx.core.app.CoreComponentFactory" android:dataExtractionRules="@xml/appsflyer_data_extraction_rules" android:enableOnBackInvokedCallback="false" android:extractNativeLibs="true" android:fullBackupContent="@xml/appsflyer_backup_rules" android:icon="@mipmap/ic_launcher" android:label="@string/app_name" android:debuggable="true" android:name="com.taxsee.driver.DriverApp" android:networkSecurityConfig="@xml/network_security_config" android:requestLegacyExternalStorage="true" android:resizeableActivity="true" android:supportsRtl="true" android:theme="@style/AppTheme" android:usesCleartextTraffic="true">
+        <profileable android:shell="true"/>
+        <property android:name="android.window.PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY" android:value="true"/>
+        <provider android:authorities="com.taxsee.driver.androidx-startup" android:exported="false" android:name="androidx.startup.InitializationProvider">
+            <meta-data android:name="com.feature.analytics.AppsFlyerApiInitializer" android:value="androidx.startup"/>
+            <meta-data android:name="com.taxsee.next_order.NextOrderShowController" android:value="androidx.startup"/>
+            <meta-data android:name="com.taxsee.driver.feature.sideeffect.LaunchedEffectInitializer" android:value="androidx.startup"/>
+            <meta-data android:name="com.taxsee.driver.feature.edge_to_edge.SetupEdgeToEdgeInitializer" android:value="androidx.startup"/>
+            <meta-data android:name="com.taxsee.driver.service.ShowMessageInitializer" android:value="androidx.startup"/>
+            <meta-data android:name="com.taxsee.driver.analytics.InForegroundAnalyticsInitializer" android:value="androidx.startup"/>
+            <meta-data android:name="com.taxsee.shared.feature.order_status_panel.ShowDialogWrapperInitializer" android:value="androidx.startup"/>
+            <meta-data android:name="com.taxsee.feature.user_metadata.background.AdvertisingIdInitializer" android:value="androidx.startup"/>
+            <meta-data android:name="com.taxsee.shared.feature.app_theme.AppThemeInitializer" android:value="androidx.startup"/>
+            <meta-data android:name="com.taxsee.shared.feature.app_theme.auto_switch.background.AutoSwitchThemeInitializer" android:value="androidx.startup"/>
+            <meta-data android:name="com.taxsee.feature.screen_analytics.background.ScreenAnalyticsInitializer" android:value="androidx.startup"/>
+            <meta-data android:name="com.taxsee.feature.keep_screen_on.KeepScreenOnInitializer" android:value="androidx.startup"/>
+            <meta-data android:name="androidx.work.WorkManagerInitializer" android:value="androidx.startup"/>
+            <meta-data android:name="androidx.emoji2.text.EmojiCompatInitializer" android:value="androidx.startup"/>
+            <meta-data android:name="androidx.lifecycle.ProcessLifecycleInitializer" android:value="androidx.startup"/>
+            <meta-data android:name="okhttp3.internal.platform.PlatformInitializer" android:value="androidx.startup"/>
+            <meta-data android:name="androidx.profileinstaller.ProfileInstallerInitializer" android:value="androidx.startup"/>
+        </provider>
+        <service android:exported="false" android:name="com.taxsee.driver.push.GooglePushService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.edit_order_options.options.ui.EditOrderOptionsActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.kaspro.activate.ActivateKasproFlowActivity" android:screenOrientation="portrait"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.kaspro.premium.premium_flow.ui.ActivateKasproPremiumFlowActivity" android:screenOrientation="portrait"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.kaspro.topup.TopUpKasproFlowActivity" android:screenOrientation="portrait" android:theme="@style/AppTheme.Transparent"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.kaspro.cash_out.CashOutKasproFlowActivity" android:screenOrientation="portrait" android:theme="@style/AppTheme.Transparent"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.kaspro.premium.camera.ui.KasproPhotoCameraAllActivity"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.kaspro.premium.camera.ui.KasproPhotoCameraPortActivity" android:screenOrientation="portrait"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.kaspro.premium.camera.ui.KasproPhotoCameraLandActivity" android:screenOrientation="landscape"/>
+        <activity android:configChanges="keyboardHidden|orientation|screenSize" android:launchMode="singleTop" android:name="com.feature.photo_review.PhotoReviewListActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+        <activity android:configChanges="keyboard|keyboardHidden|mcc|mnc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|touchscreen" android:launchMode="singleTop" android:name="com.feature.photo_review.PreviewPhotoActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+        <activity android:launchMode="singleTop" android:name="com.feature.photo_review.PhotoControlAllCameraActivity"/>
+        <activity android:launchMode="singleTop" android:name="com.feature.photo_review.PhotoControlPortraitCameraActivity" android:screenOrientation="portrait"/>
+        <activity android:launchMode="singleTop" android:name="com.feature.photo_review.PhotoControlLandscapeCameraActivity" android:screenOrientation="landscape"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.shared.feature.permission.ui.PermissionActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.shared.feature.auto_assign_order.AutoAssignFiltersFlowActivity" android:screenOrientation="portrait"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.announcements.AnnouncementsActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.cancel_order.ui.CancelOrderActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.change_car.ui.ChangeCarActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.change_city.ui.ChangeCityActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.change_city.pick_city.ui.PickCityActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.main_preferences.ui.MainPreferencesActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.offline_maps.ui.OfflineMapsActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.order_list.list.ui.OrderListActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.order_list.advertising.ui.UniversalAdvertisingOnboardingActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.permission_preferences.ui.PermissionsActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.ringtone_preferences.ui.RingtonesActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.self_employment.flow.ui.SelfEmploymentFlowActivity" android:screenOrientation="portrait"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.services.ServicesFlowActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.feedback.FeedbackFlowActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.feedback.OrderFeedbackFlowActivity" android:screenOrientation="portrait" android:theme="@style/AppTheme" android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+        <activity android:excludeFromRecents="true" android:launchMode="singleTop" android:name="com.taxsee.feature.feedback.types.ui.DeeplinkFeedbackTypesActivity" android:noHistory="true" android:screenOrientation="portrait" android:theme="@style/AppTheme.Transparent"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.zone_groups.zone_groups_sort.ui.SortZonesActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.filter_tariff.ui.FilterTariffActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.social_pages.ui.SocialPagesActivity" android:screenOrientation="portrait"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.font_scale_preferences.ui.FontScaleActivity" android:screenOrientation="portrait"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.driver_rating.ui.DriverRatingActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+        <activity android:autoRemoveFromRecents="true" android:launchMode="singleInstancePerTask" android:name="com.taxsee.feature.drive_dialog.ui.DriveDialogsBackgroundActivity" android:noHistory="true" android:screenOrientation="portrait" android:taskAffinity="com.taxsee.driver.background.dialog" android:theme="@style/AppTheme.Transparent"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.buy_shift.ui.ShiftListActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.surveys.ui.SurveyListActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.replenish.ui.ReplenishActivity" android:screenOrientation="portrait" android:windowSoftInputMode="adjustPan|stateHidden"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.edit_arrival_time.ui.EditArrivalTimeActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.money_transfer_to_driver.ui.MoneyTransferToDriverActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.money_transfer_to_client.ui.MoneyTransferToClientActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.order_review.ui.OrderReviewActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.commission.CommissionsFlowActivity" android:screenOrientation="portrait"/>
+        <provider android:authorities="com.taxsee.driver.upload-logs-provider" android:exported="false" android:grantUriPermissions="true" android:name="com.taxsee.feature.network_diagnostics.UploadLogsFileProvider">
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths"/>
+        </provider>
+        <activity android:excludeFromRecents="true" android:exported="true" android:launchMode="singleInstance" android:name="com.taxsee.feature.network_diagnostics.ui.NetworkDiagnosticsActivity" android:noHistory="true" android:screenOrientation="portrait" android:windowSoftInputMode="adjustNothing|stateAlwaysHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:host="netdiag" android:scheme="taxseedriver"/>
+            </intent-filter>
+        </activity>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.edit_route.ui.EditRouteActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+        <receiver android:exported="true" android:name="com.taxsee.feature.detect_bt_connect.background.BluetoothConnectionReceiver">
+            <intent-filter>
+                <action android:name="android.bluetooth.device.action.ACL_CONNECTED"/>
+            </intent-filter>
+        </receiver>
+        <service android:exported="false" android:name="com.taxsee.feature.detect_bt_connect.DetectBluetoothConnectionService" android:permission="android.permission.BIND_JOB_SERVICE"/>
+        <activity android:launchMode="singleTop" android:name="com.feature.chat_list.chat.OrderChatActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+        <activity android:launchMode="singleTop" android:name="com.feature.chat_list.MessageSendPositionActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+        <activity android:launchMode="singleTop" android:name="com.feature.chat_list.PanicPositionActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+        <activity android:name="com.taxsee.feature.chat.client.ui.ClientChatActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.complete_order.ui.CompleteOrderActivity" android:screenOrientation="portrait" android:windowSoftInputMode="adjustResize|stateHidden"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.gas_stations.GasStationsFlowActivity" android:screenOrientation="portrait"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.gas_stations.refuel.ui.RefuelFlowActivity" android:screenOrientation="portrait"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.profile.ui.ProfileActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+        <service android:exported="false" android:name="com.taxsee.voiplib.VoIpService" android:process=":VoIpService"/>
+        <service android:exported="false" android:foregroundServiceType="phoneCall" android:name="com.taxsee.feature.voip.VoIpCallService"/>
+        <receiver android:exported="false" android:name="com.taxsee.feature.voip.VoIpCallService$VoIpActionsReceiver"/>
+        <activity android:excludeFromRecents="true" android:launchMode="singleTop" android:name="com.taxsee.feature.voip.VoIpCallActivity" android:screenOrientation="portrait" android:taskAffinity="affinity.voip" android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.support.ui.SupportActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.pick_address.ui.PickAddressActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+        <activity android:configChanges="keyboard|keyboardHidden|mcc|mnc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|touchscreen" android:launchMode="singleTop" android:name="com.feature.web.WebViewActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.shared.feature.shared_intercity.SharedIntercityFlowActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+        <activity android:launchMode="singleTop" android:name="com.feature.notifications.NotificationsActivity" android:screenOrientation="portrait" android:theme="@style/AppTheme.Splash" android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+        <activity android:launchMode="singleTop" android:name="com.feature.menu.MenuActivity" android:screenOrientation="portrait"/>
+        <activity android:allowTaskReparenting="false" android:excludeFromRecents="true" android:exported="true" android:launchMode="singleInstance" android:name="com.feature.deeplink.UriActivity" android:noHistory="true" android:theme="@style/AppTheme.Transparent">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="taxseedriver"/>
+                <data android:host="app"/>
+            </intent-filter>
+        </activity>
+        <activity android:finishOnTaskLaunch="true" android:launchMode="singleInstance" android:name="com.feature.deeplink.HostHandler" android:noHistory="true" android:screenOrientation="portrait" android:theme="@style/AppTheme.Transparent"/>
+        <activity android:finishOnTaskLaunch="true" android:launchMode="singleTop" android:name="com.feature.deeplink.SystemSettingDeeplinkHandler" android:noHistory="true" android:theme="@style/AppTheme.Transparent"/>
+        <activity android:finishOnTaskLaunch="true" android:launchMode="singleTop" android:name="com.feature.deeplink.LogoutDeeplinkHandler" android:noHistory="true" android:theme="@style/AppTheme.Transparent"/>
+        <activity android:finishOnTaskLaunch="true" android:launchMode="singleTop" android:name="com.feature.deeplink.send_request.SendRequestHandler" android:noHistory="true" android:theme="@style/AppTheme.Transparent"/>
+        <activity android:launchMode="singleTop" android:name="com.feature.auto_assign_filters.AutoAssignFiltersActivity" android:screenOrientation="portrait" android:theme="@style/AppTheme.Transparent"/>
+        <activity android:launchMode="singleTop" android:name="com.feature.auto_assign_filters.list.FiltersListActivity" android:screenOrientation="portrait"/>
+        <activity android:launchMode="singleTop" android:name="com.feature.auto_assign_filters.edit_list.EditFiltersListActivity" android:screenOrientation="portrait"/>
+        <activity android:launchMode="singleTop" android:name="com.feature.auto_assign_filters.edit.EditFilterActivity" android:screenOrientation="portrait"/>
+        <activity android:launchMode="singleTop" android:name="com.feature.auto_assign_filters.options.SelectOptionItemsActivity" android:screenOrientation="portrait"/>
+        <activity android:launchMode="singleTop" android:name="com.feature.auto_assign_filters.advertising.AutoAdvertisingOnboardingActivity" android:screenOrientation="portrait"/>
+        <activity android:launchMode="singleTop" android:name="com.feature.auto_assign_filters.alongwayorder.AlongWayOrderActivity" android:screenOrientation="portrait"/>
+        <activity android:excludeFromRecents="true" android:launchMode="singleTop" android:name="com.feature.pushes.AlertDialogManager" android:noHistory="true" android:screenOrientation="portrait" android:theme="@style/AppTheme.Transparent"/>
+        <activity android:launchMode="singleTop" android:name="com.feature.confirm_order.ConfirmOrderActivity" android:screenOrientation="portrait"/>
+        <activity android:launchMode="singleTop" android:name="com.feature.permission_wizard.PermissionsWizardActivity" android:screenOrientation="portrait"/>
+        <activity android:launchMode="singleTop" android:name="com.feature.order_options_edit.qr_scanner.BarcodeScannerActivity" android:screenOrientation="portrait"/>
+        <activity android:exported="true" android:launchMode="singleTop" android:name="com.feature.login.StartActivity" android:screenOrientation="portrait" android:theme="@style/AppTheme.Splash">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity android:exported="false" android:launchMode="singleTop" android:name="com.feature.login.country.PickCountryActivity" android:screenOrientation="portrait" android:windowSoftInputMode="adjustResize|stateHidden"/>
+        <service android:exported="true" android:name="com.taxsee.screen.login.account_manager.AuthenticatorService">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator"/>
+            </intent-filter>
+            <meta-data android:name="android.accounts.AccountAuthenticator" android:resource="@xml/authenticator"/>
+        </service>
+        <activity android:allowTaskReparenting="false" android:excludeFromRecents="true" android:exported="true" android:launchMode="singleInstance" android:name="com.taxsee.next_order.NextOrderActivity" android:noHistory="true" android:screenOrientation="portrait" android:theme="@style/AppTheme.Transparent"/>
+        <receiver android:exported="false" android:name="com.taxsee.next_order.AcceptOrderReceiver">
+            <intent-filter>
+                <action android:name="com.taxsee.driver.ACCEPT_NEXT_ORDER_ACTION"/>
+            </intent-filter>
+        </receiver>
+        <activity android:launchMode="singleTop" android:name="com.feature.onboarding_wizard.OnboardingWizardActivity" android:screenOrientation="portrait"/>
+        <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyB41f1CA2-Kj5CdIzw68KU3ChrviOv8GnM"/>
+        <provider android:authorities="com.taxsee.driver.fileprovider" android:exported="false" android:grantUriPermissions="true" android:name="androidx.core.content.FileProvider">
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths"/>
+        </provider>
+        <receiver android:exported="false" android:name="com.taxsee.driver.push.CancelNotificationReceiver">
+            <intent-filter>
+                <action android:name="com.taxsee.driver.NOTIFICATION_CANCELLED"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:exported="false" android:name="com.taxsee.driver.feature.notifications.HeadsUpNotificationReceiver">
+            <intent-filter>
+                <action android:name="com.taxsee.driver.HEADS_UP_NOTIFICATION_ACTION"/>
+            </intent-filter>
+        </receiver>
+        <service android:exported="false" android:foregroundServiceType="location" android:name="com.taxsee.driver.service.DriverService"/>
+        <service android:exported="false" android:name="com.taxsee.driver.service.WebSocketService"/>
+        <service android:exported="false" android:name="com.taxsee.driver.feature.fileuploader.FileUploadService"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.driver.ui.activities.MainActivity" android:screenOrientation="portrait" android:theme="@style/AppTheme.Main" android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.driver.feature.order.detail.OrderDetailActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.imlab.software_cash.SoftwareCashActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.imlab.software_cash.SoftwareCashReportActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+        <provider android:authorities="com.taxsee.driver.share-software-cash-report-provider" android:exported="false" android:grantUriPermissions="true" android:name="com.taxsee.feature.imlab.software_cash.SoftwareCashReportProvider">
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths"/>
+        </provider>
+        <activity android:allowTaskReparenting="false" android:excludeFromRecents="true" android:exported="true" android:launchMode="singleInstance" android:name="com.taxsee.driver.feature.order.assign.AcceptOrderActivity" android:noHistory="true" android:screenOrientation="portrait" android:theme="@style/AppTheme.Transparent"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.feature.sos.SosActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+        <activity android:allowTaskReparenting="false" android:excludeFromRecents="true" android:exported="true" android:launchMode="singleInstance" android:name="com.taxsee.driver.feature.notifications.PushNotificationDeeplinkActivity" android:noHistory="true" android:theme="@style/AppTheme.Transparent"/>
+        <uses-library android:name="com.sec.android.app.multiwindow" android:required="false"/>
+        <meta-data android:name="com.sec.android.support.multiwindow" android:value="true"/>
+        <meta-data android:name="com.sec.android.multiwindow.MINIMUM_SIZE_W" android:resource="@dimen/app_minimumsize_w"/>
+        <meta-data android:name="com.sec.android.multiwindow.MINIMUM_SIZE_H" android:resource="@dimen/app_minimumsize_h"/>
+        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.shared.feature.system_problems.SystemProblemsFlowActivity" android:screenOrientation="portrait"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.shared.feature.order_notifications.OrderNotificationsFlowActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+        <activity android:launchMode="singleTop" android:name="com.taxsee.shared.feature.agreement.ui.AgreementActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+        <meta-data android:name="firebase_performance_collection_deactivated" android:value="false"/>
+        <meta-data android:name="firebase_performance_collection_enabled" android:value="false"/>
+        <meta-data android:name="firebase_performance_logcat_enabled" android:value="false"/>
+        <service android:enabled="false" android:exported="false" android:name="androidx.camera.core.impl.MetadataHolderService">
+            <meta-data android:name="androidx.camera.core.impl.MetadataHolderService.DEFAULT_CONFIG_PROVIDER" android:value="androidx.camera.camera2.Camera2Config$DefaultProvider"/>
+        </service>
+        <service android:directBootAware="true" android:exported="false" android:name="com.google.mlkit.common.internal.MlKitComponentDiscoveryService">
+            <meta-data android:name="com.google.firebase.components:com.google.mlkit.vision.barcode.internal.BarcodeRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+            <meta-data android:name="com.google.firebase.components:com.google.mlkit.vision.common.internal.VisionCommonRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+            <meta-data android:name="com.google.firebase.components:com.google.mlkit.common.internal.CommonComponentRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+        </service>
+        <provider android:authorities="com.taxsee.driver.mlkitinitprovider" android:exported="false" android:initOrder="99" android:name="com.google.mlkit.common.internal.MlKitInitProvider"/>
+        <service android:directBootAware="true" android:exported="false" android:name="com.google.firebase.components.ComponentDiscoveryService">
+            <meta-data android:name="com.google.firebase.components:com.google.firebase.perf.FirebasePerfKtxRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+            <meta-data android:name="com.google.firebase.components:com.google.firebase.perf.FirebasePerfRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+            <meta-data android:name="com.google.firebase.components:com.google.firebase.database.FirebaseDatabaseKtxRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+            <meta-data android:name="com.google.firebase.components:com.google.firebase.database.DatabaseRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+            <meta-data android:name="com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingKtxRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+            <meta-data android:name="com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+            <meta-data android:name="com.google.firebase.components:com.google.firebase.analytics.connector.internal.AnalyticsConnectorRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+            <meta-data android:name="com.google.firebase.components:com.google.firebase.remoteconfig.FirebaseRemoteConfigKtxRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+            <meta-data android:name="com.google.firebase.components:com.google.firebase.remoteconfig.RemoteConfigRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+            <meta-data android:name="com.google.firebase.components:com.google.firebase.abt.component.AbtRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+            <meta-data android:name="com.google.firebase.components:com.google.firebase.crashlytics.FirebaseCrashlyticsKtxRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+            <meta-data android:name="com.google.firebase.components:com.google.firebase.crashlytics.CrashlyticsRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+            <meta-data android:name="com.google.firebase.components:com.google.firebase.sessions.FirebaseSessionsRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+            <meta-data android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsKtxRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+            <meta-data android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+            <meta-data android:name="com.google.firebase.components:com.google.firebase.FirebaseCommonKtxRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+            <meta-data android:name="com.google.firebase.components:com.google.firebase.datatransport.TransportRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+        </service>
+        <activity android:excludeFromRecents="true" android:exported="false" android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+        <service android:exported="true" android:name="com.google.android.gms.auth.api.signin.RevocationBoundService" android:permission="com.google.android.gms.auth.api.signin.permission.REVOCATION_NOTIFICATION" android:visibleToInstantApps="true"/>
+        <receiver android:exported="true" android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver" android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+            </intent-filter>
+            <meta-data android:name="com.google.android.gms.cloudmessaging.FINISHED_AFTER_HANDLED" android:value="true"/>
+        </receiver>
+        <service android:directBootAware="true" android:exported="false" android:name="com.google.firebase.messaging.FirebaseMessagingService">
+            <intent-filter android:priority="-500">
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+        <receiver android:enabled="true" android:exported="false" android:name="com.google.android.gms.measurement.AppMeasurementReceiver"/>
+        <service android:enabled="true" android:exported="false" android:name="com.google.android.gms.measurement.AppMeasurementService"/>
+        <service android:enabled="true" android:exported="false" android:name="com.google.android.gms.measurement.AppMeasurementJobService" android:permission="android.permission.BIND_JOB_SERVICE"/>
+        <activity android:exported="false" android:name="com.google.android.gms.common.api.GoogleApiActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+        <service android:enabled="false" android:exported="false" android:name="com.google.firebase.sessions.SessionLifecycleService"/>
+        <provider android:authorities="com.taxsee.driver.firebaseinitprovider" android:directBootAware="true" android:exported="false" android:initOrder="100" android:name="com.google.firebase.provider.FirebaseInitProvider"/>
+        <service android:directBootAware="false" android:enabled="@bool/enable_system_job_service_default" android:exported="true" android:name="androidx.work.impl.background.systemjob.SystemJobService" android:permission="android.permission.BIND_JOB_SERVICE"/>
+        <service android:directBootAware="false" android:enabled="@bool/enable_system_foreground_service_default" android:exported="false" android:name="androidx.work.impl.foreground.SystemForegroundService"/>
+        <receiver android:directBootAware="false" android:enabled="true" android:exported="false" android:name="androidx.work.impl.utils.ForceStopRunnable$BroadcastReceiver"/>
+        <receiver android:directBootAware="false" android:enabled="false" android:exported="false" android:name="androidx.work.impl.background.systemalarm.RescheduleReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:directBootAware="false" android:enabled="true" android:exported="true" android:name="androidx.work.impl.diagnostics.DiagnosticsReceiver" android:permission="android.permission.DUMP">
+            <intent-filter>
+                <action android:name="androidx.work.diagnostics.REQUEST_DIAGNOSTICS"/>
+            </intent-filter>
+        </receiver>
+        <service android:directBootAware="true" android:exported="false" android:name="androidx.room.MultiInstanceInvalidationService"/>
+        <uses-library android:name="android.ext.adservices" android:required="false"/>
+        <uses-library android:name="androidx.window.extensions" android:required="false"/>
+        <uses-library android:name="androidx.window.sidecar" android:required="false"/>
+        <receiver android:directBootAware="false" android:enabled="true" android:exported="true" android:name="androidx.profileinstaller.ProfileInstallReceiver" android:permission="android.permission.DUMP">
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.SKIP_FILE"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION"/>
+            </intent-filter>
+        </receiver>
+        <service android:exported="false" android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery">
+            <meta-data android:name="backend:com.google.android.datatransport.cct.CctBackendFactory" android:value="cct"/>
+        </service>
+        <service android:exported="false" android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService" android:permission="android.permission.BIND_JOB_SERVICE"/>
+        <receiver android:exported="false" android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"/>
+        <activity android:exported="false" android:name="com.google.android.play.core.common.PlayCoreDialogWrapperActivity" android:stateNotNeeded="true" android:theme="@style/Theme.PlayCore.Transparent"/>
+        <meta-data android:name="com.android.vending.splits.required" android:value="true"/>
+        <meta-data android:name="com.android.stamp.source" android:value="https://play.google.com/store"/>
+        <meta-data android:name="com.android.stamp.type" android:value="STAMP_TYPE_DISTRIBUTION_APK"/>
+        <meta-data android:name="com.android.vending.splits" android:resource="@xml/splits0"/>
+        <meta-data android:name="com.android.vending.derived.apk.id" android:value="3"/>
+    </application>
+</manifest>

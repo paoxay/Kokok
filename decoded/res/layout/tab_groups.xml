@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:background="@color/screen_with_cards_background" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <include android:visibility="gone" layout="@layout/layout_timer_auto_assignment" />
+    <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <include layout="@layout/view_fragment_appbar" />
+        <include android:id="@id/system_problem_warning" android:visibility="gone" layout="@layout/system_problem_warning" />
+        <FrameLayout android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0">
+            <androidx.recyclerview.widget.RecyclerView android:id="@id/tarrif_list" android:background="@color/card_background" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+            <include android:id="@id/connectivity_conditions" layout="@layout/layout_connectivity_conditions" />
+        </FrameLayout>
+        <com.google.android.material.card.MaterialCardView android:id="@id/v_order_access_hint" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.SubTitle" android:textColor="@color/order_accent_hint_text" android:gravity="center" android:id="@id/tv_order_access_hint" android:background="@color/order_accent_hint_background" android:padding="8.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="16.0dip" />
+        </com.google.android.material.card.MaterialCardView>
+        <include android:layout_gravity="bottom" android:id="@id/v_receive_orders" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" layout="@layout/layout_receive_orders" />
+        <include android:id="@id/in_line_indicator" android:layout_width="fill_parent" android:layout_height="wrap_content" layout="@layout/layout_in_line_indicator" />
+    </LinearLayout>
+    <com.taxsee.view.progressbar.TaxseeProgressBar android:id="@id/v_fullscreen_progressbar" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" style="@style/TaxseeProgressBar" />
+</FrameLayout>

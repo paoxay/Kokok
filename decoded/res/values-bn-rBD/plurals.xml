@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="confirmation_code_attempts_left">
+        <item quantity="other">ভুল সঙ্কেত. %d প্রয়াস বাকি।</item>
+        <item quantity="one">ভুল সঙ্কেত. %d প্রচেষ্টা বাকি।</item>
+    </plurals>
+    <plurals name="confirmation_code_attempts_left_short">
+        <item quantity="other">%d প্রয়াস বাকি।</item>
+        <item quantity="one">%d প্রচেষ্টা বাকি।</item>
+    </plurals>
+    <plurals name="next_order_accepted_countdown_message">
+        <item quantity="other">অর্ডার %1$s সেকেন্ডের মধ্যে গ্রহণ করা হবে</item>
+        <item quantity="one">অর্ডার %1$s সেকেন্ডের মধ্যে গ্রহণ করা হবে</item>
+    </plurals>
+    <plurals name="next_order_countdown_message">
+        <item quantity="other">অর্ডারটি %1$s এর মধ্যে বাতিল করা হবে</item>
+        <item quantity="one">অর্ডারটি %1$s সেকেন্ডের মধ্যে বাতিল হয়ে যাবে</item>
+    </plurals>
+</resources>

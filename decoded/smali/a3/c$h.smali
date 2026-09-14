@@ -1,0 +1,35 @@
+.class abstract La3/c$h;
+.super Ljava/lang/Object;
+.source "r8-map-id-83369e011c7089229a2d93be69079bfb1a01165be964184299498138074a9cc0"
+
+# interfaces
+.implements Ljava/util/concurrent/Callable;
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = La3/c;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x40a
+    name = "h"
+.end annotation
+
+
+# instance fields
+.field d:[Ljava/lang/Object;
+
+
+# direct methods
+.method constructor <init>()V
+    .locals 0
+
+    .line 1
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    .line 2
+    .line 3
+    .line 4
+    return-void
+.end method

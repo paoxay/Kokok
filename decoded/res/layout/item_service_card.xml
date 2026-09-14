@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginHorizontal="8.0dip" android:layout_marginVertical="4.0dip"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:orientation="vertical" android:padding="16.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.BoldTitle" android:textColor="@color/text_title" android:id="@id/tv_title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textDirection="locale" />
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.SubTitle" android:textColor="@color/text_title" android:id="@id/tv_balance" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.SubTitle" android:textColor="@color/text_title" android:id="@id/tv_description" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+        <LinearLayout android:orientation="vertical" android:id="@id/bundles_container" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="10.0dip" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

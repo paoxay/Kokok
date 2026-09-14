@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:background="?selectableItemBackground" android:layout_width="fill_parent" android:layout_height="56.0dip" android:paddingHorizontal="16.0dip"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.appcompat.widget.AppCompatImageView android:id="@id/ivActionIcon" android:layout_width="24.0dip" android:layout_height="24.0dip" app:tint="@color/icon_default" />
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_title" android:ellipsize="end" android:id="@id/tvActionName" android:layout_width="0.0dip" android:layout_height="wrap_content" android:maxLines="1" android:layout_weight="1.0" android:layout_marginStart="16.0dip" />
+</LinearLayout>

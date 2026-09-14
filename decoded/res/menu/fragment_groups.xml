@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:icon="@drawable/ic_swap_vert" android:id="@id/action_swap_lists" android:title="@string/action_swap_lists_title" app:iconTint="@color/top_appbar_icon" app:showAsAction="always" />
+    <item android:icon="@drawable/ic_action_daynight" android:id="@id/action_daynight" android:visible="false" android:title="@string/action_daynight_title" app:iconTint="@color/top_appbar_icon" app:showAsAction="always" />
+    <item android:icon="@drawable/ic_warning_rectangle" android:id="@id/action_problems" android:visible="false" android:title="@string/system_notifications" app:iconTint="@color/top_appbar_icon" app:showAsAction="always" />
+    <item android:id="@id/action_auto" android:visible="false" android:title="@string/action_on_auto_title" app:showAsAction="always" />
+</menu>

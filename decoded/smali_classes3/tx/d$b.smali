@@ -1,0 +1,357 @@
+.class final Ltx/d$b;
+.super Lbd0/m;
+.source "r8-map-id-83369e011c7089229a2d93be69079bfb1a01165be964184299498138074a9cc0"
+
+# interfaces
+.implements Lkotlin/jvm/functions/Function2;
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingMethod;
+    value = Ltx/d;-><init>()V
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x18
+    name = null
+.end annotation
+
+
+# instance fields
+.field r:I
+
+.field private synthetic s:Ljava/lang/Object;
+
+
+# direct methods
+.method constructor <init>(Lzc0/b;)V
+    .locals 1
+
+    .line 1
+    const/4 v0, 0x2
+
+    .line 2
+    invoke-direct {p0, v0, p1}, Lbd0/m;-><init>(ILzc0/b;)V
+
+    .line 3
+    .line 4
+    .line 5
+    return-void
+.end method
+
+
+# virtual methods
+.method public final B(Ljava/lang/Object;)Ljava/lang/Object;
+    .locals 7
+
+    .line 1
+    iget-object v0, p0, Ltx/d$b;->s:Ljava/lang/Object;
+
+    .line 2
+    .line 3
+    check-cast v0, Lxd0/h;
+
+    .line 4
+    .line 5
+    invoke-static {}, Lad0/b;->g()Ljava/lang/Object;
+
+    .line 6
+    .line 7
+    .line 8
+    move-result-object v1
+
+    .line 9
+    iget v2, p0, Ltx/d$b;->r:I
+
+    .line 10
+    .line 11
+    const/4 v3, 0x3
+
+    .line 12
+    const/4 v4, 0x2
+
+    .line 13
+    const/4 v5, 0x1
+
+    .line 14
+    if-eqz v2, :cond_3
+
+    .line 15
+    .line 16
+    if-eq v2, v5, :cond_2
+
+    .line 17
+    .line 18
+    if-eq v2, v4, :cond_1
+
+    .line 19
+    .line 20
+    if-ne v2, v3, :cond_0
+
+    .line 21
+    .line 22
+    invoke-static {p1}, Lvc0/u;->b(Ljava/lang/Object;)V
+
+    .line 23
+    .line 24
+    .line 25
+    goto :goto_3
+
+    .line 26
+    :cond_0
+    new-instance p1, Ljava/lang/IllegalStateException;
+
+    .line 27
+    .line 28
+    const-string v0, "call to \'resume\' before \'invoke\' with coroutine"
+
+    .line 29
+    .line 30
+    invoke-direct {p1, v0}, Ljava/lang/IllegalStateException;-><init>(Ljava/lang/String;)V
+
+    .line 31
+    .line 32
+    .line 33
+    throw p1
+
+    .line 34
+    :cond_1
+    invoke-static {p1}, Lvc0/u;->b(Ljava/lang/Object;)V
+
+    .line 35
+    .line 36
+    .line 37
+    goto :goto_1
+
+    .line 38
+    :cond_2
+    invoke-static {p1}, Lvc0/u;->b(Ljava/lang/Object;)V
+
+    .line 39
+    .line 40
+    .line 41
+    goto :goto_0
+
+    .line 42
+    :cond_3
+    invoke-static {p1}, Lvc0/u;->b(Ljava/lang/Object;)V
+
+    .line 43
+    .line 44
+    .line 45
+    invoke-static {}, Ltx/d;->x0()Z
+
+    .line 46
+    .line 47
+    .line 48
+    move-result p1
+
+    .line 49
+    if-nez p1, :cond_5
+
+    .line 50
+    .line 51
+    invoke-static {v5}, Ltx/d;->y0(Z)V
+
+    .line 52
+    .line 53
+    .line 54
+    invoke-static {v5}, Lbd0/b;->a(Z)Ljava/lang/Boolean;
+
+    .line 55
+    .line 56
+    .line 57
+    move-result-object p1
+
+    .line 58
+    iput-object v0, p0, Ltx/d$b;->s:Ljava/lang/Object;
+
+    .line 59
+    .line 60
+    iput v5, p0, Ltx/d$b;->r:I
+
+    .line 61
+    .line 62
+    invoke-interface {v0, p1, p0}, Lxd0/h;->b(Ljava/lang/Object;Lzc0/b;)Ljava/lang/Object;
+
+    .line 63
+    .line 64
+    .line 65
+    move-result-object p1
+
+    .line 66
+    if-ne p1, v1, :cond_4
+
+    .line 67
+    .line 68
+    goto :goto_2
+
+    .line 69
+    :cond_4
+    :goto_0
+    sget-object p1, Ljava/util/concurrent/TimeUnit;->SECONDS:Ljava/util/concurrent/TimeUnit;
+
+    .line 70
+    .line 71
+    const-wide/16 v5, 0x2
+
+    .line 72
+    .line 73
+    invoke-virtual {p1, v5, v6}, Ljava/util/concurrent/TimeUnit;->toMillis(J)J
+
+    .line 74
+    .line 75
+    .line 76
+    move-result-wide v5
+
+    .line 77
+    iput-object v0, p0, Ltx/d$b;->s:Ljava/lang/Object;
+
+    .line 78
+    .line 79
+    iput v4, p0, Ltx/d$b;->r:I
+
+    .line 80
+    .line 81
+    invoke-static {v5, v6, p0}, Lud0/x0;->b(JLzc0/b;)Ljava/lang/Object;
+
+    .line 82
+    .line 83
+    .line 84
+    move-result-object p1
+
+    .line 85
+    if-ne p1, v1, :cond_5
+
+    .line 86
+    .line 87
+    goto :goto_2
+
+    .line 88
+    :cond_5
+    :goto_1
+    const/4 p1, 0x0
+
+    .line 89
+    invoke-static {p1}, Lbd0/b;->a(Z)Ljava/lang/Boolean;
+
+    .line 90
+    .line 91
+    .line 92
+    move-result-object p1
+
+    .line 93
+    invoke-static {v0}, Lbd0/l;->a(Ljava/lang/Object;)Ljava/lang/Object;
+
+    .line 94
+    .line 95
+    .line 96
+    move-result-object v2
+
+    .line 97
+    iput-object v2, p0, Ltx/d$b;->s:Ljava/lang/Object;
+
+    .line 98
+    .line 99
+    iput v3, p0, Ltx/d$b;->r:I
+
+    .line 100
+    .line 101
+    invoke-interface {v0, p1, p0}, Lxd0/h;->b(Ljava/lang/Object;Lzc0/b;)Ljava/lang/Object;
+
+    .line 102
+    .line 103
+    .line 104
+    move-result-object p1
+
+    .line 105
+    if-ne p1, v1, :cond_6
+
+    .line 106
+    .line 107
+    :goto_2
+    return-object v1
+
+    .line 108
+    :cond_6
+    :goto_3
+    sget-object p1, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 109
+    .line 110
+    return-object p1
+.end method
+
+.method public final E(Lxd0/h;Lzc0/b;)Ljava/lang/Object;
+    .locals 0
+
+    .line 1
+    invoke-virtual {p0, p1, p2}, Ltx/d$b;->x(Ljava/lang/Object;Lzc0/b;)Lzc0/b;
+
+    .line 2
+    .line 3
+    .line 4
+    move-result-object p1
+
+    .line 5
+    check-cast p1, Ltx/d$b;
+
+    .line 6
+    .line 7
+    sget-object p2, Lkotlin/Unit;->a:Lkotlin/Unit;
+
+    .line 8
+    .line 9
+    invoke-virtual {p1, p2}, Ltx/d$b;->B(Ljava/lang/Object;)Ljava/lang/Object;
+
+    .line 10
+    .line 11
+    .line 12
+    move-result-object p1
+
+    .line 13
+    return-object p1
+.end method
+
+.method public bridge synthetic s(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+    .locals 0
+
+    .line 1
+    check-cast p1, Lxd0/h;
+
+    .line 2
+    .line 3
+    check-cast p2, Lzc0/b;
+
+    .line 4
+    .line 5
+    invoke-virtual {p0, p1, p2}, Ltx/d$b;->E(Lxd0/h;Lzc0/b;)Ljava/lang/Object;
+
+    .line 6
+    .line 7
+    .line 8
+    move-result-object p1
+
+    .line 9
+    return-object p1
+.end method
+
+.method public final x(Ljava/lang/Object;Lzc0/b;)Lzc0/b;
+    .locals 1
+
+    .line 1
+    new-instance v0, Ltx/d$b;
+
+    .line 2
+    .line 3
+    invoke-direct {v0, p2}, Ltx/d$b;-><init>(Lzc0/b;)V
+
+    .line 4
+    .line 5
+    .line 6
+    iput-object p1, v0, Ltx/d$b;->s:Ljava/lang/Object;
+
+    .line 7
+    .line 8
+    return-object v0
+.end method

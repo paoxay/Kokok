@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <include android:id="@id/appbar" layout="@layout/view_fragment_appbar" />
+    <androidx.core.widget.NestedScrollView android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0">
+        <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_title" android:gravity="center" android:id="@id/tvDescription" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:text="@string/kaspro_driver_info_description" android:layout_marginHorizontal="16.0dip" />
+            <com.google.android.material.textfield.TextInputLayout android:enabled="false" android:id="@id/ilPhone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:hint="@string/phone_number_hint" android:layout_marginHorizontal="16.0dip">
+                <com.taxsee.shared.feature.formated_edit_text.ui.FormatEditText android:layout_gravity="start" android:id="@id/etPhone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:maxLines="1" android:imeOptions="actionDone|flagNoExtractUi|flagNoFullscreen" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.InfoBlock" android:textColor="@color/text_subtitle" android:id="@id/tvPhoneNumberDescription" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:text="@string/kaspro_phone_number_description" android:layout_marginHorizontal="16.0dip" />
+            <com.google.android.material.textfield.TextInputLayout android:id="@id/ilFirstName" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:hint="@string/Name" android:layout_marginHorizontal="16.0dip">
+                <com.google.android.material.textfield.TextInputEditText android:layout_gravity="start" android:id="@id/etFirstName" android:layout_width="fill_parent" android:layout_height="wrap_content" android:maxLines="1" android:inputType="text" android:imeOptions="actionNext|flagNoExtractUi|flagNoFullscreen" android:textAlignment="viewStart" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout android:id="@id/ilLastName" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:hint="@string/last_name" android:layout_marginHorizontal="16.0dip">
+                <com.google.android.material.textfield.TextInputEditText android:layout_gravity="start" android:id="@id/etLastName" android:layout_width="fill_parent" android:layout_height="wrap_content" android:maxLines="1" android:inputType="text" android:imeOptions="actionDone|flagNoExtractUi|flagNoFullscreen" android:textAlignment="viewStart" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.checkbox.MaterialCheckBox android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_title" android:id="@id/cbEmptyLastName" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:layout_marginBottom="16.0dip" android:text="@string/last_name_missing" android:layout_marginStart="12.0dip" android:layout_marginEnd="16.0dip" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+    <com.google.android.material.checkbox.MaterialCheckBox android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_title" android:id="@id/cbPolicy" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/kaspro_policy" android:layout_marginStart="12.0dip" android:layout_marginEnd="16.0dip" />
+    <com.google.android.material.button.MaterialButton android:enabled="false" android:id="@id/bNext" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_margin="16.0dip" android:text="@string/Next" />
+</LinearLayout>

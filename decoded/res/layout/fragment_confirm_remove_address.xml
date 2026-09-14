@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:paddingTop="10.0dip" android:paddingBottom="16.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:paddingHorizontal="16.0dip"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.appcompat.widget.AppCompatImageView android:layout_gravity="center_horizontal" android:layout_width="wrap_content" android:layout_height="10.0dip" android:layout_marginBottom="8.0dip" android:src="@drawable/ic_slide_to_bottom_arrow_black" app:tint="@color/icon_default" />
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.BottomSheetTitle" android:textColor="@color/text_title" android:gravity="center_horizontal" android:id="@id/tvQuestion" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+    <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="20.0dip">
+        <com.google.android.material.button.MaterialButton android:id="@id/bNegative" android:layout_width="0.0dip" android:layout_height="wrap_content" android:minHeight="40.0dip" android:text="@string/No" android:layout_weight="1.0" android:layout_marginEnd="8.0dip" style="?materialButtonOutlinedStyle" />
+        <com.google.android.material.button.MaterialButton android:id="@id/bPositive" android:layout_width="0.0dip" android:layout_height="wrap_content" android:minHeight="40.0dip" android:text="@string/Yes" android:layout_weight="1.0" android:layout_marginStart="8.0dip" />
+    </LinearLayout>
+</LinearLayout>

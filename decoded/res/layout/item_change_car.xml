@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:background="?selectableItemBackground" android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="@dimen/list_item_height" android:paddingHorizontal="@dimen/padding" android:paddingVertical="8.0dip"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.google.android.material.radiobutton.MaterialRadioButton android:textAppearance="@style/TextAppearance.Title" android:id="@id/bSelectCar" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0" android:paddingHorizontal="@dimen/padding" />
+    <androidx.appcompat.widget.AppCompatImageButton android:id="@id/bRemoveCar" android:background="?selectableItemBackgroundBorderless" android:layout_width="40.0dip" android:layout_height="40.0dip" android:src="@drawable/ic_address_remove" android:scaleType="centerInside" app:tint="@color/icon_default" />
+</LinearLayout>

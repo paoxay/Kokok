@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Text_40_400" android:textColor="@color/text_title" android:gravity="center" android:id="@id/price" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="@dimen/activity_vertical_margin" app:layout_constraintBottom_toTopOf="@id/type" app:layout_constraintTop_toTopOf="parent" app:layout_constraintVertical_chainStyle="packed" />
+    <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Title" android:textColor="@color/text_subtitle" android:gravity="center" android:id="@id/type" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="@dimen/activity_vertical_margin" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintTop_toBottomOf="@id/price" />
+</LinearLayout>

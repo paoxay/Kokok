@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <include android:id="@id/appBar" layout="@layout/view_fragment_appbar" />
+    <RadioGroup android:gravity="center_horizontal" android:orientation="horizontal" android:id="@id/rgTypes" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="@dimen/padding">
+        <com.google.android.material.radiobutton.MaterialRadioButton android:textAppearance="@style/TextAppearance.Title" android:id="@id/rbGood" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checked="true" android:text="@string/Good" android:maxLines="1" android:minLines="1" android:singleLine="true" />
+        <com.google.android.material.radiobutton.MaterialRadioButton android:textAppearance="@style/TextAppearance.Title" android:id="@id/rbBad" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/Bad" android:maxLines="1" android:minLines="1" android:singleLine="true" android:layout_marginStart="@dimen/padding" />
+    </RadioGroup>
+    <androidx.core.widget.NestedScrollView android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0">
+        <LinearLayout android:orientation="vertical" android:padding="@dimen/padding" android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <androidx.recyclerview.widget.RecyclerView android:id="@id/rvReviews" android:layout_width="fill_parent" android:layout_height="wrap_content" android:overScrollMode="never" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            <com.google.android.material.textfield.TextInputLayout android:id="@id/tilComment" android:layout_width="fill_parent" android:layout_height="wrap_content" android:hint="@string/Comment">
+                <com.google.android.material.textfield.TextInputEditText android:id="@id/etComment" android:layout_width="fill_parent" android:layout_height="wrap_content" android:maxLines="@integer/message_edit_lines" android:minLines="1" android:singleLine="false" android:inputType="textAutoCorrect|textCapSentences|textMultiLine" android:imeOptions="actionSend|flagNoExtractUi|flagNoFullscreen" android:imeActionId="4" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.button.MaterialButton android:id="@id/bSend" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="@dimen/padding" android:text="@string/Send" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

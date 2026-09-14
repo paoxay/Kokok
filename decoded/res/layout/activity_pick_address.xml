@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:id="@id/root" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.taxsee.driver.TaxseeCircularProgressIndicator android:layout_gravity="center" android:id="@id/empty_progress" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:indeterminate="true" />
+    <include android:id="@id/layout_map" layout="@layout/layout_map" />
+    <androidx.appcompat.widget.AppCompatImageView android:layout_gravity="center" android:id="@id/iv_place" android:layout_width="36.0dip" android:layout_height="36.0dip" android:layout_marginBottom="14.0dip" android:src="@drawable/ic_place" android:scaleType="center" app:tint="@color/icon_accent" />
+    <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <include android:id="@id/layout_search_bar" layout="@layout/layout_search_bar" />
+        <com.google.android.material.card.MaterialCardView android:id="@id/layout_addresses" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_margin="8.0dip" app:cardCornerRadius="2.0dip" app:cardUseCompatPadding="true">
+            <androidx.recyclerview.widget.RecyclerView android:id="@id/rv_addresses" android:scrollbars="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout android:layout_gravity="bottom" android:id="@id/layout_confirm_address" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <com.google.android.material.divider.MaterialDivider android:layout_width="0.0dip" android:layout_height="wrap_content" app:layout_constraintBottom_toTopOf="@id/tv_address" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent" />
+        <com.google.android.material.textview.MaterialTextView android:textAppearance="@style/TextAppearance.Text_20_400" android:textColor="@color/text_title" android:id="@id/tv_address" android:background="@color/card_background" android:focusable="true" android:clickable="true" android:layout_width="0.0dip" android:layout_height="wrap_content" android:textDirection="locale" android:paddingHorizontal="16.0dip" android:paddingVertical="32.0dip" app:elevation="5.0dip" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent" />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton android:id="@id/btn_select_address" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="16.0dip" android:src="@drawable/ic_check" app:layout_constraintBottom_toTopOf="@id/tv_address" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="@id/tv_address" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>
