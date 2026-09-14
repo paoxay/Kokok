@@ -382,7 +382,7 @@
 
     invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
 
-    const-string v6, "https://wds-sea.taximaxim.com/OrderAccept?"
+    const-string v6, "https://wds-sea.taximaxim.com/Services/Driver.svc/OrderAccept?"
 
     invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -848,4 +848,47 @@
     .catchall {:try_start_4 .. :try_end_4} :catchall_1
 
     .line 331
-    invoke-static/range {v16 .. v16}, Lcom/bot/taxsee
+    invoke-static/range {v16 .. v16}, Lcom/bot/taxsee/BotEngine;->access$502(Z)Z
+
+    .line 263
+    return-void
+
+    .line 328
+    :catchall_1
+    move-exception v0
+
+    goto :goto_a
+
+    :catchall_2
+    move-exception v0
+
+    const/16 v16, 0x0
+
+    .line 329
+    :goto_a
+    :try_start_5
+    const-string v2, "doAccept error"
+
+    invoke-static {v3, v2, v0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+    :try_end_5
+    .catchall {:try_start_5 .. :try_end_5} :catchall_3
+
+    .line 331
+    :goto_b
+    invoke-static/range {v16 .. v16}, Lcom/bot/taxsee/BotEngine;->access$502(Z)Z
+
+    .line 332
+    nop
+
+    .line 333
+    return-void
+
+    .line 331
+    :catchall_3
+    move-exception v0
+
+    invoke-static/range {v16 .. v16}, Lcom/bot/taxsee/BotEngine;->access$502(Z)Z
+
+    .line 332
+    throw v0
+.end method

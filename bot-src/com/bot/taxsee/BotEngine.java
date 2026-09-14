@@ -290,7 +290,7 @@ public final class BotEngine {
                         accepting = false;
                         return;
                     }
-                    String fullUrl = HOST + "/OrderAccept?" + q + "&sig=" + sig;
+                    String fullUrl = HOST + "/Services/Driver.svc/OrderAccept?" + q + "&sig=" + sig;
                     Log.i(TAG, "ACCEPT url=" + fullUrl);
 
                     long t0 = SystemClock.elapsedRealtime();
@@ -302,6 +302,10 @@ public final class BotEngine {
                     conn.setRequestProperty("x-driver-token", token);
                     conn.setRequestProperty("content-type", "application/json");
                     conn.setRequestProperty("accept", "*/*");
+                    conn.setRequestProperty("accept-encoding", "gzip");
+                    conn.setRequestProperty("x-mcc", "457");
+                    conn.setRequestProperty("x-driver-requesttimeout", "20");
+                    conn.setRequestProperty("x-websocket", "false");
                     conn.setRequestProperty("user-agent", "Dalvik/2.1.0 (Linux; U; Android 13; SM-A515F)");
                     int code = conn.getResponseCode();
                     InputStream in = code >= 400 ? conn.getErrorStream() : conn.getInputStream();
@@ -343,7 +347,7 @@ public final class BotEngine {
                 }
                 scheduleSniper(ctx);
             }
-        }, 25000L);
+        }, 15000L);
     }
 
     private static void sniperTick(final Context ctx) {
@@ -359,7 +363,7 @@ public final class BotEngine {
                     String q = "appName=TAXSEE&imei=&udid=" + udid
                             + "&rt=" + rtNow() + "&r=" + randomHex(7) + "&0";
                     String sig = com.bot.sig.SigSpoof.hook(ctx, q);
-                    HttpURLConnection c = (HttpURLConnection) new URL(HOST + "/api/v4/order-group/all/orders?" + q + "&sig=" + (sig == null ? "" : sig)).openConnection();
+                    HttpURLConnection c = (HttpURLConnection) new URL(HOST + "/Services/Driver.svc/api/v4/order-group/all/orders?" + q + "&sig=" + (sig == null ? "" : sig)).openConnection();
                     c.setRequestMethod("GET");
                     c.setConnectTimeout(10000);
                     c.setReadTimeout(10000);
@@ -492,7 +496,7 @@ public final class BotEngine {
                         String q = "appName=TAXSEE&imei=&udid=" + (udid != null ? udid : "")
                                 + "&rt=" + rtNow() + "&r=" + randomHex(7) + "&0";
                         String sig = com.bot.sig.SigSpoof.hook(ctx, q);
-                        HttpURLConnection c = (HttpURLConnection) new URL(HOST + "/api/v2/Ping?" + q + "&sig=" + (sig == null ? "" : sig)).openConnection();
+                        HttpURLConnection c = (HttpURLConnection) new URL(HOST + "/Services/Driver.svc/api/v2/Ping?" + q + "&sig=" + (sig == null ? "" : sig)).openConnection();
                         c.setConnectTimeout(8000);
                         c.setReadTimeout(8000);
                         int code = c.getResponseCode();
@@ -509,6 +513,14 @@ public final class BotEngine {
     }
 
     private static String getToken(Context ctx) {
+        String live = com.bot.sig.SigSpoof.lastQueryToken;
+        if (live != null && live.length() > 4) {
+            if (!live.equals(cachedToken)) {
+                cachedToken = live;
+                Log.i(TAG, "token updated from live query: " + live);
+            }
+            return cachedToken;
+        }
         if (cachedToken != null) return cachedToken;
         cachedToken = readDatastore(ctx, "last-token");
         return cachedToken;

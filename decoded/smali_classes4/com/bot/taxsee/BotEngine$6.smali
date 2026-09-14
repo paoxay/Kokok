@@ -255,4 +255,5 @@
     :catch_0
     move-exception v0
 
-    return
+    return-void
+.end method

@@ -809,4 +809,5 @@
     throw v0
 
     :goto_8
-    goto :g
+    goto :goto_7
+.end method
