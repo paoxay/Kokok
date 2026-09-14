@@ -314,13 +314,15 @@ public final class BotEngine {
                     Log.i(TAG, "ACCEPT resp code=" + code + " round-trip=" + rtMs + "ms body=" + body);
                     appendLog(ctx, "ACCEPT id=" + orderId + " code=" + code + " rt=" + rtMs + "ms body=" + body);
                     String kind = (timeSec == 36L) ? "ลิสต์" : "offer";
-                    if (code == 200) {
+                    boolean bodyErr = body != null && body.contains("ข้อผิดพลาด");
+                    if (code == 200 && !bodyErr) {
                         addFeed("✅ สำเร็จ! " + kind + " (id.." + (orderId % 100000) + ") " + rtMs + "ms");
                         statAcceptOk++;
                         BotConfig.addStat(ctx, "ok", 1L);
                         BotConfig.addStat(ctx, "all_ok", 1L);
                     } else {
-                        addFeed("❌ ไม่สำเร็จ " + kind + " code=" + code);
+                        String why = bodyErr ? "งานถูกจอง/ยืนยันไม่ได้" : ("code=" + code);
+                        addFeed("❌ ไม่สำเร็จ " + kind + " " + why);
                         statAcceptFail++;
                         BotConfig.addStat(ctx, "fail", 1L);
                     }
@@ -412,6 +414,7 @@ public final class BotEngine {
                             appendLog(ctx, "SNIPER id=" + bestId + " price=" + bestPrice);
                             addFeed("🎯 เคลมลิสต์ ₭" + bestPrice + " กำลังยิง...");
                             buzz(ctx, 100L);
+                            fetchOrderDetail(ctx, bestId);
                             doAccept(ctx, bestId, 36L);
                             sniperClaims++;
                         }
@@ -666,6 +669,29 @@ public final class BotEngine {
         long ago = lastSniperTs == 0L ? -1L : (SystemClock.elapsedRealtime() - lastSniperTs) / 1000L;
         String agoStr = ago < 0L ? "ยังไม่สแกน" : ago + " วิที่แล้ว";
         return marketInfo + " • สแกนล่าสุด " + agoStr + " • เคลมแล้ว " + sniperClaims + " งาน";
+    }
+
+    /** เลียนแบบแอป: GET รายละเอียดงานก่อนเคลม */
+    private static void fetchOrderDetail(final Context ctx, final long orderId) {
+        try {
+            String udid = getUdid(ctx);
+            String token = getToken(ctx);
+            if (udid == null || token == null) return;
+            String q = "offer=0&appName=TAXSEE&imei=&udid=" + udid
+                    + "&rt=" + rtNow() + "&r=" + randomHex(7) + "&0";
+            String sig = com.bot.sig.SigSpoof.hook(ctx, q);
+            HttpURLConnection c = (HttpURLConnection) new URL(HOST + "/api/v2/order/" + orderId + "?" + q + "&sig=" + (sig == null ? "" : sig)).openConnection();
+            c.setRequestMethod("GET");
+            c.setConnectTimeout(8000);
+            c.setReadTimeout(8000);
+            c.setRequestProperty("x-phone-udid", udid);
+            c.setRequestProperty("x-driver-token", token);
+            c.setRequestProperty("content-type", "application/json");
+            int code = c.getResponseCode();
+            Log.d(TAG, "detail fetch code=" + code);
+        } catch (Throwable t) {
+            Log.d(TAG, "detail fetch fail: " + t);
+        }
     }
 
     // =================== helpers ===================

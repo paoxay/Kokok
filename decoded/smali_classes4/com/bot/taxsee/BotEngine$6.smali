@@ -30,7 +30,7 @@
         }
     .end annotation
 
-    .line 490
+    .line 493
     iput-object p1, p0, Lcom/bot/taxsee/BotEngine$6;->val$ctx:Landroid/content/Context;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
@@ -43,7 +43,7 @@
 .method public run()V
     .locals 7
 
-    .line 495
+    .line 498
     const-string v0, "TAXBOT"
 
     :goto_0
@@ -54,7 +54,7 @@
 
     move-result-object v1
 
-    .line 496
+    .line 499
     new-instance v2, Ljava/lang/StringBuilder;
 
     invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
@@ -88,7 +88,7 @@
 
     move-result-object v1
 
-    .line 497
+    .line 500
     invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$700()Ljava/lang/String;
 
     move-result-object v2
@@ -123,14 +123,14 @@
 
     move-result-object v1
 
-    .line 498
+    .line 501
     iget-object v2, p0, Lcom/bot/taxsee/BotEngine$6;->val$ctx:Landroid/content/Context;
 
     invoke-static {v2, v1}, Lcom/bot/sig/SigSpoof;->hook(Landroid/content/Context;Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v2
 
-    .line 499
+    .line 502
     new-instance v4, Ljava/net/URL;
 
     new-instance v5, Ljava/lang/StringBuilder;
@@ -177,20 +177,20 @@
 
     check-cast v1, Ljava/net/HttpURLConnection;
 
-    .line 500
+    .line 503
     const/16 v2, 0x1f40
 
     invoke-virtual {v1, v2}, Ljava/net/HttpURLConnection;->setConnectTimeout(I)V
 
-    .line 501
+    .line 504
     invoke-virtual {v1, v2}, Ljava/net/HttpURLConnection;->setReadTimeout(I)V
 
-    .line 502
+    .line 505
     invoke-virtual {v1}, Ljava/net/HttpURLConnection;->getResponseCode()I
 
     move-result v1
 
-    .line 503
+    .line 506
     new-instance v2, Ljava/lang/StringBuilder;
 
     invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
@@ -213,14 +213,14 @@
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_0
 
-    .line 506
+    .line 509
     goto :goto_3
 
-    .line 504
+    .line 507
     :catchall_0
     move-exception v1
 
-    .line 505
+    .line 508
     new-instance v2, Ljava/lang/StringBuilder;
 
     invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
@@ -241,7 +241,7 @@
 
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    .line 507
+    .line 510
     :goto_3
     const-wide/32 v1, 0xea60
 

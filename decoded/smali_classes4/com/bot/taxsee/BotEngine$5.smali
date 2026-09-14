@@ -21,7 +21,7 @@
 .method constructor <init>()V
     .locals 0
 
-    .line 472
+    .line 475
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     return-void
@@ -32,7 +32,7 @@
 .method public onLocationChanged(Landroid/location/Location;)V
     .locals 0
 
-    .line 473
+    .line 476
     invoke-static {p1}, Lcom/bot/taxsee/BotEngine;->access$102(Landroid/location/Location;)Landroid/location/Location;
 
     return-void
@@ -41,20 +41,20 @@
 .method public onProviderDisabled(Ljava/lang/String;)V
     .locals 0
 
-    .line 476
+    .line 479
     return-void
 .end method
 
 .method public onProviderEnabled(Ljava/lang/String;)V
     .locals 0
 
-    .line 475
+    .line 478
     return-void
 .end method
 
 .method public onStatusChanged(Ljava/lang/String;ILandroid/os/Bundle;)V
     .locals 0
 
-    .line 474
+    .line 477
     return-void
 .end method
