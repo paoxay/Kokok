@@ -30,7 +30,7 @@
         }
     .end annotation
 
-    .line 205
+    .line 202
     iput-object p1, p0, Lcom/bot/taxsee/BotOverlay$4;->val$etDist:Landroid/widget/EditText;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
@@ -43,10 +43,10 @@
 .method public onCheckedChanged(Landroid/widget/CompoundButton;Z)V
     .locals 2
 
-    .line 209
+    .line 206
     nop
 
-    .line 210
+    .line 207
     :try_start_0
     iget-object p1, p0, Lcom/bot/taxsee/BotOverlay$4;->val$etDist:Landroid/widget/EditText;
 
@@ -71,33 +71,33 @@
 
     goto :goto_0
 
-    .line 212
+    .line 209
     :catchall_0
     move-exception p1
 
     goto :goto_1
 
-    .line 210
+    .line 207
     :catch_0
     move-exception p1
 
     const-wide/high16 v0, 0x4008000000000000L    # 3.0
 
-    .line 211
+    .line 208
     :goto_0
     :try_start_1
     invoke-static {v0, v1}, Lcom/bot/taxsee/BotGps;->setRadius(D)V
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_0
 
-    .line 212
+    .line 209
     :goto_1
     nop
 
-    .line 213
+    .line 210
     invoke-static {p2}, Lcom/bot/taxsee/BotGps;->setFly(Z)V
 
-    .line 214
+    .line 211
     if-eqz p2, :cond_0
 
     const-string p1, "GPS \u0e1a\u0e34\u0e19: \u0e40\u0e1b\u0e34\u0e14 \u2713 (\u0e27\u0e34\u0e48\u0e07\u0e27\u0e19\u0e2b\u0e32\u0e07\u0e32\u0e19)"
@@ -110,6 +110,6 @@
     :goto_2
     invoke-static {p1}, Lcom/bot/taxsee/BotOverlay;->access$700(Ljava/lang/String;)V
 
-    .line 215
+    .line 212
     return-void
 .end method

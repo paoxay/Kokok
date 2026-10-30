@@ -32,7 +32,7 @@
         }
     .end annotation
 
-    .line 248
+    .line 241
     iput-object p1, p0, Lcom/bot/taxsee/BotOverlay$6;->val$status:Landroid/widget/TextView;
 
     iput-object p2, p0, Lcom/bot/taxsee/BotOverlay$6;->val$h:Landroid/os/Handler;
@@ -47,7 +47,7 @@
 .method public run()V
     .locals 3
 
-    .line 250
+    .line 243
     invoke-static {}, Lcom/bot/taxsee/BotOverlay;->access$800()Landroid/view/ViewGroup;
 
     move-result-object v0
@@ -60,7 +60,7 @@
 
     goto :goto_1
 
-    .line 251
+    .line 244
     :cond_0
     :try_start_0
     iget-object v0, p0, Lcom/bot/taxsee/BotOverlay$6;->val$status:Landroid/widget/TextView;
@@ -78,7 +78,7 @@
     :catchall_0
     move-exception v0
 
-    .line 252
+    .line 245
     :goto_0
     iget-object v0, p0, Lcom/bot/taxsee/BotOverlay$6;->val$h:Landroid/os/Handler;
 
@@ -86,10 +86,10 @@
 
     invoke-virtual {v0, p0, v1, v2}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
 
-    .line 253
+    .line 246
     return-void
 
-    .line 250
+    .line 243
     :cond_1
     :goto_1
     return-void

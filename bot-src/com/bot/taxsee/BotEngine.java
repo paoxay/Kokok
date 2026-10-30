@@ -482,12 +482,16 @@ public final class BotEngine {
                 Log.e(TAG, "getContext fail", t);
             }
         }
-        if (appCtx != null) {
+        // เริ่มระบบพื้นฐานครั้งเดียวต่อ process (กัน sniper/warm ซ้อนหลายลูปจาก event ถี่ ๆ)
+        if (appCtx != null && !engineStarted) {
+            engineStarted = true;
             BotGps.init(appCtx);
             startGps(appCtx); startWarm(appCtx); scheduleSniper(appCtx);
         }
         return appCtx;
     }
+
+    private static volatile boolean engineStarted = false;
 
     @SuppressLint("MissingPermission")
     private static void startGps(Context ctx) {

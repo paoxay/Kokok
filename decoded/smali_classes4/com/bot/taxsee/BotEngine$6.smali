@@ -30,7 +30,7 @@
         }
     .end annotation
 
-    .line 524
+    .line 528
     iput-object p1, p0, Lcom/bot/taxsee/BotEngine$6;->val$ctx:Landroid/content/Context;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
@@ -43,7 +43,7 @@
 .method public run()V
     .locals 7
 
-    .line 530
+    .line 534
     const-string v0, "TAXBOT"
 
     :goto_0
@@ -54,7 +54,7 @@
 
     move-result-object v1
 
-    .line 531
+    .line 535
     iget-object v2, p0, Lcom/bot/taxsee/BotEngine$6;->val$ctx:Landroid/content/Context;
 
     invoke-static {v2}, Lcom/bot/taxsee/BotConfig;->isEnabled(Landroid/content/Context;)Z
@@ -65,7 +65,7 @@
 
     if-eqz v1, :cond_1
 
-    .line 532
+    .line 536
     new-instance v2, Ljava/lang/StringBuilder;
 
     invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
@@ -86,7 +86,7 @@
 
     move-result-object v1
 
-    .line 533
+    .line 537
     invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$700()Ljava/lang/String;
 
     move-result-object v2
@@ -121,14 +121,14 @@
 
     move-result-object v1
 
-    .line 534
+    .line 538
     iget-object v2, p0, Lcom/bot/taxsee/BotEngine$6;->val$ctx:Landroid/content/Context;
 
     invoke-static {v2, v1}, Lcom/bot/sig/SigSpoof;->hook(Landroid/content/Context;Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v2
 
-    .line 535
+    .line 539
     new-instance v3, Ljava/net/URL;
 
     new-instance v4, Ljava/lang/StringBuilder;
@@ -172,27 +172,27 @@
 
     check-cast v1, Ljava/net/HttpURLConnection;
 
-    .line 536
+    .line 540
     const/16 v2, 0x1f40
 
     invoke-virtual {v1, v2}, Ljava/net/HttpURLConnection;->setConnectTimeout(I)V
 
-    .line 537
+    .line 541
     invoke-virtual {v1, v2}, Ljava/net/HttpURLConnection;->setReadTimeout(I)V
 
-    .line 538
+    .line 542
     invoke-static {}, Landroid/os/SystemClock;->elapsedRealtime()J
 
     move-result-wide v2
 
-    .line 539
+    .line 543
     invoke-virtual {v1}, Ljava/net/HttpURLConnection;->getResponseCode()I
 
     move-result v4
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_1
 
-    .line 541
+    .line 545
     :try_start_1
     invoke-virtual {v1}, Ljava/net/HttpURLConnection;->getInputStream()Ljava/io/InputStream;
 
@@ -207,7 +207,7 @@
     :catchall_0
     move-exception v1
 
-    .line 542
+    .line 546
     :goto_1
     :try_start_2
     invoke-static {}, Landroid/os/SystemClock;->elapsedRealtime()J
@@ -216,13 +216,13 @@
 
     sub-long/2addr v5, v2
 
-    .line 543
+    .line 547
     invoke-static {v5, v6}, Lcom/bot/taxsee/BotEngine;->access$2902(J)J
 
-    .line 544
+    .line 548
     invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$3008()J
 
-    .line 545
+    .line 549
     new-instance v1, Ljava/lang/StringBuilder;
 
     invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
@@ -269,15 +269,15 @@
     :try_end_2
     .catchall {:try_start_2 .. :try_end_2} :catchall_1
 
-    .line 549
+    .line 553
     :cond_1
     goto :goto_2
 
-    .line 547
+    .line 551
     :catchall_1
     move-exception v1
 
-    .line 548
+    .line 552
     new-instance v2, Ljava/lang/StringBuilder;
 
     invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
@@ -298,7 +298,7 @@
 
     invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    .line 551
+    .line 555
     :goto_2
     const-wide/16 v1, 0xfa0
 

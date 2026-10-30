@@ -32,7 +32,7 @@
         }
     .end annotation
 
-    .line 817
+    .line 821
     iput-boolean p1, p0, Lcom/bot/taxsee/BotEngine$9;->val$enable:Z
 
     iput-object p2, p0, Lcom/bot/taxsee/BotEngine$9;->val$ctx:Landroid/content/Context;
@@ -47,7 +47,7 @@
 .method public run()V
     .locals 19
 
-    .line 821
+    .line 825
     move-object/from16 v1, p0
 
     const-string v0, "0"
@@ -75,7 +75,7 @@
 
     if-nez v4, :cond_3
 
-    .line 822
+    .line 826
     :try_start_1
     iget-object v0, v1, Lcom/bot/taxsee/BotEngine$9;->val$ctx:Landroid/content/Context;
 
@@ -85,7 +85,7 @@
 
     move-result-object v0
 
-    .line 823
+    .line 827
     aget-object v2, v0, v10
 
     invoke-virtual {v8, v2}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
@@ -107,13 +107,13 @@
     :cond_0
     const/4 v9, 0x0
 
-    .line 824
+    .line 828
     :goto_0
     iget-object v2, v1, Lcom/bot/taxsee/BotEngine$9;->val$ctx:Landroid/content/Context;
 
     invoke-static {v2, v10}, Lcom/bot/taxsee/BotConfig;->setAutoCached(Landroid/content/Context;Z)V
 
-    .line 825
+    .line 829
     if-eqz v9, :cond_1
 
     const-string v0, "\ud83e\udd16 Auto-\u0e40\u0e0b\u0e34\u0e23\u0e4c\u0e1f\u0e40\u0e27\u0e2d\u0e23\u0e4c: \u0e1b\u0e34\u0e14\u0e41\u0e25\u0e49\u0e27"
@@ -144,7 +144,7 @@
     :goto_1
     invoke-static {v0}, Lcom/bot/taxsee/BotEngine;->access$3402(Ljava/lang/String;)Ljava/lang/String;
 
-    .line 826
+    .line 830
     if-eqz v9, :cond_2
 
     const-string v0, "\ud83e\udd16 \u0e1b\u0e34\u0e14 Auto \u0e41\u0e25\u0e49\u0e27"
@@ -157,14 +157,14 @@
     :goto_2
     invoke-static {v0}, Lcom/bot/taxsee/BotEngine;->access$500(Ljava/lang/String;)V
 
-    .line 827
+    .line 831
     return-void
 
-    .line 830
+    .line 834
     :cond_3
     nop
 
-    .line 831
+    .line 835
     iget-object v4, v1, Lcom/bot/taxsee/BotEngine$9;->val$ctx:Landroid/content/Context;
 
     const-string v11, "/Services/Driver.svc/api/v3/auto-assignment/filters"
@@ -173,7 +173,7 @@
 
     move-result-object v4
 
-    .line 832
+    .line 836
     aget-object v6, v4, v10
 
     invoke-virtual {v8, v6}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
@@ -188,7 +188,7 @@
 
     if-eqz v6, :cond_5
 
-    .line 833
+    .line 837
     :try_start_2
     new-instance v6, Lorg/json/JSONObject;
 
@@ -202,10 +202,10 @@
 
     move-result-object v4
 
-    .line 834
+    .line 838
     if-eqz v4, :cond_5
 
-    .line 835
+    .line 839
     const/4 v6, 0x0
 
     :goto_3
@@ -215,12 +215,12 @@
 
     if-ge v6, v13, :cond_5
 
-    .line 836
+    .line 840
     invoke-virtual {v4, v6}, Lorg/json/JSONArray;->optJSONObject(I)Lorg/json/JSONObject;
 
     move-result-object v13
 
-    .line 837
+    .line 841
     if-eqz v13, :cond_4
 
     const-string v14, "Name"
@@ -237,7 +237,7 @@
 
     if-eqz v14, :cond_4
 
-    .line 838
+    .line 842
     const-string v4, "Id"
 
     invoke-virtual {v13, v4, v11, v12}, Lorg/json/JSONObject;->optLong(Ljava/lang/String;J)J
@@ -246,16 +246,16 @@
     :try_end_2
     .catchall {:try_start_2 .. :try_end_2} :catchall_0
 
-    .line 839
+    .line 843
     goto :goto_4
 
-    .line 835
+    .line 839
     :cond_4
     add-int/lit8 v6, v6, 0x1
 
     goto :goto_3
 
-    .line 845
+    .line 849
     :cond_5
     move-wide v13, v11
 
@@ -266,7 +266,7 @@
 
     if-gtz v6, :cond_7
 
-    .line 846
+    .line 850
     :try_start_3
     iget-object v6, v1, Lcom/bot/taxsee/BotEngine$9;->val$ctx:Landroid/content/Context;
 
@@ -282,120 +282,120 @@
 
     move-result-wide v9
 
-    .line 847
+    .line 851
     new-instance v11, Lorg/json/JSONObject;
 
     invoke-direct {v11}, Lorg/json/JSONObject;-><init>()V
 
-    .line 848
+    .line 852
     const-string v12, "PRICE_MIN"
 
     invoke-virtual {v11, v3, v12}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 849
+    .line 853
     invoke-static {v9, v10}, Ljava/lang/String;->valueOf(J)Ljava/lang/String;
 
     move-result-object v9
 
     invoke-virtual {v11, v2, v9}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 850
+    .line 854
     new-instance v9, Lorg/json/JSONObject;
 
     invoke-direct {v9}, Lorg/json/JSONObject;-><init>()V
 
-    .line 851
+    .line 855
     const-string v10, "PRICE_TYPES"
 
     invoke-virtual {v9, v3, v10}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 852
+    .line 856
     const-string v10, "PRICE_NAL;PRICE_NONAL"
 
     invoke-virtual {v9, v2, v10}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 853
+    .line 857
     new-instance v10, Lorg/json/JSONObject;
 
     invoke-direct {v10}, Lorg/json/JSONObject;-><init>()V
 
-    .line 854
+    .line 858
     const-string v12, "ACCEPT_INTERCITY"
 
     invoke-virtual {v10, v3, v12}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 855
+    .line 859
     invoke-virtual {v10, v2, v0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 856
+    .line 860
     new-instance v12, Lorg/json/JSONObject;
 
     invoke-direct {v12}, Lorg/json/JSONObject;-><init>()V
 
-    .line 857
+    .line 861
     const/16 v18, 0x1
 
     const-string v6, "ACCEPT_SUBURBAN"
 
     invoke-virtual {v12, v3, v6}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 858
+    .line 862
     invoke-virtual {v12, v2, v0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 859
+    .line 863
     new-instance v0, Lorg/json/JSONArray;
 
     invoke-direct {v0}, Lorg/json/JSONArray;-><init>()V
 
-    .line 860
+    .line 864
     invoke-virtual {v0, v11}, Lorg/json/JSONArray;->put(Ljava/lang/Object;)Lorg/json/JSONArray;
 
-    .line 861
+    .line 865
     invoke-virtual {v0, v9}, Lorg/json/JSONArray;->put(Ljava/lang/Object;)Lorg/json/JSONArray;
 
-    .line 862
+    .line 866
     invoke-virtual {v0, v10}, Lorg/json/JSONArray;->put(Ljava/lang/Object;)Lorg/json/JSONArray;
 
-    .line 863
+    .line 867
     invoke-virtual {v0, v12}, Lorg/json/JSONArray;->put(Ljava/lang/Object;)Lorg/json/JSONArray;
 
-    .line 864
+    .line 868
     new-instance v2, Lorg/json/JSONObject;
 
     invoke-direct {v2}, Lorg/json/JSONObject;-><init>()V
 
-    .line 865
+    .line 869
     const-string v3, "isCurrent"
 
     const/4 v6, 0x0
 
     invoke-virtual {v2, v3, v6}, Lorg/json/JSONObject;->put(Ljava/lang/String;I)Lorg/json/JSONObject;
 
-    .line 866
+    .line 870
     const-string v3, "options"
 
     invoke-virtual {v2, v3, v0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 867
+    .line 871
     const-string v0, "name"
 
     invoke-virtual {v2, v0, v7}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 868
+    .line 872
     const-string v0, "color"
 
     const-string v3, "#0C8BF3"
 
     invoke-virtual {v2, v0, v3}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 869
+    .line 873
     const-string v0, "IsAlongWayOrder"
 
     const/4 v6, 0x0
 
     invoke-virtual {v2, v0, v6}, Lorg/json/JSONObject;->put(Ljava/lang/String;I)Lorg/json/JSONObject;
 
-    .line 870
+    .line 874
     iget-object v0, v1, Lcom/bot/taxsee/BotEngine$9;->val$ctx:Landroid/content/Context;
 
     const-string v3, "/Services/Driver.svc/api/v1/auto-assignment/filter"
@@ -408,7 +408,7 @@
 
     move-result-object v0
 
-    .line 871
+    .line 875
     const/16 v17, 0x0
 
     aget-object v2, v0, v17
@@ -419,7 +419,7 @@
 
     if-eqz v2, :cond_6
 
-    .line 872
+    .line 876
     new-instance v2, Lorg/json/JSONObject;
 
     aget-object v3, v0, v18
@@ -436,7 +436,7 @@
 
     move-wide v13, v2
 
-    .line 874
+    .line 878
     :cond_6
     const-wide/16 v15, 0x0
 
@@ -444,7 +444,7 @@
 
     if-gtz v2, :cond_8
 
-    .line 875
+    .line 879
     new-instance v2, Ljava/lang/StringBuilder;
 
     invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
@@ -469,30 +469,30 @@
 
     invoke-static {v0}, Lcom/bot/taxsee/BotEngine;->access$3402(Ljava/lang/String;)Ljava/lang/String;
 
-    .line 876
+    .line 880
     const-string v0, "\u274c \u0e2a\u0e23\u0e49\u0e32\u0e07 filter \u0e44\u0e21\u0e48\u0e44\u0e14\u0e49 (\u0e40\u0e15\u0e47\u0e21\u0e42\u0e04\u0e27\u0e15\u0e32? \u0e25\u0e1a filter \u0e40\u0e01\u0e48\u0e32\u0e43\u0e19\u0e41\u0e2d\u0e1b\u0e01\u0e48\u0e2d\u0e19)"
 
     invoke-static {v0}, Lcom/bot/taxsee/BotEngine;->access$500(Ljava/lang/String;)V
 
-    .line 877
+    .line 881
     return-void
 
-    .line 845
+    .line 849
     :cond_7
     const/16 v18, 0x1
 
-    .line 881
+    .line 885
     :cond_8
     new-instance v0, Lorg/json/JSONObject;
 
     invoke-direct {v0}, Lorg/json/JSONObject;-><init>()V
 
-    .line 882
+    .line 886
     const-string v2, "filterId"
 
     invoke-virtual {v0, v2, v13, v14}, Lorg/json/JSONObject;->put(Ljava/lang/String;J)Lorg/json/JSONObject;
 
-    .line 883
+    .line 887
     iget-object v2, v1, Lcom/bot/taxsee/BotEngine$9;->val$ctx:Landroid/content/Context;
 
     new-instance v3, Ljava/lang/StringBuilder;
@@ -527,7 +527,7 @@
 
     move-result-object v0
 
-    .line 884
+    .line 888
     const/16 v17, 0x0
 
     aget-object v2, v0, v17
@@ -553,13 +553,13 @@
     :cond_9
     const/4 v9, 0x0
 
-    .line 885
+    .line 889
     :goto_5
     iget-object v2, v1, Lcom/bot/taxsee/BotEngine$9;->val$ctx:Landroid/content/Context;
 
     invoke-static {v2, v9}, Lcom/bot/taxsee/BotConfig;->setAutoCached(Landroid/content/Context;Z)V
 
-    .line 886
+    .line 890
     if-eqz v9, :cond_a
 
     new-instance v0, Ljava/lang/StringBuilder;
@@ -588,7 +588,7 @@
 
     goto :goto_6
 
-    .line 887
+    .line 891
     :cond_a
     new-instance v2, Ljava/lang/StringBuilder;
 
@@ -612,11 +612,11 @@
 
     move-result-object v0
 
-    .line 886
+    .line 890
     :goto_6
     invoke-static {v0}, Lcom/bot/taxsee/BotEngine;->access$3402(Ljava/lang/String;)Ljava/lang/String;
 
-    .line 888
+    .line 892
     if-eqz v9, :cond_b
 
     const-string v0, "\u2705 \u0e40\u0e1b\u0e34\u0e14 Auto-\u0e40\u0e0b\u0e34\u0e23\u0e4c\u0e1f\u0e40\u0e27\u0e2d\u0e23\u0e4c\u0e41\u0e25\u0e49\u0e27 \u2014 \u0e40\u0e0b\u0e34\u0e23\u0e4c\u0e1f\u0e40\u0e27\u0e2d\u0e23\u0e4c\u0e08\u0e48\u0e32\u0e22\u0e07\u0e32\u0e19\u0e40\u0e2d\u0e07"
@@ -631,14 +631,14 @@
     :try_end_3
     .catchall {:try_start_3 .. :try_end_3} :catchall_0
 
-    .line 892
+    .line 896
     goto :goto_8
 
-    .line 889
+    .line 893
     :catchall_0
     move-exception v0
 
-    .line 890
+    .line 894
     new-instance v2, Ljava/lang/StringBuilder;
 
     invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
@@ -663,14 +663,14 @@
 
     invoke-static {v2}, Lcom/bot/taxsee/BotEngine;->access$3402(Ljava/lang/String;)Ljava/lang/String;
 
-    .line 891
+    .line 895
     const-string v2, "TAXBOT"
 
     const-string v3, "setAuto fail"
 
     invoke-static {v2, v3, v0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
 
-    .line 893
+    .line 897
     :goto_8
     return-void
 .end method

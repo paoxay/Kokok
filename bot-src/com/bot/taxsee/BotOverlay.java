@@ -180,16 +180,13 @@ public final class BotOverlay {
             }
         });
 
-        // ตั้งค่า: ราคาขั้นต่ำ + ระยะรับงาน + ความเร็วบิน
+        // ตั้งค่า: ราคาขั้นต่ำ + ระยะรับงาน (รัศมีบิน = ค่านี้)
         root.addView(label("ราคาขั้นต่ำ (กีบ)"));
         final EditText etPrice = edit(String.valueOf(BotConfig.getMinPrice(ctx)));
         root.addView(etPrice);
-        root.addView(label("ระยะรับงาน (กม.)"));
+        root.addView(label("ระยะรับงาน (กม.) = รัศมีบิน GPS"));
         final EditText etDist = edit(String.valueOf(BotConfig.getMaxDistanceKm(ctx)));
         root.addView(etDist);
-        root.addView(label("ความเร็วบิน GPS (กม./ชม. 20-160)"));
-        final EditText etSpeed = edit(String.valueOf(BotConfig.getFlySpeed(ctx)));
-        root.addView(etSpeed);
 
         // สวิตช์ GPS บินวนในรัศมี
         LinearLayout flyRow = new LinearLayout(ctx);
@@ -229,10 +226,6 @@ public final class BotOverlay {
                     double km = Double.parseDouble(etDist.getText().toString().trim());
                     BotConfig.setMaxDistanceKm(ctx, km);
                     BotGps.setRadius(km);
-                } catch (Exception ignored) { }
-                try {
-                    long kmh = Long.parseLong(etSpeed.getText().toString().trim());
-                    BotGps.setSpeedKmh(kmh);
                 } catch (Exception ignored) { }
                 toast("บันทึกแล้ว ✓");
             }

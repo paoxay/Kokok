@@ -8,23 +8,27 @@ import android.util.Log;
 import java.security.SecureRandom;
 
 /**
- * GPS บินวนในรัศมี — จำลองตำแหน่งคนขับเคลื่อนที่หางานในรัศมีรับออเดอร์
- * (ระบบ Maxim จ่ายงานให้คนขับที่ใกล้ลูกค้าที่สุด → วิ่งวนในรัศมี = เพิ่มโอกาสโดนเสนองาน)
+ * GPS บินโหมดกระโดด — โดดสลับตำแหน่งเร็ว ๆ ในวงจรจุดที่คลุมทั้งรัศมีรับงาน
+ * (ระบบ Maxim จ่ายงานให้คนขับที่ใกล้ลูกค้าที่สุด → โดดครอบพื้นที่ = เพิ่มโอกาสโดนเสนอ/มอบงาน)
  *
  * จุดเชื่อม (แพตช์ smali):
  *  1. ox/s.onLocationChanged — ทุกพิกัดที่ GPS จริงส่งเข้าแอพ ผ่าน transform() ก่อน
  *  2. ox/v.h — พิกัดแรก (getLastKnownLocation) ผ่าน transform() ก่อน
- *  3. timer ของเรา — ดันตำแหน่งจำลองเข้า sink (mx/k) เองทุก ~1.2 วี แม้ GPS จริงนิ่ง
+ *  3. timer ของเรา — ดันตำแหน่งจำลองเข้า sink (mx/k) เองทุก ~1.25 วี แม้ GPS จริงนิ่ง
  *
  * พิกัดที่บอทใช้ (กรองระยะ + OrderAccept) = currentLoc() = ตำแหน่งเดียวกับที่แอพเห็นเป๊ะ
  */
 public final class BotGps {
     private static final String TAG = "TAXBOT";
+    /** อยู่ที่จุดหนึ่งนานแค่ไหนก่อนโดดไปจุดถัดไป (มิลลิวินาที) */
+    private static final long HOP_INTERVAL_MS = 2500L;
+    /** 3 วงซ้อน (วงใน 0.33R / กลาง 0.67R / นอก 1.0R) — รวม 33 จุด คลุมทั้งรัศมี */
+    private static final int[] RING_COUNTS = {8, 11, 14};
+    private static final double[] RING_RADII = {0.33, 0.67, 1.0};
 
     private static Context appCtx;
     private static volatile boolean flyOn = false;
     private static volatile double radiusKm = 3.0;
-    private static volatile double speedKmh = 90.0; // ปรับได้ในแผง (20-160)
     private static volatile Location realLoc = null;
 
     // sink = mx/k (อ่านจาก field "a" ของ ox/s แบบ reflection — เรียกย้อนเข้าแอพเอง)
@@ -32,19 +36,13 @@ public final class BotGps {
     private static volatile java.lang.reflect.Method sinkMethod = null;
     private static volatile long sentCount = 0L;
 
-    // สถานะการบิน
+    // สถานะการบิน — วงจรจุดล่วงหน้า + จุดปัจจุบัน
     private static boolean centerSet = false;
     private static double centerLat = 0, centerLng = 0;
+    private static double[] wpLat = null, wpLng = null;
+    private static int wpTotal = 0, wpIdx = 0;
     private static double curLat = 0, curLng = 0;
-    private static double tgtLat = 0, tgtLng = 0;
-    private static double speedMps = 25.0;
-    private static long lastTickMs = 0L;
-    // รูปแบบวงกลมหลายวงซ้อน: เป้าหมายถัดไปอยู่บนวงแหวนรอบจุดกึ่งกลาง
-    // สลับวง นอก→กลาง→ใน (1.0R / 0.72R / 0.45R) มุมเดินหน้า ~60-90° ต่อขา
-    // = กวาดครบทั้งแผ่นวงกลม ไม่กองอยู่ขอบเดียว เหมือนขับวนหางานจริง
-    private static int ringIdx = 0;
-    private static double sweepAngle = 0.0;
-    private static final double[] RING_FACTORS = {1.0, 0.72, 0.45};
+    private static long lastHopMs = 0L;
     private static final Object lock = new Object();
     private static final SecureRandom rnd = new SecureRandom();
     private static Thread pushThread = null;
@@ -52,15 +50,18 @@ public final class BotGps {
     private BotGps() {
     }
 
-    /** เรียกครั้งแรกจาก BotEngine.getContext / BotOverlay.show — โหลดค่าที่บันทึกไว้ */
+    private static boolean inited = false;
+
+    /** เรียกครั้งแรกจาก BotEngine.getContext / BotOverlay.show — โหลดค่าที่บันทึกไว้ (idempotent) */
     public static void init(Context ctx) {
+        if (inited) return;
+        inited = true;
         try {
             appCtx = ctx.getApplicationContext();
             flyOn = BotConfig.isGpsFly(appCtx);
             radiusKm = BotConfig.getMaxDistanceKm(appCtx);
-            speedKmh = BotConfig.getFlySpeed(appCtx);
             if (flyOn) {
-                Log.i(TAG, "GPS fly resume ON r=" + radiusKm + "km v=" + speedKmh + "km/h");
+                Log.i(TAG, "GPS fly(hop) resume ON r=" + radiusKm + "km");
                 ensureThread();
             }
         } catch (Throwable t) {
@@ -95,7 +96,7 @@ public final class BotGps {
         if (!flyOn) return in;
         synchronized (lock) {
             seedCenter(in);
-            advance(System.currentTimeMillis());
+            hopIfDue();
             return build(in);
         }
     }
@@ -108,7 +109,7 @@ public final class BotGps {
                 if (realLoc != null) seedCenter(realLoc);
                 else return null;
             }
-            advance(System.currentTimeMillis());
+            hopIfDue();
             Location base = realLoc;
             if (base == null) {
                 base = new Location("fused");
@@ -139,22 +140,17 @@ public final class BotGps {
         return sentCount;
     }
 
-    public static double radius() {
-        return radiusKm;
+    public static int waypointCount() {
+        return wpTotal;
     }
 
     public static void setRadius(double km) {
         if (km < 0.3) km = 0.3;
         if (km > 10.0) km = 10.0;
         radiusKm = km;
-    }
-
-    public static void setSpeedKmh(double kmh) {
-        if (kmh < 20.0) kmh = 20.0;
-        if (kmh > 160.0) kmh = 160.0;
-        speedKmh = kmh;
-        if (appCtx != null) BotConfig.setFlySpeed(appCtx, (long) kmh);
-        Log.i(TAG, "GPS fly speed=" + kmh + "km/h");
+        synchronized (lock) {
+            if (centerSet) buildCircuit(); // สร้างวงจรใหม่ตามรัศมีใหม่ (จุดเดิมถ้ายังอยู่ในวงจรก็ใช้ต่อ)
+        }
     }
 
     public static void setFly(boolean on) {
@@ -169,7 +165,7 @@ public final class BotGps {
             }
             ensureThread();
         }
-        Log.i(TAG, "GPS fly " + (on ? "ON" : "OFF") + " r=" + radiusKm + "km");
+        Log.i(TAG, "GPS fly(hop) " + (on ? "ON" : "OFF") + " r=" + radiusKm + "km");
     }
 
     /** สถานะสั้น ๆ สำหรับแผง */
@@ -178,86 +174,75 @@ public final class BotGps {
         synchronized (lock) {
             if (!centerSet) return "🛫 รอจุดกึ่งกลาง GPS...";
         }
-        return "🛫 บินวง r=" + String.format("%.1f", radiusKm) + "กม " + Math.round(speedKmh) + "กม./ชม. (" + sentCount + "จุด)";
+        return "🛫 กระโดด " + wpTotal + "จุด r=" + String.format("%.1f", radiusKm) + "กม (" + sentCount + "ส่ง)";
     }
 
-    // =================== การจำลอง ===================
+    // =================== การจำลอง (โหมดกระโดด) ===================
 
     private static void seedCenter(Location l) {
         if (centerSet) return;
         centerLat = l.getLatitude();
         centerLng = l.getLongitude();
-        curLat = centerLat;
-        curLng = centerLng;
-        newTarget();
+        buildCircuit();
+        wpIdx = 0;
+        curLat = wpLat[0];
+        curLng = wpLng[0];
         centerSet = true;
-        lastTickMs = System.currentTimeMillis();
-        Log.i(TAG, "GPS fly center=" + centerLat + "," + centerLng + " r=" + radiusKm + "km");
+        lastHopMs = System.currentTimeMillis();
+        Log.i(TAG, "GPS fly(hop) center=" + centerLat + "," + centerLng
+                + " r=" + radiusKm + "km points=" + wpTotal);
     }
 
-    private static void advance(long nowMs) {
+    /** สร้างวงจรจุด: 3 วงซ้อนรอบจุดกึ่งกลาง เดินตามขอบวงทีละจุด จบวงใน→วนกลาง→วงนอก→วนกลับ */
+    private static void buildCircuit() {
+        int total = 0;
+        for (int i = 0; i < RING_COUNTS.length; i++) total += RING_COUNTS[i];
+        double[] la = new double[total];
+        double[] lg = new double[total];
+        int idx = 0;
+        double startAngle = rnd.nextDouble() * 2.0 * Math.PI; // สุ่มทิศเริ่มทุกรอบ
+        for (int ring = 0; ring < RING_COUNTS.length; ring++) {
+            int n = RING_COUNTS[ring];
+            double rMeters = radiusKm * 1000.0 * RING_RADII[ring];
+            double base = startAngle + ring * (Math.PI / n); // เหลื่อมมุมระหว่างวง
+            for (int i = 0; i < n; i++) {
+                double a = base + 2.0 * Math.PI * i / n;
+                la[idx] = centerLat + (rMeters * Math.sin(a)) / 111320.0;
+                lg[idx] = centerLng + (rMeters * Math.cos(a)) / (111320.0 * Math.cos(Math.toRadians(centerLat)));
+                idx++;
+            }
+        }
+        wpLat = la;
+        wpLng = lg;
+        wpTotal = total;
+        if (wpIdx >= total) wpIdx = 0;
+    }
+
+    /** ครบเวลาแล้ว = โดดไปจุดถัดไปในวงจร */
+    private static void hopIfDue() {
         if (!centerSet) return;
-        if (lastTickMs == 0L) {
-            lastTickMs = nowMs;
-            return;
+        long now = System.currentTimeMillis();
+        if (now - lastHopMs >= HOP_INTERVAL_MS) {
+            lastHopMs = now;
+            wpIdx = (wpIdx + 1) % wpTotal;
+            curLat = wpLat[wpIdx];
+            curLng = wpLng[wpIdx];
         }
-        double dt = (nowMs - lastTickMs) / 1000.0;
-        lastTickMs = nowMs;
-        if (dt <= 0.0) return;
-        if (dt > 6.0) dt = 6.0; // กันกระโดดหลังหยุดนาน
-
-        double dist = distMeters(curLat, curLng, tgtLat, tgtLng);
-        if (dist < 20.0) {
-            newTarget();
-            dist = distMeters(curLat, curLng, tgtLat, tgtLng);
-        }
-        double step = speedMps * dt;
-        if (step >= dist) {
-            curLat = tgtLat;
-            curLng = tgtLng;
-            newTarget();
-        } else {
-            double f = step / dist;
-            curLat += (tgtLat - curLat) * f;
-            curLng += (tgtLng - curLng) * f;
-        }
-        // ความเร็วแกว่ง ±8% รอบค่าที่ตั้ง ให้ดูจริง
-        double base = speedKmh / 3.6;
-        speedMps = base * (0.92 + rnd.nextDouble() * 0.16);
     }
 
-    /** จุดหมายใหม่ — บนวงแหวนรอบจุดกึ่งกลาง (สลับวงนอก/กลาง/ใน มุมเดินหน้าตลอด) */
-    private static void newTarget() {
-        ringIdx = (ringIdx + 1) % RING_FACTORS.length;
-        sweepAngle += (Math.PI / 3.0) * (1.0 + rnd.nextDouble() * 0.5); // ~60-90° ต่อขา
-        if (sweepAngle > 2.0 * Math.PI) sweepAngle -= 2.0 * Math.PI;
-        double rMeters = radiusKm * 1000.0 * RING_FACTORS[ringIdx] * (0.92 + rnd.nextDouble() * 0.16);
-        double dLat = (rMeters * Math.sin(sweepAngle)) / 111320.0;
-        double dLng = (rMeters * Math.cos(sweepAngle)) / (111320.0 * Math.cos(Math.toRadians(centerLat)));
-        tgtLat = centerLat + dLat;
-        tgtLng = centerLng + dLng;
-    }
-
-    /** สร้าง Location ใหม่จากพิกัดจำลอง — ใช้ของจริงเป็นฐาน (คง provider/accuracy = ไม่ mock) */
+    /** สร้าง Location จากจุดปัจจุบัน — ใช้ของจริงเป็นฐาน (คง provider/accuracy = ไม่ mock)
+     *  ทิศ = หันไปทางจุดถัดไป, ความเร็วรายงานแคป 30 ม./วิ ไม่ให้ตัวเลขบ้าเกิน */
     private static Location build(Location base) {
         Location out = new Location(base);
         out.setLatitude(curLat);
         out.setLongitude(curLng);
         out.setTime(System.currentTimeMillis());
         out.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
-        out.setBearing((float) bearingDeg(curLat, curLng, tgtLat, tgtLng));
-        out.setSpeed((float) speedMps);
+        int next = (wpIdx + 1) % wpTotal;
+        out.setBearing((float) bearingDeg(curLat, curLng, wpLat[next], wpLng[next]));
+        out.setSpeed(8f + rnd.nextFloat() * 22f); // 8-30 ม./วิ (29-108 กม./ชม.)
         if (!(base.getAccuracy() > 0f)) out.setAccuracy(7.5f);
         return out;
-    }
-
-    private static double distMeters(double la1, double lo1, double la2, double lo2) {
-        double dLat = Math.toRadians(la2 - la1);
-        double dLng = Math.toRadians(lo2 - lo1);
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
-                + Math.cos(Math.toRadians(la1)) * Math.cos(Math.toRadians(la2))
-                * Math.sin(dLng / 2) * Math.sin(dLng / 2);
-        return 6371000.0 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     }
 
     private static double bearingDeg(double la1, double lo1, double la2, double lo2) {
@@ -282,7 +267,7 @@ public final class BotGps {
                                 Location base = realLoc;
                                 Location l;
                                 synchronized (lock) {
-                                    advance(System.currentTimeMillis());
+                                    hopIfDue();
                                     if (base == null) {
                                         base = new Location("fused");
                                         base.setAccuracy(9f);
@@ -292,7 +277,8 @@ public final class BotGps {
                                 sinkMethod.invoke(sink, l);
                                 sentCount++;
                                 if (sentCount % 25L == 1L) {
-                                    Log.d(TAG, "GPS fly push #" + sentCount + " " + curLat + "," + curLng);
+                                    Log.d(TAG, "GPS hop push #" + sentCount + " wp" + (wpIdx + 1) + "/" + wpTotal
+                                            + " " + curLat + "," + curLng);
                                 }
                             }
                         } catch (Throwable t) {
@@ -300,7 +286,7 @@ public final class BotGps {
                             sink = null; // เลิกดัน แต่ transform ยังทำงานตาม GPS จริง
                         }
                         try {
-                            Thread.sleep(1200L);
+                            Thread.sleep(1250L);
                         } catch (InterruptedException ie) {
                             return;
                         }

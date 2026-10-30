@@ -288,7 +288,7 @@
 .method private static dp(I)I
     .locals 1
 
-    .line 323
+    .line 316
     int-to-float p0, p0
 
     sget-object v0, Lcom/bot/taxsee/BotOverlay;->ctx:Landroid/content/Context;
@@ -313,32 +313,32 @@
 .method private static edit(Ljava/lang/String;)Landroid/widget/EditText;
     .locals 2
 
-    .line 294
+    .line 287
     new-instance v0, Landroid/widget/EditText;
 
     sget-object v1, Lcom/bot/taxsee/BotOverlay;->ctx:Landroid/content/Context;
 
     invoke-direct {v0, v1}, Landroid/widget/EditText;-><init>(Landroid/content/Context;)V
 
-    .line 295
+    .line 288
     invoke-virtual {v0, p0}, Landroid/widget/EditText;->setText(Ljava/lang/CharSequence;)V
 
-    .line 296
+    .line 289
     const/4 p0, -0x1
 
     invoke-virtual {v0, p0}, Landroid/widget/EditText;->setTextColor(I)V
 
-    .line 297
+    .line 290
     const/high16 p0, 0x41500000    # 13.0f
 
     invoke-virtual {v0, p0}, Landroid/widget/EditText;->setTextSize(F)V
 
-    .line 298
+    .line 291
     const/4 p0, 0x1
 
     invoke-virtual {v0, p0}, Landroid/widget/EditText;->setSingleLine(Z)V
 
-    .line 299
+    .line 292
     return-object v0
 .end method
 
@@ -376,12 +376,12 @@
 .method private static hidePanel()V
     .locals 2
 
-    .line 312
+    .line 305
     sget-object v0, Lcom/bot/taxsee/BotOverlay;->panel:Landroid/view/ViewGroup;
 
     if-eqz v0, :cond_0
 
-    .line 313
+    .line 306
     :try_start_0
     sget-object v0, Lcom/bot/taxsee/BotOverlay;->wm:Landroid/view/WindowManager;
 
@@ -396,13 +396,13 @@
     :catchall_0
     move-exception v0
 
-    .line 314
+    .line 307
     :goto_0
     const/4 v0, 0x0
 
     sput-object v0, Lcom/bot/taxsee/BotOverlay;->panel:Landroid/view/ViewGroup;
 
-    .line 316
+    .line 309
     :cond_0
     return-void
 .end method
@@ -587,39 +587,39 @@
 .method private static label(Ljava/lang/String;)Landroid/widget/TextView;
     .locals 2
 
-    .line 286
+    .line 279
     new-instance v0, Landroid/widget/TextView;
 
     sget-object v1, Lcom/bot/taxsee/BotOverlay;->ctx:Landroid/content/Context;
 
     invoke-direct {v0, v1}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
 
-    .line 287
+    .line 280
     invoke-virtual {v0, p0}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
-    .line 288
+    .line 281
     const p0, -0x342a1f
 
     invoke-virtual {v0, p0}, Landroid/widget/TextView;->setTextColor(I)V
 
-    .line 289
+    .line 282
     const/high16 p0, 0x41400000    # 12.0f
 
     invoke-virtual {v0, p0}, Landroid/widget/TextView;->setTextSize(F)V
 
-    .line 290
+    .line 283
     return-object v0
 .end method
 
 .method private static shortStatus()Ljava/lang/String;
     .locals 6
 
-    .line 275
+    .line 268
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
 
-    .line 276
+    .line 269
     sget-object v1, Lcom/bot/taxsee/BotOverlay;->ctx:Landroid/content/Context;
 
     invoke-static {v1}, Lcom/bot/taxsee/BotConfig;->isEnabled(Landroid/content/Context;)Z
@@ -638,12 +638,12 @@
     :goto_0
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    .line 277
+    .line 270
     invoke-static {}, Lcom/bot/taxsee/BotGps;->shortStatus()Ljava/lang/String;
 
     move-result-object v1
 
-    .line 278
+    .line 271
     invoke-virtual {v1}, Ljava/lang/String;->length()I
 
     move-result v2
@@ -658,7 +658,7 @@
 
     invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    .line 279
+    .line 272
     :cond_1
     sget-object v1, Lcom/bot/taxsee/BotOverlay;->ctx:Landroid/content/Context;
 
@@ -668,7 +668,7 @@
 
     move-result-wide v1
 
-    .line 280
+    .line 273
     sget-object v3, Lcom/bot/taxsee/BotOverlay;->ctx:Landroid/content/Context;
 
     const-string v4, "offers"
@@ -677,7 +677,7 @@
 
     move-result-wide v3
 
-    .line 281
+    .line 274
     const-string v5, " \u2022 \u0e27\u0e31\u0e19\u0e19\u0e35\u0e49 \u0e23\u0e31\u0e1a "
 
     invoke-virtual {v0, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
@@ -696,7 +696,7 @@
 
     invoke-virtual {v1, v3, v4}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
 
-    .line 282
+    .line 275
     invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 
     move-result-object v0
@@ -987,7 +987,7 @@
     invoke-virtual {v0, v1}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
     .line 187
-    const-string v5, "\u0e23\u0e30\u0e22\u0e30\u0e23\u0e31\u0e1a\u0e07\u0e32\u0e19 (\u0e01\u0e21.)"
+    const-string v5, "\u0e23\u0e30\u0e22\u0e30\u0e23\u0e31\u0e1a\u0e07\u0e32\u0e19 (\u0e01\u0e21.) = \u0e23\u0e31\u0e28\u0e21\u0e35\u0e1a\u0e34\u0e19 GPS"
 
     invoke-static {v5}, Lcom/bot/taxsee/BotOverlay;->label(Ljava/lang/String;)Landroid/widget/TextView;
 
@@ -1013,140 +1013,113 @@
     .line 189
     invoke-virtual {v0, v5}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
-    .line 190
-    const-string v6, "\u0e04\u0e27\u0e32\u0e21\u0e40\u0e23\u0e47\u0e27\u0e1a\u0e34\u0e19 GPS (\u0e01\u0e21./\u0e0a\u0e21. 20-160)"
-
-    invoke-static {v6}, Lcom/bot/taxsee/BotOverlay;->label(Ljava/lang/String;)Landroid/widget/TextView;
-
-    move-result-object v6
-
-    invoke-virtual {v0, v6}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
-
-    .line 191
-    sget-object v6, Lcom/bot/taxsee/BotOverlay;->ctx:Landroid/content/Context;
-
-    invoke-static {v6}, Lcom/bot/taxsee/BotConfig;->getFlySpeed(Landroid/content/Context;)J
-
-    move-result-wide v6
-
-    invoke-static {v6, v7}, Ljava/lang/String;->valueOf(J)Ljava/lang/String;
-
-    move-result-object v6
-
-    invoke-static {v6}, Lcom/bot/taxsee/BotOverlay;->edit(Ljava/lang/String;)Landroid/widget/EditText;
-
-    move-result-object v6
-
     .line 192
-    invoke-virtual {v0, v6}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
+    new-instance v6, Landroid/widget/LinearLayout;
+
+    sget-object v7, Lcom/bot/taxsee/BotOverlay;->ctx:Landroid/content/Context;
+
+    invoke-direct {v6, v7}, Landroid/widget/LinearLayout;-><init>(Landroid/content/Context;)V
+
+    .line 193
+    invoke-virtual {v6, v4}, Landroid/widget/LinearLayout;->setOrientation(I)V
+
+    .line 194
+    invoke-virtual {v6, v3}, Landroid/widget/LinearLayout;->setGravity(I)V
 
     .line 195
-    new-instance v7, Landroid/widget/LinearLayout;
-
-    sget-object v8, Lcom/bot/taxsee/BotOverlay;->ctx:Landroid/content/Context;
-
-    invoke-direct {v7, v8}, Landroid/widget/LinearLayout;-><init>(Landroid/content/Context;)V
-
-    .line 196
-    invoke-virtual {v7, v4}, Landroid/widget/LinearLayout;->setOrientation(I)V
-
-    .line 197
-    invoke-virtual {v7, v3}, Landroid/widget/LinearLayout;->setGravity(I)V
-
-    .line 198
     new-instance v3, Landroid/widget/Switch;
 
     sget-object v4, Lcom/bot/taxsee/BotOverlay;->ctx:Landroid/content/Context;
 
     invoke-direct {v3, v4}, Landroid/widget/Switch;-><init>(Landroid/content/Context;)V
 
-    .line 199
+    .line 196
     invoke-static {}, Lcom/bot/taxsee/BotGps;->isFlying()Z
 
     move-result v4
 
     invoke-virtual {v3, v4}, Landroid/widget/Switch;->setChecked(Z)V
 
-    .line 200
+    .line 197
     new-instance v4, Landroid/widget/TextView;
 
-    sget-object v8, Lcom/bot/taxsee/BotOverlay;->ctx:Landroid/content/Context;
+    sget-object v7, Lcom/bot/taxsee/BotOverlay;->ctx:Landroid/content/Context;
 
-    invoke-direct {v4, v8}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
+    invoke-direct {v4, v7}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
 
-    .line 201
-    const-string v8, "  \ud83d\udeeb GPS \u0e1a\u0e34\u0e19\u0e27\u0e19\u0e43\u0e19\u0e23\u0e31\u0e28\u0e21\u0e35 (\u0e2b\u0e32\u0e07\u0e32\u0e19)"
+    .line 198
+    const-string v7, "  \ud83d\udeeb GPS \u0e1a\u0e34\u0e19\u0e27\u0e19\u0e43\u0e19\u0e23\u0e31\u0e28\u0e21\u0e35 (\u0e2b\u0e32\u0e07\u0e32\u0e19)"
 
-    invoke-virtual {v4, v8}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+    invoke-virtual {v4, v7}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
-    .line 202
+    .line 199
     invoke-virtual {v4, v2}, Landroid/widget/TextView;->setTextColor(I)V
 
-    .line 203
-    invoke-virtual {v7, v3}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
+    .line 200
+    invoke-virtual {v6, v3}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
-    invoke-virtual {v7, v4}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
+    invoke-virtual {v6, v4}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
-    .line 204
-    invoke-virtual {v0, v7}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
+    .line 201
+    invoke-virtual {v0, v6}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
-    .line 205
+    .line 202
     new-instance v2, Lcom/bot/taxsee/BotOverlay$4;
 
     invoke-direct {v2, v5}, Lcom/bot/taxsee/BotOverlay$4;-><init>(Landroid/widget/EditText;)V
 
     invoke-virtual {v3, v2}, Landroid/widget/Switch;->setOnCheckedChangeListener(Landroid/widget/CompoundButton$OnCheckedChangeListener;)V
 
-    .line 219
+    .line 216
     new-instance v2, Landroid/widget/Button;
 
     sget-object v3, Lcom/bot/taxsee/BotOverlay;->ctx:Landroid/content/Context;
 
     invoke-direct {v2, v3}, Landroid/widget/Button;-><init>(Landroid/content/Context;)V
 
-    .line 220
+    .line 217
     const-string v3, "\ud83d\udcbe \u0e1a\u0e31\u0e19\u0e17\u0e36\u0e01"
 
     invoke-virtual {v2, v3}, Landroid/widget/Button;->setText(Ljava/lang/CharSequence;)V
 
-    .line 221
+    .line 218
     invoke-virtual {v0, v2}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
-    .line 222
+    .line 219
     new-instance v3, Lcom/bot/taxsee/BotOverlay$5;
 
-    invoke-direct {v3, v1, v5, v6}, Lcom/bot/taxsee/BotOverlay$5;-><init>(Landroid/widget/EditText;Landroid/widget/EditText;Landroid/widget/EditText;)V
+    invoke-direct {v3, v1, v5}, Lcom/bot/taxsee/BotOverlay$5;-><init>(Landroid/widget/EditText;Landroid/widget/EditText;)V
 
     invoke-virtual {v2, v3}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
 
-    .line 242
+    .line 235
     new-instance v1, Landroid/widget/TextView;
 
     sget-object v2, Lcom/bot/taxsee/BotOverlay;->ctx:Landroid/content/Context;
 
     invoke-direct {v1, v2}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
 
-    .line 243
+    .line 236
     const v2, -0x21976
 
     invoke-virtual {v1, v2}, Landroid/widget/TextView;->setTextColor(I)V
 
-    .line 244
+    .line 237
     const/high16 v2, 0x41400000    # 12.0f
 
     invoke-virtual {v1, v2}, Landroid/widget/TextView;->setTextSize(F)V
 
-    .line 245
+    .line 238
     invoke-static {}, Lcom/bot/taxsee/BotOverlay;->shortStatus()Ljava/lang/String;
 
     move-result-object v2
 
     invoke-virtual {v1, v2}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
-    .line 246
+    .line 239
     invoke-virtual {v0, v1}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
-    .line 247
+    .line 240
     new-instance v2, Landroid/os/Handler;
 
     invoke-static {}, Landroid/os/Looper;->getMainLooper()Landroid/os/Looper;
@@ -1155,20 +1128,20 @@
 
     invoke-direct {v2, v3}, Landroid/os/Handler;-><init>(Landroid/os/Looper;)V
 
-    .line 248
+    .line 241
     new-instance v3, Lcom/bot/taxsee/BotOverlay$6;
 
     invoke-direct {v3, v1, v2}, Lcom/bot/taxsee/BotOverlay$6;-><init>(Landroid/widget/TextView;Landroid/os/Handler;)V
 
-    .line 255
+    .line 248
     const-wide/16 v4, 0x7d0
 
     invoke-virtual {v2, v3, v4, v5}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
 
-    .line 257
+    .line 250
     sput-object v0, Lcom/bot/taxsee/BotOverlay;->panel:Landroid/view/ViewGroup;
 
-    .line 258
+    .line 251
     new-instance v6, Landroid/view/WindowManager$LayoutParams;
 
     const/16 v10, 0x20
@@ -1183,12 +1156,12 @@
 
     invoke-direct/range {v6 .. v11}, Landroid/view/WindowManager$LayoutParams;-><init>(IIIII)V
 
-    .line 264
+    .line 257
     const/16 v0, 0x50
 
     iput v0, v6, Landroid/view/WindowManager$LayoutParams;->gravity:I
 
-    .line 265
+    .line 258
     const/16 v0, 0x14
 
     invoke-static {v0}, Lcom/bot/taxsee/BotOverlay;->dp(I)I
@@ -1197,28 +1170,28 @@
 
     iput v0, v6, Landroid/view/WindowManager$LayoutParams;->y:I
 
-    .line 266
+    .line 259
     iget v0, v6, Landroid/view/WindowManager$LayoutParams;->flags:I
 
     or-int/lit8 v0, v0, 0x8
 
     iput v0, v6, Landroid/view/WindowManager$LayoutParams;->flags:I
 
-    .line 267
+    .line 260
     sget-object v0, Lcom/bot/taxsee/BotOverlay;->wm:Landroid/view/WindowManager;
 
     sget-object v1, Lcom/bot/taxsee/BotOverlay;->panel:Landroid/view/ViewGroup;
 
     invoke-interface {v0, v1, v6}, Landroid/view/WindowManager;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
-    .line 269
+    .line 262
     iget v0, v6, Landroid/view/WindowManager$LayoutParams;->flags:I
 
     and-int/lit8 v0, v0, -0x9
 
     iput v0, v6, Landroid/view/WindowManager$LayoutParams;->flags:I
 
-    .line 270
+    .line 263
     :try_start_0
     sget-object v0, Lcom/bot/taxsee/BotOverlay;->wm:Landroid/view/WindowManager;
 
@@ -1233,7 +1206,7 @@
     :catchall_0
     move-exception v0
 
-    .line 271
+    .line 264
     :goto_0
     return-void
 .end method
@@ -1241,7 +1214,7 @@
 .method private static toast(Ljava/lang/String;)V
     .locals 2
 
-    .line 319
+    .line 312
     sget-object v0, Lcom/bot/taxsee/BotOverlay;->ctx:Landroid/content/Context;
 
     const/4 v1, 0x0
@@ -1252,7 +1225,7 @@
 
     invoke-virtual {p0}, Landroid/widget/Toast;->show()V
 
-    .line 320
+    .line 313
     return-void
 .end method
 
@@ -1279,7 +1252,7 @@
 .method private static updateFabColor()V
     .locals 2
 
-    .line 304
+    .line 297
     :try_start_0
     sget-object v0, Lcom/bot/taxsee/BotOverlay;->fab:Landroid/view/View;
 
@@ -1296,13 +1269,13 @@
     :cond_0
     const/4 v0, 0x0
 
-    .line 305
+    .line 298
     :goto_0
     instance-of v1, v0, Landroid/graphics/drawable/GradientDrawable;
 
     if-eqz v1, :cond_2
 
-    .line 306
+    .line 299
     check-cast v0, Landroid/graphics/drawable/GradientDrawable;
 
     sget-object v1, Lcom/bot/taxsee/BotOverlay;->ctx:Landroid/content/Context;
@@ -1327,7 +1300,7 @@
 
     goto :goto_2
 
-    .line 308
+    .line 301
     :catchall_0
     move-exception v0
 
@@ -1335,6 +1308,6 @@
     :goto_2
     nop
 
-    .line 309
+    .line 302
     return-void
 .end method
