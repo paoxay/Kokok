@@ -830,7 +830,15 @@ public final class BotEngine {
                         addFeed(ok ? "🤖 ปิด Auto แล้ว" : "❌ ปิด Auto ไม่สำเร็จ");
                         return;
                     }
-                    // 1) หา filter ชื่อ BotAuto ที่เคยสร้างไว้
+                    // ===== เปิด =====
+                    // พิสูจน์แล้วจาก template เซิร์ฟเวอร์: PRICE_MIN Max=100000.0
+                    // — ส่งเกินนี้เซิร์ฟเวอร์รับ request แต่ "ตัดค่าทิ้งเงียบๆ" = filter ไม่มีขั้นต่ำ = รับงานทุกราคา (อันตราย)
+                    // ดังนั้น auto ใช้เพดาน 100000 เสมอ; ราคาที่สูงกว่านี้ให้บอทเราคุมเอง
+                    long wantPrice = BotConfig.getMinPrice(ctx);
+                    if (wantPrice > 100000L) wantPrice = 100000L;
+                    long botMin = BotConfig.getMinPrice(ctx);
+
+                    // 1) หา filter BotAuto* ที่เคยสร้างไว้
                     long id = 0L;
                     String[] list = autoCall(ctx, "GET", "/Services/Driver.svc/api/v3/auto-assignment/filters", null);
                     if ("200".equals(list[0])) {
@@ -838,58 +846,57 @@ public final class BotEngine {
                         if (fs != null) {
                             for (int i = 0; i < fs.length(); i++) {
                                 JSONObject f = fs.optJSONObject(i);
-                                if (f != null && "BotAuto".equals(f.optString("Name", ""))) {
+                                if (f != null && f.optString("Name", "").startsWith("BotAuto")) {
                                     id = f.optLong("Id", 0L);
                                     break;
                                 }
                             }
                         }
                     }
-                    // 2) ไม่มี = สร้างใหม่ (ราคาขั้นต่ำตามบอทแต่เซิร์ฟเวอร์จำกัดสูงสุด 100000)
-                    if (id <= 0L) {
-                        long priceMin = Math.min(BotConfig.getMinPrice(ctx), 100000L);
-                        JSONObject o1 = new JSONObject();
-                        o1.put("Code", "PRICE_MIN");
-                        o1.put("Value", String.valueOf(priceMin));
-                        JSONObject o2 = new JSONObject();
-                        o2.put("Code", "PRICE_TYPES");
-                        o2.put("Value", "PRICE_NAL;PRICE_NONAL");
-                        JSONObject o3 = new JSONObject();
-                        o3.put("Code", "ACCEPT_INTERCITY");
-                        o3.put("Value", "0");
-                        JSONObject o4 = new JSONObject();
-                        o4.put("Code", "ACCEPT_SUBURBAN");
-                        o4.put("Value", "0");
-                        JSONArray opts = new JSONArray();
-                        opts.put(o1);
-                        opts.put(o2);
-                        opts.put(o3);
-                        opts.put(o4);
-                        JSONObject body = new JSONObject();
-                        body.put("isCurrent", 0);
-                        body.put("options", opts);
-                        body.put("name", "BotAuto");
-                        body.put("color", "#0C8BF3");
-                        body.put("IsAlongWayOrder", 0);
-                        String[] create = autoCall(ctx, "POST", "/Services/Driver.svc/api/v1/auto-assignment/filter", body.toString());
-                        if ("200".equals(create[0])) {
-                            id = new JSONObject(create[1]).optLong("ID", 0L);
+                    // 2) มีเดิม → upsert ราคา (POST พร้อม id) แล้วอ่านค่าที่เซิร์ฟเวอร์เก็บจริง
+                    String stored = null;
+                    if (id > 0L) {
+                        try {
+                            JSONObject up = autoBody(wantPrice);
+                            up.put("id", id);
+                            String[] upr = autoCall(ctx, "POST", "/Services/Driver.svc/api/v1/auto-assignment/filter", up.toString());
+                            Log.i(TAG, "AUTO UPSERT #" + id + " price=" + wantPrice + " -> " + upr[0]);
+                        } catch (Throwable upErr) {
+                            Log.e(TAG, "AUTO upsert fail", upErr);
                         }
+                        stored = readStoredPrice(ctx, id);
+                    }
+                    // 3) ไม่มีเดิม/แก้ไม่เข้า → สร้างใหม่ที่ราคาถูกกติกา
+                    if (id <= 0L || !String.valueOf(wantPrice).equals(stored)) {
+                        String[] create = autoCall(ctx, "POST", "/Services/Driver.svc/api/v1/auto-assignment/filter", autoBody(wantPrice).toString());
+                        if ("200".equals(create[0])) {
+                            JSONObject cr = new JSONObject(create[1]);
+                            id = cr.optLong("ID", cr.optLong("Id", cr.optLong("id", 0L)));
+                        }
+                        if (id > 0L) stored = readStoredPrice(ctx, id);
                         if (id <= 0L) {
-                            autoState = "🤖 Auto: สร้าง filter ไม่ได้ code=" + create[0];
-                            addFeed("❌ สร้าง filter ไม่ได้ (เต็มโควตา? ลบ filter เก่าในแอปก่อน)");
+                            autoState = "🤖 Auto: สร้าง filter ไม่ได้ — ลบ filter เก่า (Pao/BotAuto) ในแอปก่อนแล้วลองใหม่";
+                            addFeed("❌ สร้าง filter ไม่ได้ (โควตาเต็ม?)");
                             return;
                         }
                     }
-                    // 3) active
+                    // 4) ยืนยันราคาถูกเก็บจริงก่อนเปิด — ห้ามเปิด filter ที่ไม่มีขั้นต่ำ (จะรับงานราคาต่ำดิบ)
+                    if (!String.valueOf(wantPrice).equals(stored)) {
+                        autoCall(ctx, "GET", "/Services/Driver.svc/api/v1/auto-assignment/disable", null);
+                        autoState = "🤖 Auto: ไม่เปิด — ตั้งราคา filter ไม่สำเร็จ (เก็บ=" + stored + ") ลบ filter BotAuto เก่าในแอปแล้วกดใหม่";
+                        addFeed("⚠️ Auto ไม่เปิด — ราคา filter ไม่ถูกตั้ง (กันรับงานราคาต่ำ)");
+                        return;
+                    }
+                    // 5) active + สรุป
                     JSONObject act = new JSONObject();
                     act.put("filterId", id);
                     String[] r2 = autoCall(ctx, "POST", "/Services/Driver.svc/api/v1/auto-assignment/filter/" + id + "/active", act.toString());
                     boolean ok = "200".equals(r2[0]) && r2[1].contains("\"Success\":true");
                     BotConfig.setAutoCached(ctx, ok);
-                    autoState = ok ? "🤖 Auto-เซิร์ฟเวอร์: เปิดแล้ว (BotAuto #" + id + ")"
+                    autoState = ok ? ("🤖 Auto: เปิดแล้ว รับงาน ₭" + wantPrice + "+ (#" + id + ")"
+                            + (botMin > 100000L ? " ⚠️เพดานระบบ 100k (บอทคุม " + botMin + " เอง)" : ""))
                             : "🤖 Auto: เปิดไม่สำเร็จ code=" + r2[0];
-                    addFeed(ok ? "✅ เปิด Auto-เซิร์ฟเวอร์แล้ว — เซิร์ฟเวอร์จ่ายงานเอง" : "❌ เปิด Auto ไม่สำเร็จ");
+                    addFeed(ok ? "✅ เปิด Auto แล้ว — มอบงาน ₭" + wantPrice + "+ ให้เรงเอง" : "❌ เปิด Auto ไม่สำเร็จ");
                 } catch (Throwable e) {
                     autoState = "🤖 Auto: ผิดพลาด " + e.getMessage();
                     Log.e(TAG, "setAuto fail", e);
@@ -898,6 +905,56 @@ public final class BotEngine {
         }, "taxbot-auto-set");
         t.setDaemon(true);
         t.start();
+    }
+
+    /** อ่านราคา PRICE_MIN ที่เซิร์ฟเวอร์เก็บจริงใน filter — null = ไม่ถูกตั้ง (อันตราย) */
+    private static String readStoredPrice(Context ctx, long filterId) {
+        try {
+            String[] chk = autoCall(ctx, "GET", "/Services/Driver.svc/api/android/v1/auto-assignment/filter/" + filterId, null);
+            if (!"200".equals(chk[0])) return null;
+            JSONArray opts = new JSONObject(chk[1]).optJSONArray("Options");
+            if (opts == null) return null;
+            for (int i = 0; i < opts.length(); i++) {
+                JSONObject o = opts.optJSONObject(i);
+                if (o != null && "PRICE_MIN".equals(o.optString("Code", ""))) {
+                    if (o.isNull("Value")) return null;
+                    String s = String.valueOf(o.opt("Value"));
+                    if (s.endsWith(".0")) s = s.substring(0, s.length() - 2);
+                    return s;
+                }
+            }
+        } catch (Throwable t) {
+            Log.e(TAG, "readStoredPrice fail", t);
+        }
+        return null;
+    }
+
+    /** สร้าง body สำหรับ filter BotAuto ตามราคาขั้นต่ำที่ต้องการ */
+    private static JSONObject autoBody(long priceMin) throws Exception {
+        JSONObject o1 = new JSONObject();
+        o1.put("Code", "PRICE_MIN");
+        o1.put("Value", String.valueOf(priceMin));
+        JSONObject o2 = new JSONObject();
+        o2.put("Code", "PRICE_TYPES");
+        o2.put("Value", "PRICE_NAL;PRICE_NONAL");
+        JSONObject o3 = new JSONObject();
+        o3.put("Code", "ACCEPT_INTERCITY");
+        o3.put("Value", "0");
+        JSONObject o4 = new JSONObject();
+        o4.put("Code", "ACCEPT_SUBURBAN");
+        o4.put("Value", "0");
+        JSONArray opts = new JSONArray();
+        opts.put(o1);
+        opts.put(o2);
+        opts.put(o3);
+        opts.put(o4);
+        JSONObject body = new JSONObject();
+        body.put("isCurrent", 0);
+        body.put("options", opts);
+        body.put("name", "BotAuto2");
+        body.put("color", "#0C8BF3");
+        body.put("IsAlongWayOrder", 0);
+        return body;
     }
 
     /** HTTP สำหรับ auto-assignment (GET/POST + sig) — คืน [code, body] */
@@ -924,7 +981,7 @@ public final class BotEngine {
         }
         int code = c.getResponseCode();
         String body = readAll(code >= 400 ? c.getErrorStream() : c.getInputStream());
-        Log.i(TAG, "AUTO " + method + " " + path + " -> " + code + " body=" + (body.length() > 200 ? body.substring(0, 200) : body));
+        Log.i(TAG, "AUTO " + method + " " + path + " -> " + code + " body=" + (body.length() > 900 ? body.substring(0, 900) : body));
         return new String[]{String.valueOf(code), body};
     }
 
