@@ -66,6 +66,16 @@ public final class BotConfig {
         prefs(ctx).edit().putBoolean("gps_fly", v).apply();
     }
 
+    /** ความเร็วบิน (กม./ชม.) — default 90, จำกัด 20-160 */
+    public static long getFlySpeed(Context ctx) {
+        long v = prefs(ctx).getLong("fly_speed_kmh", 90L);
+        return v < 20L ? 20L : (v > 160L ? 160L : v);
+    }
+
+    public static void setFlySpeed(Context ctx, long v) {
+        prefs(ctx).edit().putLong("fly_speed_kmh", Math.max(20L, Math.min(160L, v))).apply();
+    }
+
     /** แคชสถานะ auto-assignment ล่าสุดที่รู้จากเซิร์ฟเวอร์ (ไว้แสดงต่อเนื่อง) */
     public static boolean isAutoCached(Context ctx) {
         return prefs(ctx).getBoolean("auto_on", false);

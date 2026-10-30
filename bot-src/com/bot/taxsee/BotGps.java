@@ -24,6 +24,7 @@ public final class BotGps {
     private static Context appCtx;
     private static volatile boolean flyOn = false;
     private static volatile double radiusKm = 3.0;
+    private static volatile double speedKmh = 90.0; // ปรับได้ในแผง (20-160)
     private static volatile Location realLoc = null;
 
     // sink = mx/k (อ่านจาก field "a" ของ ox/s แบบ reflection — เรียกย้อนเข้าแอพเอง)
@@ -36,8 +37,14 @@ public final class BotGps {
     private static double centerLat = 0, centerLng = 0;
     private static double curLat = 0, curLng = 0;
     private static double tgtLat = 0, tgtLng = 0;
-    private static double speedMps = 15.0; // ~54 กม./ชม. (แกว่ง 13-18 ให้ดูจริง)
+    private static double speedMps = 25.0;
     private static long lastTickMs = 0L;
+    // รูปแบบวงกลมหลายวงซ้อน: เป้าหมายถัดไปอยู่บนวงแหวนรอบจุดกึ่งกลาง
+    // สลับวง นอก→กลาง→ใน (1.0R / 0.72R / 0.45R) มุมเดินหน้า ~60-90° ต่อขา
+    // = กวาดครบทั้งแผ่นวงกลม ไม่กองอยู่ขอบเดียว เหมือนขับวนหางานจริง
+    private static int ringIdx = 0;
+    private static double sweepAngle = 0.0;
+    private static final double[] RING_FACTORS = {1.0, 0.72, 0.45};
     private static final Object lock = new Object();
     private static final SecureRandom rnd = new SecureRandom();
     private static Thread pushThread = null;
@@ -51,8 +58,9 @@ public final class BotGps {
             appCtx = ctx.getApplicationContext();
             flyOn = BotConfig.isGpsFly(appCtx);
             radiusKm = BotConfig.getMaxDistanceKm(appCtx);
+            speedKmh = BotConfig.getFlySpeed(appCtx);
             if (flyOn) {
-                Log.i(TAG, "GPS fly resume ON r=" + radiusKm + "km");
+                Log.i(TAG, "GPS fly resume ON r=" + radiusKm + "km v=" + speedKmh + "km/h");
                 ensureThread();
             }
         } catch (Throwable t) {
@@ -141,6 +149,14 @@ public final class BotGps {
         radiusKm = km;
     }
 
+    public static void setSpeedKmh(double kmh) {
+        if (kmh < 20.0) kmh = 20.0;
+        if (kmh > 160.0) kmh = 160.0;
+        speedKmh = kmh;
+        if (appCtx != null) BotConfig.setFlySpeed(appCtx, (long) kmh);
+        Log.i(TAG, "GPS fly speed=" + kmh + "km/h");
+    }
+
     public static void setFly(boolean on) {
         flyOn = on;
         try {
@@ -162,7 +178,7 @@ public final class BotGps {
         synchronized (lock) {
             if (!centerSet) return "🛫 รอจุดกึ่งกลาง GPS...";
         }
-        return "🛫 บินอยู่ r=" + String.format("%.1f", radiusKm) + "กม (" + sentCount + "จุด)";
+        return "🛫 บินวง r=" + String.format("%.1f", radiusKm) + "กม " + Math.round(speedKmh) + "กม./ชม. (" + sentCount + "จุด)";
     }
 
     // =================== การจำลอง ===================
@@ -205,15 +221,19 @@ public final class BotGps {
             curLat += (tgtLat - curLat) * f;
             curLng += (tgtLng - curLng) * f;
         }
-        speedMps = 13.0 + rnd.nextDouble() * 5.0; // แกว่งความเร็ว 13-18 ม./วิ
+        // ความเร็วแกว่ง ±8% รอบค่าที่ตั้ง ให้ดูจริง
+        double base = speedKmh / 3.6;
+        speedMps = base * (0.92 + rnd.nextDouble() * 0.16);
     }
 
-    /** จุดหมายใหม่ — สุ่มในวงกลมรอบจุดกึ่งกลาง */
+    /** จุดหมายใหม่ — บนวงแหวนรอบจุดกึ่งกลาง (สลับวงนอก/กลาง/ใน มุมเดินหน้าตลอด) */
     private static void newTarget() {
-        double rMeters = radiusKm * 1000.0 * Math.sqrt(rnd.nextDouble());
-        double theta = rnd.nextDouble() * 2.0 * Math.PI;
-        double dLat = (rMeters * Math.sin(theta)) / 111320.0;
-        double dLng = (rMeters * Math.cos(theta)) / (111320.0 * Math.cos(Math.toRadians(centerLat)));
+        ringIdx = (ringIdx + 1) % RING_FACTORS.length;
+        sweepAngle += (Math.PI / 3.0) * (1.0 + rnd.nextDouble() * 0.5); // ~60-90° ต่อขา
+        if (sweepAngle > 2.0 * Math.PI) sweepAngle -= 2.0 * Math.PI;
+        double rMeters = radiusKm * 1000.0 * RING_FACTORS[ringIdx] * (0.92 + rnd.nextDouble() * 0.16);
+        double dLat = (rMeters * Math.sin(sweepAngle)) / 111320.0;
+        double dLng = (rMeters * Math.cos(sweepAngle)) / (111320.0 * Math.cos(Math.toRadians(centerLat)));
         tgtLat = centerLat + dLat;
         tgtLng = centerLng + dLng;
     }

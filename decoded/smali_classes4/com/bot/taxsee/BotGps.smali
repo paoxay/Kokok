@@ -4,6 +4,8 @@
 
 
 # static fields
+.field private static final RING_FACTORS:[D
+
 .field private static final TAG:Ljava/lang/String; = "TAXBOT"
 
 .field private static appCtx:Landroid/content/Context;
@@ -30,6 +32,8 @@
 
 .field private static volatile realLoc:Landroid/location/Location;
 
+.field private static ringIdx:I
+
 .field private static final rnd:Ljava/security/SecureRandom;
 
 .field private static volatile sentCount:J
@@ -38,7 +42,11 @@
 
 .field private static volatile sinkMethod:Ljava/lang/reflect/Method;
 
+.field private static volatile speedKmh:D
+
 .field private static speedMps:D
+
+.field private static sweepAngle:D
 
 .field private static tgtLat:D
 
@@ -47,7 +55,7 @@
 
 # direct methods
 .method static constructor <clinit>()V
-    .locals 6
+    .locals 8
 
     .line 25
     const/4 v0, 0x0
@@ -60,76 +68,103 @@
     sput-wide v1, Lcom/bot/taxsee/BotGps;->radiusKm:D
 
     .line 27
+    const-wide v1, 0x4056800000000000L    # 90.0
+
+    sput-wide v1, Lcom/bot/taxsee/BotGps;->speedKmh:D
+
+    .line 28
     const/4 v1, 0x0
 
     sput-object v1, Lcom/bot/taxsee/BotGps;->realLoc:Landroid/location/Location;
 
-    .line 30
+    .line 31
     sput-object v1, Lcom/bot/taxsee/BotGps;->sink:Ljava/lang/Object;
 
-    .line 31
+    .line 32
     sput-object v1, Lcom/bot/taxsee/BotGps;->sinkMethod:Ljava/lang/reflect/Method;
 
-    .line 32
+    .line 33
     const-wide/16 v2, 0x0
 
     sput-wide v2, Lcom/bot/taxsee/BotGps;->sentCount:J
 
-    .line 35
+    .line 36
     sput-boolean v0, Lcom/bot/taxsee/BotGps;->centerSet:Z
 
-    .line 36
+    .line 37
     const-wide/16 v4, 0x0
 
     sput-wide v4, Lcom/bot/taxsee/BotGps;->centerLat:D
 
     sput-wide v4, Lcom/bot/taxsee/BotGps;->centerLng:D
 
-    .line 37
+    .line 38
     sput-wide v4, Lcom/bot/taxsee/BotGps;->curLat:D
 
     sput-wide v4, Lcom/bot/taxsee/BotGps;->curLng:D
 
-    .line 38
+    .line 39
     sput-wide v4, Lcom/bot/taxsee/BotGps;->tgtLat:D
 
     sput-wide v4, Lcom/bot/taxsee/BotGps;->tgtLng:D
 
-    .line 39
-    const-wide/high16 v4, 0x402e000000000000L    # 15.0
-
-    sput-wide v4, Lcom/bot/taxsee/BotGps;->speedMps:D
-
     .line 40
-    sput-wide v2, Lcom/bot/taxsee/BotGps;->lastTickMs:J
+    const-wide/high16 v6, 0x4039000000000000L    # 25.0
+
+    sput-wide v6, Lcom/bot/taxsee/BotGps;->speedMps:D
 
     .line 41
+    sput-wide v2, Lcom/bot/taxsee/BotGps;->lastTickMs:J
+
+    .line 45
+    sput v0, Lcom/bot/taxsee/BotGps;->ringIdx:I
+
+    .line 46
+    sput-wide v4, Lcom/bot/taxsee/BotGps;->sweepAngle:D
+
+    .line 47
+    const/4 v0, 0x3
+
+    new-array v0, v0, [D
+
+    fill-array-data v0, :array_0
+
+    sput-object v0, Lcom/bot/taxsee/BotGps;->RING_FACTORS:[D
+
+    .line 48
     new-instance v0, Ljava/lang/Object;
 
     invoke-direct {v0}, Ljava/lang/Object;-><init>()V
 
     sput-object v0, Lcom/bot/taxsee/BotGps;->lock:Ljava/lang/Object;
 
-    .line 42
+    .line 49
     new-instance v0, Ljava/security/SecureRandom;
 
     invoke-direct {v0}, Ljava/security/SecureRandom;-><init>()V
 
     sput-object v0, Lcom/bot/taxsee/BotGps;->rnd:Ljava/security/SecureRandom;
 
-    .line 43
+    .line 50
     sput-object v1, Lcom/bot/taxsee/BotGps;->pushThread:Ljava/lang/Thread;
 
     return-void
+
+    :array_0
+    .array-data 8
+        0x3ff0000000000000L    # 1.0
+        0x3fe70a3d70a3d70aL    # 0.72
+        0x3fdccccccccccccdL    # 0.45
+    .end array-data
 .end method
 
 .method private constructor <init>()V
     .locals 0
 
-    .line 45
+    .line 52
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
-    .line 46
+    .line 53
     return-void
 .end method
 
@@ -261,14 +296,14 @@
 .method private static advance(J)V
     .locals 13
 
-    .line 183
+    .line 199
     sget-boolean v0, Lcom/bot/taxsee/BotGps;->centerSet:Z
 
     if-nez v0, :cond_0
 
     return-void
 
-    .line 184
+    .line 200
     :cond_0
     sget-wide v0, Lcom/bot/taxsee/BotGps;->lastTickMs:J
 
@@ -278,13 +313,13 @@
 
     if-nez v4, :cond_1
 
-    .line 185
+    .line 201
     sput-wide p0, Lcom/bot/taxsee/BotGps;->lastTickMs:J
 
-    .line 186
+    .line 202
     return-void
 
-    .line 188
+    .line 204
     :cond_1
     sget-wide v0, Lcom/bot/taxsee/BotGps;->lastTickMs:J
 
@@ -298,10 +333,10 @@
 
     div-double/2addr v0, v2
 
-    .line 189
+    .line 205
     sput-wide p0, Lcom/bot/taxsee/BotGps;->lastTickMs:J
 
-    .line 190
+    .line 206
     const-wide/16 p0, 0x0
 
     cmpg-double v2, v0, p0
@@ -310,7 +345,7 @@
 
     return-void
 
-    .line 191
+    .line 207
     :cond_2
     const-wide/high16 p0, 0x4018000000000000L    # 6.0
 
@@ -320,7 +355,7 @@
 
     move-wide v0, p0
 
-    .line 193
+    .line 209
     :cond_3
     sget-wide v2, Lcom/bot/taxsee/BotGps;->curLat:D
 
@@ -334,17 +369,17 @@
 
     move-result-wide p0
 
-    .line 194
+    .line 210
     const-wide/high16 v2, 0x4034000000000000L    # 20.0
 
     cmpg-double v4, p0, v2
 
     if-gez v4, :cond_4
 
-    .line 195
+    .line 211
     invoke-static {}, Lcom/bot/taxsee/BotGps;->newTarget()V
 
-    .line 196
+    .line 212
     sget-wide v5, Lcom/bot/taxsee/BotGps;->curLat:D
 
     sget-wide v7, Lcom/bot/taxsee/BotGps;->curLng:D
@@ -357,37 +392,37 @@
 
     move-result-wide p0
 
-    .line 198
+    .line 214
     :cond_4
     sget-wide v2, Lcom/bot/taxsee/BotGps;->speedMps:D
 
     mul-double v2, v2, v0
 
-    .line 199
+    .line 215
     cmpl-double v0, v2, p0
 
     if-ltz v0, :cond_5
 
-    .line 200
+    .line 216
     sget-wide p0, Lcom/bot/taxsee/BotGps;->tgtLat:D
 
     sput-wide p0, Lcom/bot/taxsee/BotGps;->curLat:D
 
-    .line 201
+    .line 217
     sget-wide p0, Lcom/bot/taxsee/BotGps;->tgtLng:D
 
     sput-wide p0, Lcom/bot/taxsee/BotGps;->curLng:D
 
-    .line 202
+    .line 218
     invoke-static {}, Lcom/bot/taxsee/BotGps;->newTarget()V
 
     goto :goto_0
 
-    .line 204
+    .line 220
     :cond_5
     div-double/2addr v2, p0
 
-    .line 205
+    .line 221
     sget-wide p0, Lcom/bot/taxsee/BotGps;->curLat:D
 
     sget-wide v0, Lcom/bot/taxsee/BotGps;->tgtLat:D
@@ -402,7 +437,7 @@
 
     sput-wide p0, Lcom/bot/taxsee/BotGps;->curLat:D
 
-    .line 206
+    .line 222
     sget-wide p0, Lcom/bot/taxsee/BotGps;->curLng:D
 
     sget-wide v0, Lcom/bot/taxsee/BotGps;->tgtLng:D
@@ -417,32 +452,41 @@
 
     sput-wide p0, Lcom/bot/taxsee/BotGps;->curLng:D
 
-    .line 208
+    .line 225
     :goto_0
-    sget-object p0, Lcom/bot/taxsee/BotGps;->rnd:Ljava/security/SecureRandom;
+    sget-wide p0, Lcom/bot/taxsee/BotGps;->speedKmh:D
 
-    invoke-virtual {p0}, Ljava/security/SecureRandom;->nextDouble()D
+    const-wide v0, 0x400ccccccccccccdL    # 3.6
 
-    move-result-wide p0
+    div-double/2addr p0, v0
 
-    const-wide/high16 v0, 0x4014000000000000L    # 5.0
+    .line 226
+    sget-object v0, Lcom/bot/taxsee/BotGps;->rnd:Ljava/security/SecureRandom;
+
+    invoke-virtual {v0}, Ljava/security/SecureRandom;->nextDouble()D
+
+    move-result-wide v0
+
+    const-wide v2, 0x3fc47ae147ae147bL    # 0.16
+
+    mul-double v0, v0, v2
+
+    const-wide v2, 0x3fed70a3d70a3d71L    # 0.92
+
+    add-double/2addr v0, v2
 
     mul-double p0, p0, v0
 
-    const-wide/high16 v0, 0x402a000000000000L    # 13.0
-
-    add-double/2addr p0, v0
-
     sput-wide p0, Lcom/bot/taxsee/BotGps;->speedMps:D
 
-    .line 209
+    .line 227
     return-void
 .end method
 
 .method public static attach(Ljava/lang/Object;)V
     .locals 7
 
-    .line 67
+    .line 75
     const-string v0, "TAXBOT"
 
     :try_start_0
@@ -452,7 +496,7 @@
 
     if-eqz p0, :cond_0
 
-    .line 68
+    .line 76
     invoke-virtual {p0}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
 
     move-result-object v1
@@ -463,17 +507,17 @@
 
     move-result-object v1
 
-    .line 69
+    .line 77
     const/4 v2, 0x1
 
     invoke-virtual {v1, v2}, Ljava/lang/reflect/Field;->setAccessible(Z)V
 
-    .line 70
+    .line 78
     invoke-virtual {v1, p0}, Ljava/lang/reflect/Field;->get(Ljava/lang/Object;)Ljava/lang/Object;
 
     move-result-object p0
 
-    .line 71
+    .line 79
     invoke-virtual {p0}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
 
     move-result-object v1
@@ -492,16 +536,16 @@
 
     move-result-object v1
 
-    .line 72
+    .line 80
     invoke-virtual {v1, v2}, Ljava/lang/reflect/Method;->setAccessible(Z)V
 
-    .line 73
+    .line 81
     sput-object v1, Lcom/bot/taxsee/BotGps;->sinkMethod:Ljava/lang/reflect/Method;
 
-    .line 74
+    .line 82
     sput-object p0, Lcom/bot/taxsee/BotGps;->sink:Ljava/lang/Object;
 
-    .line 75
+    .line 83
     new-instance v1, Ljava/lang/StringBuilder;
 
     invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
@@ -532,31 +576,31 @@
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
-    .line 79
+    .line 87
     :cond_0
     goto :goto_0
 
-    .line 77
+    .line 85
     :catchall_0
     move-exception p0
 
-    .line 78
+    .line 86
     const-string v1, "GPS sink attach fail"
 
     invoke-static {v0, v1, p0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
 
-    .line 80
+    .line 88
     :goto_0
     invoke-static {}, Lcom/bot/taxsee/BotGps;->ensureThread()V
 
-    .line 81
+    .line 89
     return-void
 .end method
 
 .method private static bearingDeg(DDDD)D
     .locals 4
 
-    .line 244
+    .line 264
     sub-double/2addr p6, p2
 
     invoke-static {p6, p7}, Ljava/lang/Math;->toRadians(D)D
@@ -577,7 +621,7 @@
 
     mul-double p2, p2, v0
 
-    .line 245
+    .line 265
     invoke-static {p0, p1}, Ljava/lang/Math;->toRadians(D)D
 
     move-result-wide v0
@@ -596,7 +640,7 @@
 
     mul-double v0, v0, v2
 
-    .line 246
+    .line 266
     invoke-static {p0, p1}, Ljava/lang/Math;->toRadians(D)D
 
     move-result-wide p0
@@ -627,7 +671,7 @@
 
     sub-double/2addr v0, p0
 
-    .line 247
+    .line 267
     invoke-static {p2, p3, v0, v1}, Ljava/lang/Math;->atan2(DD)D
 
     move-result-wide p0
@@ -648,36 +692,36 @@
 .method private static build(Landroid/location/Location;)Landroid/location/Location;
     .locals 11
 
-    .line 223
+    .line 243
     new-instance v0, Landroid/location/Location;
 
     invoke-direct {v0, p0}, Landroid/location/Location;-><init>(Landroid/location/Location;)V
 
-    .line 224
+    .line 244
     sget-wide v1, Lcom/bot/taxsee/BotGps;->curLat:D
 
     invoke-virtual {v0, v1, v2}, Landroid/location/Location;->setLatitude(D)V
 
-    .line 225
+    .line 245
     sget-wide v1, Lcom/bot/taxsee/BotGps;->curLng:D
 
     invoke-virtual {v0, v1, v2}, Landroid/location/Location;->setLongitude(D)V
 
-    .line 226
+    .line 246
     invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
 
     move-result-wide v1
 
     invoke-virtual {v0, v1, v2}, Landroid/location/Location;->setTime(J)V
 
-    .line 227
+    .line 247
     invoke-static {}, Landroid/os/SystemClock;->elapsedRealtimeNanos()J
 
     move-result-wide v1
 
     invoke-virtual {v0, v1, v2}, Landroid/location/Location;->setElapsedRealtimeNanos(J)V
 
-    .line 228
+    .line 248
     sget-wide v3, Lcom/bot/taxsee/BotGps;->curLat:D
 
     sget-wide v5, Lcom/bot/taxsee/BotGps;->curLng:D
@@ -694,14 +738,14 @@
 
     invoke-virtual {v0, v1}, Landroid/location/Location;->setBearing(F)V
 
-    .line 229
+    .line 249
     sget-wide v1, Lcom/bot/taxsee/BotGps;->speedMps:D
 
     double-to-float v1, v1
 
     invoke-virtual {v0, v1}, Landroid/location/Location;->setSpeed(F)V
 
-    .line 230
+    .line 250
     invoke-virtual {p0}, Landroid/location/Location;->getAccuracy()F
 
     move-result p0
@@ -716,7 +760,7 @@
 
     invoke-virtual {v0, p0}, Landroid/location/Location;->setAccuracy(F)V
 
-    .line 231
+    .line 251
     :cond_0
     return-object v0
 .end method
@@ -724,7 +768,7 @@
 .method public static currentLoc()Landroid/location/Location;
     .locals 3
 
-    .line 97
+    .line 105
     sget-boolean v0, Lcom/bot/taxsee/BotGps;->flyOn:Z
 
     if-nez v0, :cond_0
@@ -733,19 +777,19 @@
 
     return-object v0
 
-    .line 98
+    .line 106
     :cond_0
     sget-object v0, Lcom/bot/taxsee/BotGps;->lock:Ljava/lang/Object;
 
     monitor-enter v0
 
-    .line 99
+    .line 107
     :try_start_0
     sget-boolean v1, Lcom/bot/taxsee/BotGps;->centerSet:Z
 
     if-nez v1, :cond_2
 
-    .line 100
+    .line 108
     sget-object v1, Lcom/bot/taxsee/BotGps;->realLoc:Landroid/location/Location;
 
     if-eqz v1, :cond_1
@@ -756,7 +800,7 @@
 
     goto :goto_0
 
-    .line 101
+    .line 109
     :cond_1
     monitor-exit v0
 
@@ -764,7 +808,7 @@
 
     return-object v0
 
-    .line 103
+    .line 111
     :cond_2
     :goto_0
     invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
@@ -773,25 +817,25 @@
 
     invoke-static {v1, v2}, Lcom/bot/taxsee/BotGps;->advance(J)V
 
-    .line 104
+    .line 112
     sget-object v1, Lcom/bot/taxsee/BotGps;->realLoc:Landroid/location/Location;
 
-    .line 105
+    .line 113
     if-nez v1, :cond_3
 
-    .line 106
+    .line 114
     new-instance v1, Landroid/location/Location;
 
     const-string v2, "fused"
 
     invoke-direct {v1, v2}, Landroid/location/Location;-><init>(Ljava/lang/String;)V
 
-    .line 107
+    .line 115
     const/high16 v2, 0x41100000    # 9.0f
 
     invoke-virtual {v1, v2}, Landroid/location/Location;->setAccuracy(F)V
 
-    .line 109
+    .line 117
     :cond_3
     invoke-static {v1}, Lcom/bot/taxsee/BotGps;->build(Landroid/location/Location;)Landroid/location/Location;
 
@@ -801,7 +845,7 @@
 
     return-object v1
 
-    .line 110
+    .line 118
     :catchall_0
     move-exception v1
 
@@ -815,21 +859,21 @@
 .method private static distMeters(DDDD)D
     .locals 4
 
-    .line 235
+    .line 255
     sub-double v0, p4, p0
 
     invoke-static {v0, v1}, Ljava/lang/Math;->toRadians(D)D
 
     move-result-wide v0
 
-    .line 236
+    .line 256
     sub-double/2addr p6, p2
 
     invoke-static {p6, p7}, Ljava/lang/Math;->toRadians(D)D
 
     move-result-wide p2
 
-    .line 237
+    .line 257
     const-wide/high16 p6, 0x4000000000000000L    # 2.0
 
     div-double/2addr v0, p6
@@ -844,7 +888,7 @@
 
     mul-double v2, v2, v0
 
-    .line 238
+    .line 258
     invoke-static {p0, p1}, Ljava/lang/Math;->toRadians(D)D
 
     move-result-wide p0
@@ -865,7 +909,7 @@
 
     div-double/2addr p2, p6
 
-    .line 239
+    .line 259
     invoke-static {p2, p3}, Ljava/lang/Math;->sin(D)D
 
     move-result-wide p4
@@ -880,7 +924,7 @@
 
     add-double/2addr v2, p0
 
-    .line 240
+    .line 260
     invoke-static {v2, v3}, Ljava/lang/Math;->sqrt(D)D
 
     move-result-wide p0
@@ -907,7 +951,7 @@
 .method private static ensureThread()V
     .locals 4
 
-    .line 253
+    .line 273
     sget-object v0, Lcom/bot/taxsee/BotGps;->pushThread:Ljava/lang/Thread;
 
     if-eqz v0, :cond_0
@@ -922,13 +966,13 @@
 
     return-void
 
-    .line 254
+    .line 274
     :cond_0
     const-class v0, Lcom/bot/taxsee/BotGps;
 
     monitor-enter v0
 
-    .line 255
+    .line 275
     :try_start_0
     sget-object v1, Lcom/bot/taxsee/BotGps;->pushThread:Ljava/lang/Thread;
 
@@ -946,7 +990,7 @@
 
     return-void
 
-    .line 256
+    .line 276
     :cond_1
     new-instance v1, Ljava/lang/Thread;
 
@@ -960,25 +1004,25 @@
 
     sput-object v1, Lcom/bot/taxsee/BotGps;->pushThread:Ljava/lang/Thread;
 
-    .line 290
+    .line 310
     sget-object v1, Lcom/bot/taxsee/BotGps;->pushThread:Ljava/lang/Thread;
 
     const/4 v2, 0x1
 
     invoke-virtual {v1, v2}, Ljava/lang/Thread;->setDaemon(Z)V
 
-    .line 291
+    .line 311
     sget-object v1, Lcom/bot/taxsee/BotGps;->pushThread:Ljava/lang/Thread;
 
     invoke-virtual {v1}, Ljava/lang/Thread;->start()V
 
-    .line 292
+    .line 312
     monitor-exit v0
 
-    .line 293
+    .line 313
     return-void
 
-    .line 292
+    .line 312
     :catchall_0
     move-exception v1
 
@@ -992,12 +1036,12 @@
 .method public static hasCenter()Z
     .locals 2
 
-    .line 125
+    .line 133
     sget-object v0, Lcom/bot/taxsee/BotGps;->lock:Ljava/lang/Object;
 
     monitor-enter v0
 
-    .line 126
+    .line 134
     :try_start_0
     sget-boolean v1, Lcom/bot/taxsee/BotGps;->centerSet:Z
 
@@ -1005,7 +1049,7 @@
 
     return v1
 
-    .line 127
+    .line 135
     :catchall_0
     move-exception v1
 
@@ -1019,7 +1063,7 @@
 .method public static init(Landroid/content/Context;)V
     .locals 3
 
-    .line 51
+    .line 58
     const-string v0, "TAXBOT"
 
     :try_start_0
@@ -1029,7 +1073,7 @@
 
     sput-object p0, Lcom/bot/taxsee/BotGps;->appCtx:Landroid/content/Context;
 
-    .line 52
+    .line 59
     sget-object p0, Lcom/bot/taxsee/BotGps;->appCtx:Landroid/content/Context;
 
     invoke-static {p0}, Lcom/bot/taxsee/BotConfig;->isGpsFly(Landroid/content/Context;)Z
@@ -1038,7 +1082,7 @@
 
     sput-boolean p0, Lcom/bot/taxsee/BotGps;->flyOn:Z
 
-    .line 53
+    .line 60
     sget-object p0, Lcom/bot/taxsee/BotGps;->appCtx:Landroid/content/Context;
 
     invoke-static {p0}, Lcom/bot/taxsee/BotConfig;->getMaxDistanceKm(Landroid/content/Context;)D
@@ -1047,12 +1091,23 @@
 
     sput-wide v1, Lcom/bot/taxsee/BotGps;->radiusKm:D
 
-    .line 54
+    .line 61
+    sget-object p0, Lcom/bot/taxsee/BotGps;->appCtx:Landroid/content/Context;
+
+    invoke-static {p0}, Lcom/bot/taxsee/BotConfig;->getFlySpeed(Landroid/content/Context;)J
+
+    move-result-wide v1
+
+    long-to-double v1, v1
+
+    sput-wide v1, Lcom/bot/taxsee/BotGps;->speedKmh:D
+
+    .line 62
     sget-boolean p0, Lcom/bot/taxsee/BotGps;->flyOn:Z
 
     if-eqz p0, :cond_0
 
-    .line 55
+    .line 63
     new-instance p0, Ljava/lang/StringBuilder;
 
     invoke-direct {p0}, Ljava/lang/StringBuilder;-><init>()V
@@ -1069,7 +1124,19 @@
 
     move-result-object p0
 
-    const-string v1, "km"
+    const-string v1, "km v="
+
+    invoke-virtual {p0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object p0
+
+    sget-wide v1, Lcom/bot/taxsee/BotGps;->speedKmh:D
+
+    invoke-virtual {p0, v1, v2}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
+
+    move-result-object p0
+
+    const-string v1, "km/h"
 
     invoke-virtual {p0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -1081,25 +1148,25 @@
 
     invoke-static {v0, p0}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
-    .line 56
+    .line 64
     invoke-static {}, Lcom/bot/taxsee/BotGps;->ensureThread()V
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
-    .line 60
+    .line 68
     :cond_0
     goto :goto_0
 
-    .line 58
+    .line 66
     :catchall_0
     move-exception p0
 
-    .line 59
+    .line 67
     const-string v1, "BotGps init fail"
 
     invoke-static {v0, v1, p0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
 
-    .line 61
+    .line 69
     :goto_0
     return-void
 .end method
@@ -1107,7 +1174,7 @@
 .method public static isFlying()Z
     .locals 1
 
-    .line 121
+    .line 129
     sget-boolean v0, Lcom/bot/taxsee/BotGps;->flyOn:Z
 
     return v0
@@ -1116,99 +1183,154 @@
 .method private static newTarget()V
     .locals 8
 
-    .line 213
+    .line 231
+    sget v0, Lcom/bot/taxsee/BotGps;->ringIdx:I
+
+    add-int/lit8 v0, v0, 0x1
+
+    sget-object v1, Lcom/bot/taxsee/BotGps;->RING_FACTORS:[D
+
+    array-length v1, v1
+
+    rem-int/2addr v0, v1
+
+    sput v0, Lcom/bot/taxsee/BotGps;->ringIdx:I
+
+    .line 232
+    sget-wide v0, Lcom/bot/taxsee/BotGps;->sweepAngle:D
+
+    sget-object v2, Lcom/bot/taxsee/BotGps;->rnd:Ljava/security/SecureRandom;
+
+    invoke-virtual {v2}, Ljava/security/SecureRandom;->nextDouble()D
+
+    move-result-wide v2
+
+    const-wide/high16 v4, 0x3fe0000000000000L    # 0.5
+
+    mul-double v2, v2, v4
+
+    const-wide/high16 v4, 0x3ff0000000000000L    # 1.0
+
+    add-double/2addr v2, v4
+
+    const-wide v4, 0x3ff0c152382d7365L    # 1.0471975511965976
+
+    mul-double v2, v2, v4
+
+    add-double/2addr v0, v2
+
+    sput-wide v0, Lcom/bot/taxsee/BotGps;->sweepAngle:D
+
+    .line 233
+    sget-wide v0, Lcom/bot/taxsee/BotGps;->sweepAngle:D
+
+    const-wide v2, 0x401921fb54442d18L    # 6.283185307179586
+
+    cmpl-double v4, v0, v2
+
+    if-lez v4, :cond_0
+
+    sget-wide v0, Lcom/bot/taxsee/BotGps;->sweepAngle:D
+
+    sub-double/2addr v0, v2
+
+    sput-wide v0, Lcom/bot/taxsee/BotGps;->sweepAngle:D
+
+    .line 234
+    :cond_0
     sget-wide v0, Lcom/bot/taxsee/BotGps;->radiusKm:D
 
     const-wide v2, 0x408f400000000000L    # 1000.0
 
     mul-double v0, v0, v2
 
+    sget-object v2, Lcom/bot/taxsee/BotGps;->RING_FACTORS:[D
+
+    sget v3, Lcom/bot/taxsee/BotGps;->ringIdx:I
+
+    aget-wide v3, v2, v3
+
+    mul-double v0, v0, v3
+
     sget-object v2, Lcom/bot/taxsee/BotGps;->rnd:Ljava/security/SecureRandom;
 
     invoke-virtual {v2}, Ljava/security/SecureRandom;->nextDouble()D
 
     move-result-wide v2
 
-    invoke-static {v2, v3}, Ljava/lang/Math;->sqrt(D)D
-
-    move-result-wide v2
-
-    mul-double v0, v0, v2
-
-    .line 214
-    sget-object v2, Lcom/bot/taxsee/BotGps;->rnd:Ljava/security/SecureRandom;
-
-    invoke-virtual {v2}, Ljava/security/SecureRandom;->nextDouble()D
-
-    move-result-wide v2
-
-    const-wide/high16 v4, 0x4000000000000000L    # 2.0
+    const-wide v4, 0x3fc47ae147ae147bL    # 0.16
 
     mul-double v2, v2, v4
 
-    const-wide v4, 0x400921fb54442d18L    # Math.PI
-
-    mul-double v2, v2, v4
-
-    .line 215
-    invoke-static {v2, v3}, Ljava/lang/Math;->sin(D)D
-
-    move-result-wide v4
-
-    mul-double v4, v4, v0
-
-    const-wide v6, 0x40fb2d8000000000L    # 111320.0
-
-    div-double/2addr v4, v6
-
-    .line 216
-    invoke-static {v2, v3}, Ljava/lang/Math;->cos(D)D
-
-    move-result-wide v2
-
-    mul-double v0, v0, v2
-
-    sget-wide v2, Lcom/bot/taxsee/BotGps;->centerLat:D
-
-    invoke-static {v2, v3}, Ljava/lang/Math;->toRadians(D)D
-
-    move-result-wide v2
-
-    invoke-static {v2, v3}, Ljava/lang/Math;->cos(D)D
-
-    move-result-wide v2
-
-    mul-double v2, v2, v6
-
-    div-double/2addr v0, v2
-
-    .line 217
-    sget-wide v2, Lcom/bot/taxsee/BotGps;->centerLat:D
+    const-wide v4, 0x3fed70a3d70a3d71L    # 0.92
 
     add-double/2addr v2, v4
 
-    sput-wide v2, Lcom/bot/taxsee/BotGps;->tgtLat:D
+    mul-double v0, v0, v2
 
-    .line 218
+    .line 235
+    sget-wide v2, Lcom/bot/taxsee/BotGps;->sweepAngle:D
+
+    invoke-static {v2, v3}, Ljava/lang/Math;->sin(D)D
+
+    move-result-wide v2
+
+    mul-double v2, v2, v0
+
+    const-wide v4, 0x40fb2d8000000000L    # 111320.0
+
+    div-double/2addr v2, v4
+
+    .line 236
+    sget-wide v6, Lcom/bot/taxsee/BotGps;->sweepAngle:D
+
+    invoke-static {v6, v7}, Ljava/lang/Math;->cos(D)D
+
+    move-result-wide v6
+
+    mul-double v0, v0, v6
+
+    sget-wide v6, Lcom/bot/taxsee/BotGps;->centerLat:D
+
+    invoke-static {v6, v7}, Ljava/lang/Math;->toRadians(D)D
+
+    move-result-wide v6
+
+    invoke-static {v6, v7}, Ljava/lang/Math;->cos(D)D
+
+    move-result-wide v6
+
+    mul-double v6, v6, v4
+
+    div-double/2addr v0, v6
+
+    .line 237
+    sget-wide v4, Lcom/bot/taxsee/BotGps;->centerLat:D
+
+    add-double/2addr v4, v2
+
+    sput-wide v4, Lcom/bot/taxsee/BotGps;->tgtLat:D
+
+    .line 238
     sget-wide v2, Lcom/bot/taxsee/BotGps;->centerLng:D
 
     add-double/2addr v2, v0
 
     sput-wide v2, Lcom/bot/taxsee/BotGps;->tgtLng:D
 
-    .line 219
+    .line 239
     return-void
 .end method
 
 .method public static noteReal(Landroid/location/Location;)V
     .locals 0
 
-    .line 115
+    .line 123
     if-eqz p0, :cond_0
 
     sput-object p0, Lcom/bot/taxsee/BotGps;->realLoc:Landroid/location/Location;
 
-    .line 116
+    .line 124
     :cond_0
     return-void
 .end method
@@ -1216,7 +1338,7 @@
 .method public static radius()D
     .locals 2
 
-    .line 135
+    .line 143
     sget-wide v0, Lcom/bot/taxsee/BotGps;->radiusKm:D
 
     return-wide v0
@@ -1225,14 +1347,14 @@
 .method private static seedCenter(Landroid/location/Location;)V
     .locals 2
 
-    .line 171
+    .line 187
     sget-boolean v0, Lcom/bot/taxsee/BotGps;->centerSet:Z
 
     if-eqz v0, :cond_0
 
     return-void
 
-    .line 172
+    .line 188
     :cond_0
     invoke-virtual {p0}, Landroid/location/Location;->getLatitude()D
 
@@ -1240,39 +1362,39 @@
 
     sput-wide v0, Lcom/bot/taxsee/BotGps;->centerLat:D
 
-    .line 173
+    .line 189
     invoke-virtual {p0}, Landroid/location/Location;->getLongitude()D
 
     move-result-wide v0
 
     sput-wide v0, Lcom/bot/taxsee/BotGps;->centerLng:D
 
-    .line 174
+    .line 190
     sget-wide v0, Lcom/bot/taxsee/BotGps;->centerLat:D
 
     sput-wide v0, Lcom/bot/taxsee/BotGps;->curLat:D
 
-    .line 175
+    .line 191
     sget-wide v0, Lcom/bot/taxsee/BotGps;->centerLng:D
 
     sput-wide v0, Lcom/bot/taxsee/BotGps;->curLng:D
 
-    .line 176
+    .line 192
     invoke-static {}, Lcom/bot/taxsee/BotGps;->newTarget()V
 
-    .line 177
+    .line 193
     const/4 p0, 0x1
 
     sput-boolean p0, Lcom/bot/taxsee/BotGps;->centerSet:Z
 
-    .line 178
+    .line 194
     invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
 
     move-result-wide v0
 
     sput-wide v0, Lcom/bot/taxsee/BotGps;->lastTickMs:J
 
-    .line 179
+    .line 195
     new-instance p0, Ljava/lang/StringBuilder;
 
     invoke-direct {p0}, Ljava/lang/StringBuilder;-><init>()V
@@ -1327,14 +1449,14 @@
 
     invoke-static {v0, p0}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
-    .line 180
+    .line 196
     return-void
 .end method
 
 .method public static sentPoints()J
     .locals 2
 
-    .line 131
+    .line 139
     sget-wide v0, Lcom/bot/taxsee/BotGps;->sentCount:J
 
     return-wide v0
@@ -1343,10 +1465,10 @@
 .method public static setFly(Z)V
     .locals 3
 
-    .line 145
+    .line 161
     sput-boolean p0, Lcom/bot/taxsee/BotGps;->flyOn:Z
 
-    .line 147
+    .line 163
     :try_start_0
     sget-object v0, Lcom/bot/taxsee/BotGps;->appCtx:Landroid/content/Context;
 
@@ -1358,24 +1480,24 @@
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
-    .line 149
+    .line 165
     :cond_0
     goto :goto_0
 
-    .line 148
+    .line 164
     :catchall_0
     move-exception v0
 
-    .line 150
+    .line 166
     :goto_0
     if-eqz p0, :cond_2
 
-    .line 151
+    .line 167
     sget-object v0, Lcom/bot/taxsee/BotGps;->lock:Ljava/lang/Object;
 
     monitor-enter v0
 
-    .line 152
+    .line 168
     :try_start_1
     sget-boolean v1, Lcom/bot/taxsee/BotGps;->centerSet:Z
 
@@ -1389,18 +1511,18 @@
 
     invoke-static {v1}, Lcom/bot/taxsee/BotGps;->seedCenter(Landroid/location/Location;)V
 
-    .line 153
+    .line 169
     :cond_1
     monitor-exit v0
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_1
 
-    .line 154
+    .line 170
     invoke-static {}, Lcom/bot/taxsee/BotGps;->ensureThread()V
 
     goto :goto_1
 
-    .line 153
+    .line 169
     :catchall_1
     move-exception p0
 
@@ -1411,7 +1533,7 @@
 
     throw p0
 
-    .line 156
+    .line 172
     :cond_2
     :goto_1
     const-string v0, "TAXBOT"
@@ -1464,14 +1586,14 @@
 
     invoke-static {v0, p0}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
-    .line 157
+    .line 173
     return-void
 .end method
 
 .method public static setRadius(D)V
     .locals 3
 
-    .line 139
+    .line 147
     const-wide v0, 0x3fd3333333333333L    # 0.3
 
     cmpg-double v2, p0, v0
@@ -1480,7 +1602,7 @@
 
     move-wide p0, v0
 
-    .line 140
+    .line 148
     :cond_0
     const-wide/high16 v0, 0x4024000000000000L    # 10.0
 
@@ -1490,18 +1612,89 @@
 
     move-wide p0, v0
 
-    .line 141
+    .line 149
     :cond_1
     sput-wide p0, Lcom/bot/taxsee/BotGps;->radiusKm:D
 
-    .line 142
+    .line 150
+    return-void
+.end method
+
+.method public static setSpeedKmh(D)V
+    .locals 3
+
+    .line 153
+    const-wide/high16 v0, 0x4034000000000000L    # 20.0
+
+    cmpg-double v2, p0, v0
+
+    if-gez v2, :cond_0
+
+    move-wide p0, v0
+
+    .line 154
+    :cond_0
+    const-wide/high16 v0, 0x4064000000000000L    # 160.0
+
+    cmpl-double v2, p0, v0
+
+    if-lez v2, :cond_1
+
+    move-wide p0, v0
+
+    .line 155
+    :cond_1
+    sput-wide p0, Lcom/bot/taxsee/BotGps;->speedKmh:D
+
+    .line 156
+    sget-object v0, Lcom/bot/taxsee/BotGps;->appCtx:Landroid/content/Context;
+
+    if-eqz v0, :cond_2
+
+    sget-object v0, Lcom/bot/taxsee/BotGps;->appCtx:Landroid/content/Context;
+
+    double-to-long v1, p0
+
+    invoke-static {v0, v1, v2}, Lcom/bot/taxsee/BotConfig;->setFlySpeed(Landroid/content/Context;J)V
+
+    .line 157
+    :cond_2
+    new-instance v0, Ljava/lang/StringBuilder;
+
+    invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
+
+    const-string v1, "GPS fly speed="
+
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    invoke-virtual {v0, p0, p1}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
+
+    move-result-object p0
+
+    const-string p1, "km/h"
+
+    invoke-virtual {p0, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object p0
+
+    invoke-virtual {p0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object p0
+
+    const-string p1, "TAXBOT"
+
+    invoke-static {p1, p0}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
+
+    .line 158
     return-void
 .end method
 
 .method public static shortStatus()Ljava/lang/String;
     .locals 5
 
-    .line 161
+    .line 177
     sget-boolean v0, Lcom/bot/taxsee/BotGps;->flyOn:Z
 
     if-nez v0, :cond_0
@@ -1510,13 +1703,13 @@
 
     return-object v0
 
-    .line 162
+    .line 178
     :cond_0
     sget-object v0, Lcom/bot/taxsee/BotGps;->lock:Ljava/lang/Object;
 
     monitor-enter v0
 
-    .line 163
+    .line 179
     :try_start_0
     sget-boolean v1, Lcom/bot/taxsee/BotGps;->centerSet:Z
 
@@ -1528,18 +1721,18 @@
 
     return-object v1
 
-    .line 164
+    .line 180
     :cond_1
     monitor-exit v0
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
-    .line 165
+    .line 181
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
 
-    const-string v1, "\ud83d\udeeb \u0e1a\u0e34\u0e19\u0e2d\u0e22\u0e39\u0e48 r="
+    const-string v1, "\ud83d\udeeb \u0e1a\u0e34\u0e19\u0e27\u0e07 r="
 
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -1569,7 +1762,23 @@
 
     move-result-object v0
 
-    const-string v1, "\u0e01\u0e21 ("
+    const-string v1, "\u0e01\u0e21 "
+
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    sget-wide v1, Lcom/bot/taxsee/BotGps;->speedKmh:D
+
+    invoke-static {v1, v2}, Ljava/lang/Math;->round(D)J
+
+    move-result-wide v1
+
+    invoke-virtual {v0, v1, v2}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    const-string v1, "\u0e01\u0e21./\u0e0a\u0e21. ("
 
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -1593,7 +1802,7 @@
 
     return-object v0
 
-    .line 164
+    .line 180
     :catchall_0
     move-exception v1
 
@@ -1608,42 +1817,42 @@
 .method public static transform(Landroid/location/Location;)Landroid/location/Location;
     .locals 3
 
-    .line 85
+    .line 93
     if-nez p0, :cond_0
 
     const/4 p0, 0x0
 
     return-object p0
 
-    .line 86
+    .line 94
     :cond_0
     sput-object p0, Lcom/bot/taxsee/BotGps;->realLoc:Landroid/location/Location;
 
-    .line 87
+    .line 95
     sget-boolean v0, Lcom/bot/taxsee/BotGps;->flyOn:Z
 
     if-nez v0, :cond_1
 
     return-object p0
 
-    .line 88
+    .line 96
     :cond_1
     sget-object v0, Lcom/bot/taxsee/BotGps;->lock:Ljava/lang/Object;
 
     monitor-enter v0
 
-    .line 89
+    .line 97
     :try_start_0
     invoke-static {p0}, Lcom/bot/taxsee/BotGps;->seedCenter(Landroid/location/Location;)V
 
-    .line 90
+    .line 98
     invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
 
     move-result-wide v1
 
     invoke-static {v1, v2}, Lcom/bot/taxsee/BotGps;->advance(J)V
 
-    .line 91
+    .line 99
     invoke-static {p0}, Lcom/bot/taxsee/BotGps;->build(Landroid/location/Location;)Landroid/location/Location;
 
     move-result-object p0
@@ -1652,7 +1861,7 @@
 
     return-object p0
 
-    .line 92
+    .line 100
     :catchall_0
     move-exception p0
 

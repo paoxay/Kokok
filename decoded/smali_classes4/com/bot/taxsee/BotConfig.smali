@@ -16,12 +16,12 @@
 .method public static addStat(Landroid/content/Context;Ljava/lang/String;J)V
     .locals 3
 
-    .line 95
+    .line 105
     invoke-static {p0}, Lcom/bot/taxsee/BotConfig;->prefs(Landroid/content/Context;)Landroid/content/SharedPreferences;
 
     move-result-object p0
 
-    .line 96
+    .line 106
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
@@ -54,7 +54,7 @@
 
     move-result-object p1
 
-    .line 97
+    .line 107
     invoke-interface {p0}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
 
     move-result-object v0
@@ -73,7 +73,7 @@
 
     invoke-interface {p0}, Landroid/content/SharedPreferences$Editor;->apply()V
 
-    .line 98
+    .line 108
     return-void
 .end method
 
@@ -96,10 +96,52 @@
     return-wide v0
 .end method
 
+.method public static getFlySpeed(Landroid/content/Context;)J
+    .locals 4
+
+    .line 71
+    invoke-static {p0}, Lcom/bot/taxsee/BotConfig;->prefs(Landroid/content/Context;)Landroid/content/SharedPreferences;
+
+    move-result-object p0
+
+    const-string v0, "fly_speed_kmh"
+
+    const-wide/16 v1, 0x5a
+
+    invoke-interface {p0, v0, v1, v2}, Landroid/content/SharedPreferences;->getLong(Ljava/lang/String;J)J
+
+    move-result-wide v0
+
+    .line 72
+    const-wide/16 v2, 0x14
+
+    cmp-long p0, v0, v2
+
+    if-gez p0, :cond_0
+
+    :goto_0
+    move-wide v0, v2
+
+    goto :goto_1
+
+    :cond_0
+    const-wide/16 v2, 0xa0
+
+    cmp-long p0, v0, v2
+
+    if-lez p0, :cond_1
+
+    goto :goto_0
+
+    :cond_1
+    :goto_1
+    return-wide v0
+.end method
+
 .method public static getListMinPrice(Landroid/content/Context;)J
     .locals 3
 
-    .line 82
+    .line 92
     invoke-static {p0}, Lcom/bot/taxsee/BotConfig;->prefs(Landroid/content/Context;)Landroid/content/SharedPreferences;
 
     move-result-object p0
@@ -199,7 +241,7 @@
 .method public static getStatToday(Landroid/content/Context;Ljava/lang/String;)J
     .locals 2
 
-    .line 101
+    .line 111
     invoke-static {p0}, Lcom/bot/taxsee/BotConfig;->prefs(Landroid/content/Context;)Landroid/content/SharedPreferences;
 
     move-result-object p0
@@ -248,7 +290,7 @@
 .method public static isAutoCached(Landroid/content/Context;)Z
     .locals 2
 
-    .line 71
+    .line 81
     invoke-static {p0}, Lcom/bot/taxsee/BotConfig;->prefs(Landroid/content/Context;)Landroid/content/SharedPreferences;
 
     move-result-object p0
@@ -320,23 +362,23 @@
 .method public static pruneOldStats(Landroid/content/Context;)V
     .locals 9
 
-    .line 107
+    .line 117
     :try_start_0
     invoke-static {p0}, Lcom/bot/taxsee/BotConfig;->prefs(Landroid/content/Context;)Landroid/content/SharedPreferences;
 
     move-result-object p0
 
-    .line 108
+    .line 118
     invoke-static {}, Lcom/bot/taxsee/BotConfig;->todayKey()Ljava/lang/String;
 
     move-result-object v0
 
-    .line 109
+    .line 119
     new-instance v1, Ljava/util/HashSet;
 
     invoke-direct {v1}, Ljava/util/HashSet;-><init>()V
 
-    .line 110
+    .line 120
     invoke-interface {p0}, Landroid/content/SharedPreferences;->getAll()Ljava/util/Map;
 
     move-result-object v2
@@ -362,7 +404,7 @@
 
     check-cast v3, Ljava/lang/String;
 
-    .line 111
+    .line 121
     const-string v4, "st_"
 
     invoke-virtual {v3, v4}, Ljava/lang/String;->startsWith(Ljava/lang/String;)Z
@@ -373,7 +415,7 @@
 
     goto :goto_0
 
-    .line 112
+    .line 122
     :cond_0
     const/16 v4, 0x5f
 
@@ -387,7 +429,7 @@
 
     move-result-object v4
 
-    .line 113
+    .line 123
     invoke-virtual {v4, v0}, Ljava/lang/String;->compareTo(Ljava/lang/String;)I
 
     move-result v5
@@ -396,7 +438,7 @@
 
     if-gez v5, :cond_2
 
-    .line 115
+    .line 125
     :try_start_1
     new-instance v5, Ljava/text/SimpleDateFormat;
 
@@ -406,12 +448,12 @@
 
     invoke-direct {v5, v6, v7}, Ljava/text/SimpleDateFormat;-><init>(Ljava/lang/String;Ljava/util/Locale;)V
 
-    .line 116
+    .line 126
     invoke-virtual {v5, v4}, Ljava/text/SimpleDateFormat;->parse(Ljava/lang/String;)Ljava/util/Date;
 
     move-result-object v4
 
-    .line 117
+    .line 127
     invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
 
     move-result-wide v5
@@ -435,7 +477,7 @@
 
     goto :goto_1
 
-    .line 118
+    .line 128
     :catch_0
     move-exception v3
 
@@ -443,11 +485,11 @@
     :goto_1
     nop
 
-    .line 120
+    .line 130
     :cond_2
     goto :goto_0
 
-    .line 121
+    .line 131
     :cond_3
     :try_start_2
     invoke-interface {v1}, Ljava/util/Set;->isEmpty()Z
@@ -456,12 +498,12 @@
 
     if-nez v0, :cond_5
 
-    .line 122
+    .line 132
     invoke-interface {p0}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
 
     move-result-object p0
 
-    .line 123
+    .line 133
     invoke-interface {v1}, Ljava/util/Set;->iterator()Ljava/util/Iterator;
 
     move-result-object v0
@@ -483,7 +525,7 @@
 
     goto :goto_2
 
-    .line 124
+    .line 134
     :cond_4
     invoke-interface {p0}, Landroid/content/SharedPreferences$Editor;->apply()V
     :try_end_2
@@ -491,7 +533,7 @@
 
     goto :goto_3
 
-    .line 126
+    .line 136
     :catchall_0
     move-exception p0
 
@@ -499,14 +541,14 @@
     :goto_3
     nop
 
-    .line 127
+    .line 137
     return-void
 .end method
 
 .method public static setAutoCached(Landroid/content/Context;Z)V
     .locals 1
 
-    .line 75
+    .line 85
     invoke-static {p0}, Lcom/bot/taxsee/BotConfig;->prefs(Landroid/content/Context;)Landroid/content/SharedPreferences;
 
     move-result-object p0
@@ -523,7 +565,7 @@
 
     invoke-interface {p0}, Landroid/content/SharedPreferences$Editor;->apply()V
 
-    .line 76
+    .line 86
     return-void
 .end method
 
@@ -575,6 +617,42 @@
     return-void
 .end method
 
+.method public static setFlySpeed(Landroid/content/Context;J)V
+    .locals 2
+
+    .line 76
+    invoke-static {p0}, Lcom/bot/taxsee/BotConfig;->prefs(Landroid/content/Context;)Landroid/content/SharedPreferences;
+
+    move-result-object p0
+
+    invoke-interface {p0}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
+
+    move-result-object p0
+
+    const-wide/16 v0, 0xa0
+
+    invoke-static {v0, v1, p1, p2}, Ljava/lang/Math;->min(JJ)J
+
+    move-result-wide p1
+
+    const-wide/16 v0, 0x14
+
+    invoke-static {v0, v1, p1, p2}, Ljava/lang/Math;->max(JJ)J
+
+    move-result-wide p1
+
+    const-string v0, "fly_speed_kmh"
+
+    invoke-interface {p0, v0, p1, p2}, Landroid/content/SharedPreferences$Editor;->putLong(Ljava/lang/String;J)Landroid/content/SharedPreferences$Editor;
+
+    move-result-object p0
+
+    invoke-interface {p0}, Landroid/content/SharedPreferences$Editor;->apply()V
+
+    .line 77
+    return-void
+.end method
+
 .method public static setGpsFly(Landroid/content/Context;Z)V
     .locals 1
 
@@ -602,7 +680,7 @@
 .method public static setListMinPrice(Landroid/content/Context;J)V
     .locals 1
 
-    .line 86
+    .line 96
     invoke-static {p0}, Lcom/bot/taxsee/BotConfig;->prefs(Landroid/content/Context;)Landroid/content/SharedPreferences;
 
     move-result-object p0
@@ -619,7 +697,7 @@
 
     invoke-interface {p0}, Landroid/content/SharedPreferences$Editor;->apply()V
 
-    .line 87
+    .line 97
     return-void
 .end method
 
@@ -712,7 +790,7 @@
 .method private static todayKey()Ljava/lang/String;
     .locals 3
 
-    .line 90
+    .line 100
     new-instance v0, Ljava/text/SimpleDateFormat;
 
     const-string v1, "yyyyMMdd"
@@ -721,7 +799,7 @@
 
     invoke-direct {v0, v1, v2}, Ljava/text/SimpleDateFormat;-><init>(Ljava/lang/String;Ljava/util/Locale;)V
 
-    .line 91
+    .line 101
     new-instance v1, Ljava/util/Date;
 
     invoke-direct {v1}, Ljava/util/Date;-><init>()V
