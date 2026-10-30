@@ -30,7 +30,7 @@
         }
     .end annotation
 
-    .line 577
+    .line 610
     iput-object p1, p0, Lcom/bot/taxsee/BotEngine$7;->val$ctx:Landroid/content/Context;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
@@ -41,33 +41,33 @@
 
 # virtual methods
 .method public run()V
-    .locals 11
+    .locals 15
 
-    .line 581
+    .line 614
     const-string v0, "TAXBOT"
 
     :try_start_0
     iget-object v1, p0, Lcom/bot/taxsee/BotEngine$7;->val$ctx:Landroid/content/Context;
 
-    invoke-static {v1}, Lcom/bot/taxsee/BotEngine;->access$200(Landroid/content/Context;)Ljava/lang/String;
+    invoke-static {v1}, Lcom/bot/taxsee/BotEngine;->access$300(Landroid/content/Context;)Ljava/lang/String;
 
     move-result-object v1
 
-    .line 582
+    .line 615
     iget-object v2, p0, Lcom/bot/taxsee/BotEngine$7;->val$ctx:Landroid/content/Context;
 
-    invoke-static {v2}, Lcom/bot/taxsee/BotEngine;->access$300(Landroid/content/Context;)Ljava/lang/String;
+    invoke-static {v2}, Lcom/bot/taxsee/BotEngine;->access$400(Landroid/content/Context;)Ljava/lang/String;
 
     move-result-object v2
 
-    .line 583
-    if-eqz v1, :cond_a
+    .line 616
+    if-eqz v1, :cond_12
 
     if-nez v2, :cond_0
 
-    goto/16 :goto_6
+    goto/16 :goto_7
 
-    .line 584
+    .line 617
     :cond_0
     new-instance v3, Ljava/lang/StringBuilder;
 
@@ -89,7 +89,7 @@
 
     move-result-object v3
 
-    .line 585
+    .line 618
     invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$700()Ljava/lang/String;
 
     move-result-object v4
@@ -124,14 +124,14 @@
 
     move-result-object v3
 
-    .line 586
+    .line 619
     iget-object v4, p0, Lcom/bot/taxsee/BotEngine$7;->val$ctx:Landroid/content/Context;
 
     invoke-static {v4, v3}, Lcom/bot/sig/SigSpoof;->hook(Landroid/content/Context;Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v4
 
-    .line 587
+    .line 620
     new-instance v5, Ljava/net/URL;
 
     new-instance v6, Ljava/lang/StringBuilder;
@@ -180,42 +180,42 @@
 
     check-cast v3, Ljava/net/HttpURLConnection;
 
-    .line 588
+    .line 621
     const-string v4, "GET"
 
     invoke-virtual {v3, v4}, Ljava/net/HttpURLConnection;->setRequestMethod(Ljava/lang/String;)V
 
-    .line 589
+    .line 622
     const/16 v4, 0x2710
 
     invoke-virtual {v3, v4}, Ljava/net/HttpURLConnection;->setConnectTimeout(I)V
 
-    .line 590
+    .line 623
     invoke-virtual {v3, v4}, Ljava/net/HttpURLConnection;->setReadTimeout(I)V
 
-    .line 591
+    .line 624
     const-string v4, "x-phone-udid"
 
     invoke-virtual {v3, v4, v1}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 592
+    .line 625
     const-string v1, "x-driver-token"
 
     invoke-virtual {v3, v1, v2}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 593
+    .line 626
     const-string v1, "content-type"
 
     const-string v2, "application/json"
 
     invoke-virtual {v3, v1, v2}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 594
+    .line 627
     invoke-virtual {v3}, Ljava/net/HttpURLConnection;->getResponseCode()I
 
     move-result v1
 
-    .line 595
+    .line 628
     const/16 v2, 0x190
 
     if-lt v1, v2, :cond_2
@@ -236,7 +236,7 @@
 
     move-result-object v2
 
-    .line 596
+    .line 629
     new-instance v3, Ljava/lang/StringBuilder;
 
     invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
@@ -257,219 +257,406 @@
 
     invoke-static {v0, v3}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
-    .line 597
+    .line 630
+    new-instance v3, Ljava/lang/StringBuilder;
+
+    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
+
+    const-string v4, "RATING code="
+
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v3
+
+    invoke-virtual {v3, v1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+
+    move-result-object v3
+
+    const-string v4, " body="
+
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v3
+
+    invoke-virtual {v2}, Ljava/lang/String;->length()I
+
+    move-result v4
+
+    const/16 v5, 0x384
+
+    const/4 v7, 0x0
+
+    if-le v4, v5, :cond_3
+
+    invoke-virtual {v2, v7, v5}, Ljava/lang/String;->substring(II)Ljava/lang/String;
+
+    move-result-object v4
+
+    goto :goto_1
+
+    :cond_3
+    move-object v4, v2
+
+    :goto_1
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v3
+
+    invoke-virtual {v3}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v3
+
+    invoke-static {v0, v3}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
+
+    .line 631
     const/16 v3, 0xc8
 
-    if-ne v1, v3, :cond_9
+    if-ne v1, v3, :cond_11
 
-    .line 598
+    .line 632
     new-instance v1, Lorg/json/JSONArray;
 
     invoke-direct {v1, v2}, Lorg/json/JSONArray;-><init>(Ljava/lang/String;)V
 
-    .line 599
+    .line 633
     nop
 
-    .line 600
-    const/4 v2, 0x0
+    .line 634
+    new-instance v2, Ljava/lang/StringBuilder;
 
-    const/4 v3, 0x0
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
 
-    move-object v4, v2
+    .line 635
+    new-instance v3, Ljava/lang/StringBuilder;
 
-    const/4 v5, 0x0
+    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
 
-    :goto_1
+    .line 636
+    const/4 v4, 0x0
+
+    move-object v5, v4
+
+    const/4 v8, 0x0
+
+    :goto_2
     invoke-virtual {v1}, Lorg/json/JSONArray;->length()I
 
-    move-result v7
+    move-result v9
 
-    if-ge v5, v7, :cond_6
+    if-ge v8, v9, :cond_c
 
-    .line 601
-    invoke-virtual {v1, v5}, Lorg/json/JSONArray;->optJSONObject(I)Lorg/json/JSONObject;
+    .line 637
+    invoke-virtual {v1, v8}, Lorg/json/JSONArray;->optJSONObject(I)Lorg/json/JSONObject;
 
-    move-result-object v7
+    move-result-object v9
 
-    .line 602
-    if-nez v7, :cond_3
+    .line 638
+    if-nez v9, :cond_4
 
-    goto :goto_2
+    goto :goto_3
 
-    .line 603
-    :cond_3
-    const-string v8, "Code"
+    .line 639
+    :cond_4
+    const-string v10, "Code"
 
-    invoke-virtual {v7, v8, v6}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    invoke-virtual {v9, v10, v6}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 
-    move-result-object v8
+    move-result-object v10
 
-    .line 604
-    const-string v9, "TOTAL_RANG"
+    .line 640
+    const-string v11, "Value"
 
-    invoke-virtual {v9, v8}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    invoke-virtual {v9, v11, v6}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v11
+
+    .line 641
+    const-string v12, "Type"
+
+    invoke-virtual {v9, v12, v7}, Lorg/json/JSONObject;->optInt(Ljava/lang/String;I)I
 
     move-result v9
+
+    .line 642
+    const-string v12, "TOTAL_RANG"
+
+    invoke-virtual {v12, v10}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+
+    move-result v12
+
+    if-eqz v12, :cond_5
+
+    move-object v4, v11
+
+    goto :goto_3
+
+    .line 643
+    :cond_5
+    const-string v12, "DATE_UPDATE"
+
+    invoke-virtual {v12, v10}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+
+    move-result v12
+
+    if-eqz v12, :cond_6
+
+    move-object v5, v11
+
+    goto :goto_3
+
+    .line 644
+    :cond_6
+    invoke-static {v10}, Lcom/bot/taxsee/BotEngine;->access$3200(Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v10
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_0
 
-    const-string v10, "Value"
+    .line 645
+    if-nez v10, :cond_7
 
-    if-eqz v9, :cond_4
+    goto :goto_3
 
+    .line 646
+    :cond_7
+    const-string v12, " "
+
+    const-string v13, " \u2022 "
+
+    const/4 v14, 0x1
+
+    if-ne v9, v14, :cond_9
+
+    .line 647
     :try_start_2
-    invoke-virtual {v7, v10, v6}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    invoke-virtual {v2}, Ljava/lang/StringBuilder;->length()I
 
-    move-result-object v2
+    move-result v9
 
-    .line 605
-    :cond_4
-    const-string v9, "DATE_UPDATE"
+    if-lez v9, :cond_8
 
-    invoke-virtual {v9, v8}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    invoke-virtual {v2, v13}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result v8
+    .line 648
+    :cond_8
+    invoke-virtual {v2, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    if-eqz v8, :cond_5
+    move-result-object v9
 
-    invoke-virtual {v7, v10, v6}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    invoke-virtual {v9, v12}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result-object v4
+    move-result-object v9
 
-    .line 600
-    :cond_5
-    :goto_2
-    add-int/lit8 v5, v5, 0x1
+    invoke-virtual {v9, v11}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    goto :goto_1
+    goto :goto_3
 
-    .line 607
-    :cond_6
-    if-eqz v2, :cond_8
+    .line 649
+    :cond_9
+    const/4 v14, -0x1
 
-    .line 608
+    if-ne v9, v14, :cond_b
+
+    const-string v9, "0"
+
+    invoke-virtual {v9, v11}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+
+    move-result v9
+
+    if-nez v9, :cond_b
+
+    .line 650
+    invoke-virtual {v3}, Ljava/lang/StringBuilder;->length()I
+
+    move-result v9
+
+    if-lez v9, :cond_a
+
+    invoke-virtual {v3, v13}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 651
+    :cond_a
+    invoke-virtual {v3, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v9
+
+    invoke-virtual {v9, v12}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v9
+
+    invoke-virtual {v9, v11}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 636
+    :cond_b
+    :goto_3
+    add-int/lit8 v8, v8, 0x1
+
+    goto :goto_2
+
+    .line 654
+    :cond_c
+    if-eqz v4, :cond_10
+
+    .line 655
     new-instance v1, Ljava/lang/StringBuilder;
 
     invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
 
-    .line 609
-    const-string v5, "\u2b50 \u0e40\u0e23\u0e15\u0e15\u0e34\u0e49\u0e07\u0e08\u0e23\u0e34\u0e07: "
+    .line 656
+    const-string v6, "\u2b50 \u0e40\u0e23\u0e15\u0e15\u0e34\u0e49\u0e07\u0e08\u0e23\u0e34\u0e07: "
 
-    invoke-virtual {v1, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result-object v5
+    move-result-object v6
 
-    invoke-virtual {v5, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v6, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result-object v5
+    move-result-object v6
 
-    const-string v6, "  \u2192  \u0e40\u0e1b\u0e49\u0e32\u0e2b\u0e21\u0e32\u0e22 0.99"
+    const-string v8, "  \u2192  \u0e40\u0e1b\u0e49\u0e32\u0e2b\u0e21\u0e32\u0e22 0.99"
 
-    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v6, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     :try_end_2
     .catchall {:try_start_2 .. :try_end_2} :catchall_0
 
-    .line 611
+    .line 658
     :try_start_3
-    invoke-static {v2}, Ljava/lang/Double;->parseDouble(Ljava/lang/String;)D
+    invoke-static {v4}, Ljava/lang/Double;->parseDouble(Ljava/lang/String;)D
 
-    move-result-wide v5
+    move-result-wide v8
 
-    .line 612
-    const-wide v7, 0x3fefae147ae147aeL    # 0.99
+    .line 659
+    const-wide v10, 0x3fefae147ae147aeL    # 0.99
 
-    div-double/2addr v5, v7
+    div-double/2addr v8, v10
 
-    const-wide/high16 v7, 0x4059000000000000L    # 100.0
+    const-wide/high16 v10, 0x4059000000000000L    # 100.0
 
-    mul-double v5, v5, v7
+    mul-double v8, v8, v10
 
-    double-to-int v2, v5
+    double-to-int v4, v8
 
-    const/16 v5, 0x64
+    const/16 v6, 0x64
 
-    invoke-static {v5, v2}, Ljava/lang/Math;->min(II)I
+    invoke-static {v6, v4}, Ljava/lang/Math;->min(II)I
 
-    move-result v2
+    move-result v4
 
-    invoke-static {v3, v2}, Ljava/lang/Math;->max(II)I
+    invoke-static {v7, v4}, Ljava/lang/Math;->max(II)I
 
-    move-result v2
+    move-result v4
 
-    .line 613
-    const-string v5, " ("
+    .line 660
+    const-string v6, " ("
 
-    invoke-virtual {v1, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result-object v5
+    move-result-object v6
 
-    invoke-virtual {v5, v2}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    invoke-virtual {v6, v4}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
 
-    move-result-object v2
+    move-result-object v4
 
-    const-string v5, "%)"
+    const-string v6, "%)"
 
-    invoke-virtual {v2, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v4, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     :try_end_3
     .catch Ljava/lang/Exception; {:try_start_3 .. :try_end_3} :catch_0
     .catchall {:try_start_3 .. :try_end_3} :catchall_0
 
-    goto :goto_3
+    goto :goto_4
 
-    .line 614
+    .line 661
     :catch_0
-    move-exception v2
+    move-exception v4
 
-    :goto_3
+    :goto_4
     nop
 
-    .line 615
-    if-eqz v4, :cond_7
+    .line 662
+    if-eqz v5, :cond_d
 
     :try_start_4
-    invoke-virtual {v4}, Ljava/lang/String;->length()I
+    invoke-virtual {v5}, Ljava/lang/String;->length()I
+
+    move-result v4
+
+    const/16 v6, 0xa
+
+    if-le v4, v6, :cond_d
+
+    const-string v4, "\n\u0e2d\u0e31\u0e1b\u0e40\u0e14\u0e15\u0e25\u0e48\u0e32\u0e2a\u0e38\u0e14: "
+
+    invoke-virtual {v1, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v4
+
+    invoke-virtual {v5, v7, v6}, Ljava/lang/String;->substring(II)Ljava/lang/String;
+
+    move-result-object v5
+
+    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 663
+    :cond_d
+    invoke-virtual {v2}, Ljava/lang/StringBuilder;->length()I
+
+    move-result v4
+
+    if-lez v4, :cond_e
+
+    const-string v4, "\n\u2795 "
+
+    invoke-virtual {v1, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v4
+
+    invoke-virtual {v4, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/CharSequence;)Ljava/lang/StringBuilder;
+
+    .line 664
+    :cond_e
+    invoke-virtual {v3}, Ljava/lang/StringBuilder;->length()I
 
     move-result v2
 
-    const/16 v5, 0xa
+    if-lez v2, :cond_f
 
-    if-le v2, v5, :cond_7
-
-    const-string v2, "\n\u0e2d\u0e31\u0e1b\u0e40\u0e14\u0e15\u0e25\u0e48\u0e32\u0e2a\u0e38\u0e14: "
+    const-string v2, "\n\u2796 "
 
     invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v2
 
-    invoke-virtual {v4, v3, v5}, Ljava/lang/String;->substring(II)Ljava/lang/String;
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/CharSequence;)Ljava/lang/StringBuilder;
 
-    move-result-object v3
+    .line 665
+    :cond_f
+    const-string v2, "\n\ud83d\udca1 \u0e40\u0e23\u0e48\u0e07\u0e40\u0e23\u0e15\u0e15\u0e34\u0e49\u0e07: \u0e23\u0e31\u0e1a\u0e07\u0e32\u0e19 auto \u0e17\u0e38\u0e01\u0e04\u0e23\u0e31\u0e49\u0e07 \u0e2d\u0e22\u0e48\u0e32\u0e1b\u0e0f\u0e34\u0e40\u0e2a\u0e18/\u0e1b\u0e25\u0e48\u0e2d\u0e22\u0e2b\u0e21\u0e14\u0e2d\u0e32\u0e22\u0e38"
 
-    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    .line 616
-    :cond_7
+    .line 666
     invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 
     move-result-object v1
 
-    invoke-static {v1}, Lcom/bot/taxsee/BotEngine;->access$2402(Ljava/lang/String;)Ljava/lang/String;
+    invoke-static {v1}, Lcom/bot/taxsee/BotEngine;->access$3102(Ljava/lang/String;)Ljava/lang/String;
 
-    .line 617
-    goto :goto_4
-
-    .line 618
-    :cond_8
-    const-string v1, "\u0e2d\u0e48\u0e32\u0e19\u0e04\u0e48\u0e32\u0e40\u0e23\u0e15\u0e15\u0e34\u0e49\u0e07\u0e44\u0e21\u0e48\u0e44\u0e14\u0e49 (\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e40\u0e1b\u0e25\u0e35\u0e48\u0e22\u0e19?)"
-
-    invoke-static {v1}, Lcom/bot/taxsee/BotEngine;->access$2402(Ljava/lang/String;)Ljava/lang/String;
-
-    .line 620
-    :goto_4
+    .line 667
     goto :goto_5
 
-    .line 621
-    :cond_9
+    .line 668
+    :cond_10
+    const-string v1, "\u0e2d\u0e48\u0e32\u0e19\u0e04\u0e48\u0e32\u0e40\u0e23\u0e15\u0e15\u0e34\u0e49\u0e07\u0e44\u0e21\u0e48\u0e44\u0e14\u0e49 (\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e40\u0e1b\u0e25\u0e35\u0e48\u0e22\u0e19?)"
+
+    invoke-static {v1}, Lcom/bot/taxsee/BotEngine;->access$3102(Ljava/lang/String;)Ljava/lang/String;
+
+    .line 670
+    :goto_5
+    goto :goto_6
+
+    .line 671
+    :cond_11
     new-instance v2, Ljava/lang/StringBuilder;
 
     invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
@@ -494,28 +681,28 @@
 
     move-result-object v1
 
-    invoke-static {v1}, Lcom/bot/taxsee/BotEngine;->access$2402(Ljava/lang/String;)Ljava/lang/String;
+    invoke-static {v1}, Lcom/bot/taxsee/BotEngine;->access$3102(Ljava/lang/String;)Ljava/lang/String;
 
-    .line 626
-    :goto_5
-    goto :goto_7
-
-    .line 583
-    :cond_a
+    .line 676
     :goto_6
+    goto :goto_8
+
+    .line 616
+    :cond_12
+    :goto_7
     const-string v1, "\u0e22\u0e31\u0e07\u0e44\u0e21\u0e48\u0e1e\u0e1a token/udid"
 
-    invoke-static {v1}, Lcom/bot/taxsee/BotEngine;->access$2402(Ljava/lang/String;)Ljava/lang/String;
+    invoke-static {v1}, Lcom/bot/taxsee/BotEngine;->access$3102(Ljava/lang/String;)Ljava/lang/String;
     :try_end_4
     .catchall {:try_start_4 .. :try_end_4} :catchall_0
 
     return-void
 
-    .line 623
+    .line 673
     :catchall_0
     move-exception v1
 
-    .line 624
+    .line 674
     new-instance v2, Ljava/lang/StringBuilder;
 
     invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
@@ -538,14 +725,14 @@
 
     move-result-object v2
 
-    invoke-static {v2}, Lcom/bot/taxsee/BotEngine;->access$2402(Ljava/lang/String;)Ljava/lang/String;
+    invoke-static {v2}, Lcom/bot/taxsee/BotEngine;->access$3102(Ljava/lang/String;)Ljava/lang/String;
 
-    .line 625
+    .line 675
     const-string v2, "fetchRating fail"
 
     invoke-static {v0, v2, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
 
-    .line 627
-    :goto_7
+    .line 677
+    :goto_8
     return-void
 .end method

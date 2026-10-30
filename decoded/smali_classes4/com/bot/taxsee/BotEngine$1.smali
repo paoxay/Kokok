@@ -22,9 +22,11 @@
 
 .field final synthetic val$fOrderId:J
 
+.field final synthetic val$seenAt:J
+
 
 # direct methods
-.method constructor <init>(Landroid/content/Context;J)V
+.method constructor <init>(Landroid/content/Context;JJ)V
     .locals 0
     .annotation system Ldalvik/annotation/Signature;
         value = {
@@ -32,10 +34,12 @@
         }
     .end annotation
 
-    .line 233
+    .line 252
     iput-object p1, p0, Lcom/bot/taxsee/BotEngine$1;->val$fCtx:Landroid/content/Context;
 
     iput-wide p2, p0, Lcom/bot/taxsee/BotEngine$1;->val$fOrderId:J
+
+    iput-wide p4, p0, Lcom/bot/taxsee/BotEngine$1;->val$seenAt:J
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -45,17 +49,19 @@
 
 # virtual methods
 .method public run()V
-    .locals 5
+    .locals 7
 
-    .line 236
+    .line 255
     iget-object v0, p0, Lcom/bot/taxsee/BotEngine$1;->val$fCtx:Landroid/content/Context;
 
     iget-wide v1, p0, Lcom/bot/taxsee/BotEngine$1;->val$fOrderId:J
 
     const-wide/16 v3, 0x3
 
-    invoke-static {v0, v1, v2, v3, v4}, Lcom/bot/taxsee/BotEngine;->access$000(Landroid/content/Context;JJ)V
+    iget-wide v5, p0, Lcom/bot/taxsee/BotEngine$1;->val$seenAt:J
 
-    .line 237
+    invoke-static/range {v0 .. v6}, Lcom/bot/taxsee/BotEngine;->access$000(Landroid/content/Context;JJJ)V
+
+    .line 256
     return-void
 .end method

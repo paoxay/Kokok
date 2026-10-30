@@ -8,7 +8,7 @@
 
 # annotations
 .annotation system Ldalvik/annotation/EnclosingMethod;
-    value = Lcom/bot/taxsee/BotEngine;->doAccept(Landroid/content/Context;JJ)V
+    value = Lcom/bot/taxsee/BotEngine;->doAccept(Landroid/content/Context;JJJ)V
 .end annotation
 
 .annotation system Ldalvik/annotation/InnerClass;
@@ -20,13 +20,15 @@
 # instance fields
 .field final synthetic val$ctx:Landroid/content/Context;
 
+.field final synthetic val$offerSeenAt:J
+
 .field final synthetic val$orderId:J
 
 .field final synthetic val$timeSec:J
 
 
 # direct methods
-.method constructor <init>(Landroid/content/Context;JJ)V
+.method constructor <init>(JLandroid/content/Context;JJ)V
     .locals 0
     .annotation system Ldalvik/annotation/Signature;
         value = {
@@ -34,12 +36,14 @@
         }
     .end annotation
 
-    .line 246
-    iput-object p1, p0, Lcom/bot/taxsee/BotEngine$2;->val$ctx:Landroid/content/Context;
+    .line 272
+    iput-wide p1, p0, Lcom/bot/taxsee/BotEngine$2;->val$offerSeenAt:J
 
-    iput-wide p2, p0, Lcom/bot/taxsee/BotEngine$2;->val$orderId:J
+    iput-object p3, p0, Lcom/bot/taxsee/BotEngine$2;->val$ctx:Landroid/content/Context;
 
-    iput-wide p4, p0, Lcom/bot/taxsee/BotEngine$2;->val$timeSec:J
+    iput-wide p4, p0, Lcom/bot/taxsee/BotEngine$2;->val$orderId:J
+
+    iput-wide p6, p0, Lcom/bot/taxsee/BotEngine$2;->val$timeSec:J
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -51,244 +55,596 @@
 .method public run()V
     .locals 22
 
-    .line 250
+    .line 276
     move-object/from16 v1, p0
 
-    const-string v0, "ms body="
-
-    const-string v2, "TAXBOT"
-
     :try_start_0
-    invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$100()Landroid/location/Location;
+    iget-wide v2, v1, Lcom/bot/taxsee/BotEngine$2;->val$offerSeenAt:J
 
-    move-result-object v4
+    const-wide/16 v4, 0x0
 
-    .line 251
-    const-wide/16 v5, 0x0
+    cmp-long v0, v2, v4
 
-    if-eqz v4, :cond_0
+    if-lez v0, :cond_0
 
-    invoke-virtual {v4}, Landroid/location/Location;->getLatitude()D
+    .line 277
+    invoke-static {}, Landroid/os/SystemClock;->elapsedRealtime()J
 
-    move-result-wide v7
+    move-result-wide v2
+
+    iget-wide v6, v1, Lcom/bot/taxsee/BotEngine$2;->val$offerSeenAt:J
+
+    sub-long/2addr v2, v6
+
+    invoke-static {v2, v3}, Lcom/bot/taxsee/BotEngine;->access$102(J)J
+
+    .line 279
+    :cond_0
+    invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$200()Landroid/location/Location;
+
+    move-result-object v0
+
+    .line 280
+    const-wide/16 v2, 0x0
+
+    if-eqz v0, :cond_1
+
+    invoke-virtual {v0}, Landroid/location/Location;->getLatitude()D
+
+    move-result-wide v6
 
     goto :goto_0
 
-    :cond_0
-    move-wide v7, v5
-
-    .line 252
-    :goto_0
-    if-eqz v4, :cond_1
-
-    invoke-virtual {v4}, Landroid/location/Location;->getLongitude()D
-
-    move-result-wide v9
-
-    goto :goto_1
-
     :cond_1
-    move-wide v9, v5
+    move-wide v6, v2
 
-    .line 253
-    :goto_1
-    if-eqz v4, :cond_2
+    .line 281
+    :goto_0
+    if-eqz v0, :cond_2
 
-    invoke-virtual {v4}, Landroid/location/Location;->getSpeed()F
-
-    move-result v11
-
-    float-to-double v11, v11
-
-    goto :goto_2
-
-    :cond_2
-    move-wide v11, v5
-
-    .line 254
-    :goto_2
-    if-eqz v4, :cond_3
-
-    invoke-virtual {v4}, Landroid/location/Location;->getBearing()F
-
-    move-result v5
-
-    float-to-double v5, v5
-
-    .line 255
-    :cond_3
-    if-eqz v4, :cond_4
-
-    invoke-virtual {v4}, Landroid/location/Location;->getAccuracy()F
-
-    move-result v4
-
-    goto :goto_3
-
-    :cond_4
-    const v4, 0x40b9999a    # 5.8f
-
-    .line 257
-    :goto_3
-    iget-object v13, v1, Lcom/bot/taxsee/BotEngine$2;->val$ctx:Landroid/content/Context;
-
-    invoke-static {v13}, Lcom/bot/taxsee/BotEngine;->access$200(Landroid/content/Context;)Ljava/lang/String;
-
-    move-result-object v13
-
-    .line 258
-    iget-object v14, v1, Lcom/bot/taxsee/BotEngine$2;->val$ctx:Landroid/content/Context;
-
-    invoke-static {v14}, Lcom/bot/taxsee/BotEngine;->access$300(Landroid/content/Context;)Ljava/lang/String;
-
-    move-result-object v14
-
-    .line 259
-    if-eqz v14, :cond_e
-
-    if-nez v13, :cond_5
-
-    const/16 v19, 0x0
-
-    goto/16 :goto_b
-
-    .line 266
-    :cond_5
-    move/from16 v16, v4
-
-    const/4 v15, 0x0
-
-    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
-
-    move-result-wide v3
-
-    .line 267
-    move-wide/from16 v17, v5
-
-    invoke-static {}, Landroid/os/SystemClock;->elapsedRealtime()J
-
-    move-result-wide v5
-    :try_end_0
-    .catchall {:try_start_0 .. :try_end_0} :catchall_1
-
-    .line 268
-    const/16 v19, 0x0
-
-    :try_start_1
-    new-instance v15, Ljava/lang/StringBuilder;
-
-    invoke-direct {v15}, Ljava/lang/StringBuilder;-><init>()V
-
-    move-wide/from16 v20, v11
-
-    const-string v11, "ID="
-
-    invoke-virtual {v15, v11}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v11
-
-    move-object v12, v14
-
-    iget-wide v14, v1, Lcom/bot/taxsee/BotEngine$2;->val$orderId:J
-
-    invoke-virtual {v11, v14, v15}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
-
-    move-result-object v11
-
-    const-string v14, "&time="
-
-    invoke-virtual {v11, v14}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v11
-
-    iget-wide v14, v1, Lcom/bot/taxsee/BotEngine$2;->val$timeSec:J
-
-    invoke-virtual {v11, v14, v15}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
-
-    move-result-object v11
-
-    const-string v14, "&autoAccept=0&latitude="
-
-    invoke-virtual {v11, v14}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v11
-
-    invoke-virtual {v11, v7, v8}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
-
-    move-result-object v7
-
-    const-string v8, "&longitude="
-
-    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v7
-
-    invoke-virtual {v7, v9, v10}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
-
-    move-result-object v7
-
-    const-string v8, "&speed="
-
-    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v7
-
-    .line 273
-    invoke-static/range {v20 .. v21}, Lcom/bot/taxsee/BotEngine;->access$600(D)D
+    invoke-virtual {v0}, Landroid/location/Location;->getLongitude()D
 
     move-result-wide v8
 
-    invoke-virtual {v7, v8, v9}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
+    goto :goto_1
 
-    move-result-object v7
+    :cond_2
+    move-wide v8, v2
 
-    const-string v8, "&lts="
+    .line 282
+    :goto_1
+    if-eqz v0, :cond_3
 
-    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v0}, Landroid/location/Location;->getSpeed()F
 
-    move-result-object v7
+    move-result v10
 
-    invoke-virtual {v7, v3, v4}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
+    float-to-double v10, v10
 
-    move-result-object v3
+    goto :goto_2
 
-    const-string v4, "&bearing="
+    :cond_3
+    move-wide v10, v2
+
+    .line 283
+    :goto_2
+    if-eqz v0, :cond_4
+
+    invoke-virtual {v0}, Landroid/location/Location;->getBearing()F
+
+    move-result v2
+
+    float-to-double v2, v2
+
+    .line 284
+    :cond_4
+    if-eqz v0, :cond_5
+
+    invoke-virtual {v0}, Landroid/location/Location;->getAccuracy()F
+
+    move-result v0
+
+    goto :goto_3
+
+    :cond_5
+    const v0, 0x40b9999a    # 5.8f
+
+    .line 286
+    :goto_3
+    iget-object v12, v1, Lcom/bot/taxsee/BotEngine$2;->val$ctx:Landroid/content/Context;
+
+    invoke-static {v12}, Lcom/bot/taxsee/BotEngine;->access$300(Landroid/content/Context;)Ljava/lang/String;
+
+    move-result-object v12
+
+    .line 287
+    iget-object v13, v1, Lcom/bot/taxsee/BotEngine$2;->val$ctx:Landroid/content/Context;
+
+    invoke-static {v13}, Lcom/bot/taxsee/BotEngine;->access$400(Landroid/content/Context;)Ljava/lang/String;
+
+    move-result-object v13
+
+    .line 288
+    if-eqz v13, :cond_12
+
+    if-nez v12, :cond_6
+
+    goto/16 :goto_b
+
+    .line 294
+    :cond_6
+    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+
+    move-result-wide v14
+
+    .line 295
+    move-wide/from16 v16, v4
+
+    invoke-static {}, Landroid/os/SystemClock;->elapsedRealtime()J
+
+    move-result-wide v4
+
+    .line 296
+    move-wide/from16 v18, v2
+
+    new-instance v2, Ljava/lang/StringBuilder;
+
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+
+    const-string v3, "ID="
+
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v2
+
+    move-wide/from16 v20, v10
+
+    iget-wide v10, v1, Lcom/bot/taxsee/BotEngine$2;->val$orderId:J
+
+    invoke-virtual {v2, v10, v11}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
+
+    move-result-object v2
+
+    const-string v3, "&time="
+
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v2
+
+    iget-wide v10, v1, Lcom/bot/taxsee/BotEngine$2;->val$timeSec:J
+
+    invoke-virtual {v2, v10, v11}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
+
+    move-result-object v2
+
+    const-string v3, "&autoAccept=0&latitude="
+
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v2
+
+    invoke-virtual {v2, v6, v7}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
+
+    move-result-object v2
+
+    const-string v3, "&longitude="
+
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v2
+
+    invoke-virtual {v2, v8, v9}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
+
+    move-result-object v2
+
+    const-string v3, "&speed="
+
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v2
+
+    .line 301
+    invoke-static/range {v20 .. v21}, Lcom/bot/taxsee/BotEngine;->access$600(D)D
+
+    move-result-wide v6
+
+    invoke-virtual {v2, v6, v7}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
+
+    move-result-object v2
+
+    const-string v3, "&lts="
+
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v2
+
+    invoke-virtual {v2, v14, v15}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
+
+    move-result-object v2
+
+    const-string v3, "&bearing="
+
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v2
+
+    .line 303
+    invoke-static/range {v18 .. v19}, Lcom/bot/taxsee/BotEngine;->access$600(D)D
+
+    move-result-wide v6
+
+    invoke-virtual {v2, v6, v7}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
+
+    move-result-object v2
+
+    const-string v3, "&radius="
+
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v2
+
+    float-to-double v6, v0
+
+    .line 304
+    invoke-static {v6, v7}, Lcom/bot/taxsee/BotEngine;->access$600(D)D
+
+    move-result-wide v6
+
+    invoke-virtual {v2, v6, v7}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    const-string v2, "&vradius=138.4&offset="
+
+    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    invoke-virtual {v0, v4, v5}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    const-string v2, "&provider=fused&mock=0&appName=TAXSEE&imei=&udid="
+
+    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    invoke-virtual {v0, v12}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    const-string v2, "&rt="
+
+    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    .line 310
+    invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$700()Ljava/lang/String;
+
+    move-result-object v2
+
+    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    const-string v2, "&r="
+
+    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    .line 311
+    const/4 v2, 0x7
+
+    invoke-static {v2}, Lcom/bot/taxsee/BotEngine;->access$800(I)Ljava/lang/String;
+
+    move-result-object v2
+
+    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    const-string v2, "&0"
+
+    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v0
+
+    .line 314
+    invoke-static {}, Landroid/os/SystemClock;->elapsedRealtime()J
+
+    move-result-wide v2
+
+    .line 315
+    iget-object v4, v1, Lcom/bot/taxsee/BotEngine$2;->val$ctx:Landroid/content/Context;
+
+    invoke-static {v4, v0}, Lcom/bot/sig/SigSpoof;->hook(Landroid/content/Context;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v4
+
+    .line 316
+    invoke-static {}, Landroid/os/SystemClock;->elapsedRealtime()J
+
+    move-result-wide v5
+
+    sub-long/2addr v5, v2
+
+    .line 317
+    if-eqz v4, :cond_11
+
+    invoke-virtual {v4}, Ljava/lang/String;->length()I
+
+    move-result v2
+
+    if-nez v2, :cond_7
+
+    goto/16 :goto_a
+
+    .line 322
+    :cond_7
+    new-instance v2, Ljava/lang/StringBuilder;
+
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+
+    const-string v3, "https://wds-sea.taximaxim.com/Services/Driver.svc/OrderAccept?"
+
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v2
+
+    invoke-virtual {v2, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    const-string v2, "&sig="
+
+    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    invoke-virtual {v0, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v0
+
+    .line 323
+    const-string v2, "TAXBOT"
+
+    new-instance v3, Ljava/lang/StringBuilder;
+
+    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
+
+    const-string v4, "ACCEPT url="
 
     invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v3
 
-    .line 275
-    invoke-static/range {v17 .. v18}, Lcom/bot/taxsee/BotEngine;->access$600(D)D
+    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v3
+
+    invoke-virtual {v3}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v3
+
+    invoke-static {v2, v3}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
+
+    .line 325
+    invoke-static {}, Landroid/os/SystemClock;->elapsedRealtime()J
+
+    move-result-wide v2
+
+    .line 326
+    new-instance v4, Ljava/net/URL;
+
+    invoke-direct {v4, v0}, Ljava/net/URL;-><init>(Ljava/lang/String;)V
+
+    invoke-virtual {v4}, Ljava/net/URL;->openConnection()Ljava/net/URLConnection;
+
+    move-result-object v0
+
+    check-cast v0, Ljava/net/HttpURLConnection;
+
+    .line 327
+    const-string v4, "GET"
+
+    invoke-virtual {v0, v4}, Ljava/net/HttpURLConnection;->setRequestMethod(Ljava/lang/String;)V
+
+    .line 328
+    const/16 v4, 0x2710
+
+    invoke-virtual {v0, v4}, Ljava/net/HttpURLConnection;->setConnectTimeout(I)V
+
+    .line 329
+    invoke-virtual {v0, v4}, Ljava/net/HttpURLConnection;->setReadTimeout(I)V
+
+    .line 330
+    const-string v4, "x-phone-udid"
+
+    invoke-virtual {v0, v4, v12}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
+
+    .line 331
+    const-string v4, "x-driver-token"
+
+    invoke-virtual {v0, v4, v13}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
+
+    .line 332
+    const-string v4, "content-type"
+
+    const-string v7, "application/json"
+
+    invoke-virtual {v0, v4, v7}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
+
+    .line 333
+    const-string v4, "accept"
+
+    const-string v7, "*/*"
+
+    invoke-virtual {v0, v4, v7}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
+
+    .line 334
+    const-string v4, "accept-encoding"
+
+    const-string v7, "gzip"
+
+    invoke-virtual {v0, v4, v7}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
+
+    .line 335
+    const-string v4, "x-mcc"
+
+    const-string v7, "457"
+
+    invoke-virtual {v0, v4, v7}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
+
+    .line 336
+    const-string v4, "x-driver-requesttimeout"
+
+    const-string v7, "20"
+
+    invoke-virtual {v0, v4, v7}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
+
+    .line 337
+    const-string v4, "x-websocket"
+
+    const-string v7, "false"
+
+    invoke-virtual {v0, v4, v7}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
+
+    .line 338
+    const-string v4, "user-agent"
+
+    const-string v7, "Dalvik/2.1.0 (Linux; U; Android 13; SM-A515F)"
+
+    invoke-virtual {v0, v4, v7}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
+
+    .line 339
+    invoke-virtual {v0}, Ljava/net/HttpURLConnection;->getResponseCode()I
+
+    move-result v4
+
+    .line 340
+    const/16 v7, 0x190
+
+    if-lt v4, v7, :cond_8
+
+    invoke-virtual {v0}, Ljava/net/HttpURLConnection;->getErrorStream()Ljava/io/InputStream;
+
+    move-result-object v0
+
+    goto :goto_4
+
+    :cond_8
+    invoke-virtual {v0}, Ljava/net/HttpURLConnection;->getInputStream()Ljava/io/InputStream;
+
+    move-result-object v0
+
+    .line 341
+    :goto_4
+    invoke-static {v0}, Lcom/bot/taxsee/BotEngine;->access$900(Ljava/io/InputStream;)Ljava/lang/String;
+
+    move-result-object v0
+
+    .line 342
+    invoke-static {}, Landroid/os/SystemClock;->elapsedRealtime()J
 
     move-result-wide v7
 
-    invoke-virtual {v3, v7, v8}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
+    sub-long/2addr v7, v2
+
+    .line 343
+    invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$1008()J
+
+    .line 344
+    invoke-static {v7, v8}, Lcom/bot/taxsee/BotEngine;->access$1114(J)J
+
+    .line 345
+    invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$1200()J
+
+    move-result-wide v2
+
+    cmp-long v9, v2, v16
+
+    if-eqz v9, :cond_9
+
+    invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$1200()J
+
+    move-result-wide v2
+
+    cmp-long v9, v7, v2
+
+    if-gez v9, :cond_a
+
+    :cond_9
+    invoke-static {v7, v8}, Lcom/bot/taxsee/BotEngine;->access$1202(J)J
+
+    .line 346
+    :cond_a
+    invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$1300()J
+
+    move-result-wide v2
+
+    cmp-long v9, v7, v2
+
+    if-lez v9, :cond_b
+
+    invoke-static {v7, v8}, Lcom/bot/taxsee/BotEngine;->access$1302(J)J
+
+    .line 347
+    :cond_b
+    const-string v2, "TAXBOT"
+
+    new-instance v3, Ljava/lang/StringBuilder;
+
+    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
+
+    const-string v9, "ACCEPT resp code="
+
+    invoke-virtual {v3, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v3
 
-    const-string v4, "&radius="
-
-    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
 
     move-result-object v3
 
-    move/from16 v4, v16
+    const-string v9, " round-trip="
 
-    float-to-double v7, v4
-
-    .line 276
-    invoke-static {v7, v8}, Lcom/bot/taxsee/BotEngine;->access$600(D)D
-
-    move-result-wide v7
-
-    invoke-virtual {v3, v7, v8}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
+    invoke-virtual {v3, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v3
 
-    const-string v4, "&vradius=138.4&offset="
+    invoke-virtual {v3, v7, v8}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
 
-    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v3
+
+    const-string v9, "ms fireDelay="
+
+    invoke-virtual {v3, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v3
+
+    .line 348
+    invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$100()J
+
+    move-result-wide v9
+
+    invoke-virtual {v3, v9, v10}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
+
+    move-result-object v3
+
+    const-string v9, "ms sig="
+
+    invoke-virtual {v3, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v3
 
@@ -296,392 +652,7 @@
 
     move-result-object v3
 
-    const-string v4, "&provider=fused&mock=0&appName=TAXSEE&imei=&udid="
-
-    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v3
-
-    invoke-virtual {v3, v13}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v3
-
-    const-string v4, "&rt="
-
-    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v3
-
-    .line 282
-    invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$700()Ljava/lang/String;
-
-    move-result-object v4
-
-    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v3
-
-    const-string v4, "&r="
-
-    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v3
-
-    .line 283
-    const/4 v4, 0x7
-
-    invoke-static {v4}, Lcom/bot/taxsee/BotEngine;->access$800(I)Ljava/lang/String;
-
-    move-result-object v4
-
-    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v3
-
-    const-string v4, "&0"
-
-    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v3
-
-    invoke-virtual {v3}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    move-result-object v3
-
-    .line 286
-    iget-object v4, v1, Lcom/bot/taxsee/BotEngine$2;->val$ctx:Landroid/content/Context;
-
-    invoke-static {v4, v3}, Lcom/bot/sig/SigSpoof;->hook(Landroid/content/Context;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v4
-
-    .line 287
-    if-eqz v4, :cond_d
-
-    invoke-virtual {v4}, Ljava/lang/String;->length()I
-
-    move-result v5
-
-    if-nez v5, :cond_6
-
-    goto/16 :goto_a
-
-    .line 293
-    :cond_6
-    new-instance v5, Ljava/lang/StringBuilder;
-
-    invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
-
-    const-string v6, "https://wds-sea.taximaxim.com/Services/Driver.svc/OrderAccept?"
-
-    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v5
-
-    invoke-virtual {v5, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v3
-
-    const-string v5, "&sig="
-
-    invoke-virtual {v3, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v3
-
-    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v3
-
-    invoke-virtual {v3}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    move-result-object v3
-
-    .line 294
-    new-instance v4, Ljava/lang/StringBuilder;
-
-    invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
-
-    const-string v5, "ACCEPT url="
-
-    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v4
-
-    invoke-virtual {v4, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v4
-
-    invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    move-result-object v4
-
-    invoke-static {v2, v4}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
-
-    .line 296
-    invoke-static {}, Landroid/os/SystemClock;->elapsedRealtime()J
-
-    move-result-wide v4
-
-    .line 297
-    new-instance v6, Ljava/net/URL;
-
-    invoke-direct {v6, v3}, Ljava/net/URL;-><init>(Ljava/lang/String;)V
-
-    invoke-virtual {v6}, Ljava/net/URL;->openConnection()Ljava/net/URLConnection;
-
-    move-result-object v3
-
-    check-cast v3, Ljava/net/HttpURLConnection;
-
-    .line 298
-    const-string v6, "GET"
-
-    invoke-virtual {v3, v6}, Ljava/net/HttpURLConnection;->setRequestMethod(Ljava/lang/String;)V
-
-    .line 299
-    const/16 v6, 0x2710
-
-    invoke-virtual {v3, v6}, Ljava/net/HttpURLConnection;->setConnectTimeout(I)V
-
-    .line 300
-    invoke-virtual {v3, v6}, Ljava/net/HttpURLConnection;->setReadTimeout(I)V
-
-    .line 301
-    const-string v6, "x-phone-udid"
-
-    invoke-virtual {v3, v6, v13}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 302
-    const-string v6, "x-driver-token"
-
-    invoke-virtual {v3, v6, v12}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 303
-    const-string v6, "content-type"
-
-    const-string v7, "application/json"
-
-    invoke-virtual {v3, v6, v7}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 304
-    const-string v6, "accept"
-
-    const-string v7, "*/*"
-
-    invoke-virtual {v3, v6, v7}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 305
-    const-string v6, "accept-encoding"
-
-    const-string v7, "gzip"
-
-    invoke-virtual {v3, v6, v7}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 306
-    const-string v6, "x-mcc"
-
-    const-string v7, "457"
-
-    invoke-virtual {v3, v6, v7}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 307
-    const-string v6, "x-driver-requesttimeout"
-
-    const-string v7, "20"
-
-    invoke-virtual {v3, v6, v7}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 308
-    const-string v6, "x-websocket"
-
-    const-string v7, "false"
-
-    invoke-virtual {v3, v6, v7}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 309
-    const-string v6, "user-agent"
-
-    const-string v7, "Dalvik/2.1.0 (Linux; U; Android 13; SM-A515F)"
-
-    invoke-virtual {v3, v6, v7}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 310
-    invoke-virtual {v3}, Ljava/net/HttpURLConnection;->getResponseCode()I
-
-    move-result v6
-
-    .line 311
-    const/16 v7, 0x190
-
-    if-lt v6, v7, :cond_7
-
-    invoke-virtual {v3}, Ljava/net/HttpURLConnection;->getErrorStream()Ljava/io/InputStream;
-
-    move-result-object v3
-
-    goto :goto_4
-
-    :cond_7
-    invoke-virtual {v3}, Ljava/net/HttpURLConnection;->getInputStream()Ljava/io/InputStream;
-
-    move-result-object v3
-
-    .line 312
-    :goto_4
-    invoke-static {v3}, Lcom/bot/taxsee/BotEngine;->access$900(Ljava/io/InputStream;)Ljava/lang/String;
-
-    move-result-object v3
-
-    .line 313
-    invoke-static {}, Landroid/os/SystemClock;->elapsedRealtime()J
-
-    move-result-wide v7
-
-    sub-long/2addr v7, v4
-
-    .line 314
-    new-instance v4, Ljava/lang/StringBuilder;
-
-    invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
-
-    const-string v5, "ACCEPT resp code="
-
-    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v4
-
-    invoke-virtual {v4, v6}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
-
-    move-result-object v4
-
-    const-string v5, " round-trip="
-
-    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v4
-
-    invoke-virtual {v4, v7, v8}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
-
-    move-result-object v4
-
-    invoke-virtual {v4, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v4
-
-    invoke-virtual {v4, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v4
-
-    invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    move-result-object v4
-
-    invoke-static {v2, v4}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
-
-    .line 315
-    iget-object v4, v1, Lcom/bot/taxsee/BotEngine$2;->val$ctx:Landroid/content/Context;
-
-    new-instance v5, Ljava/lang/StringBuilder;
-
-    invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
-
-    const-string v9, "ACCEPT id="
-
-    invoke-virtual {v5, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v5
-
-    iget-wide v9, v1, Lcom/bot/taxsee/BotEngine$2;->val$orderId:J
-
-    invoke-virtual {v5, v9, v10}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
-
-    move-result-object v5
-
-    const-string v9, " code="
-
-    invoke-virtual {v5, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v5
-
-    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
-
-    move-result-object v5
-
-    const-string v9, " rt="
-
-    invoke-virtual {v5, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v5
-
-    invoke-virtual {v5, v7, v8}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
-
-    move-result-object v5
-
-    invoke-virtual {v5, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v0
-
-    invoke-virtual {v0, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v0
-
-    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    move-result-object v0
-
-    invoke-static {v4, v0}, Lcom/bot/taxsee/BotEngine;->access$1000(Landroid/content/Context;Ljava/lang/String;)V
-
-    .line 316
-    iget-wide v4, v1, Lcom/bot/taxsee/BotEngine$2;->val$timeSec:J
-
-    const-wide/16 v9, 0x24
-
-    cmp-long v0, v4, v9
-
-    if-nez v0, :cond_8
-
-    const-string v0, "\u0e25\u0e34\u0e2a\u0e15\u0e4c"
-
-    goto :goto_5
-
-    :cond_8
-    const-string v0, "offer"
-
-    .line 317
-    :goto_5
-    if-eqz v3, :cond_9
-
-    const-string v4, "\u0e02\u0e49\u0e2d\u0e1c\u0e34\u0e14\u0e1e\u0e25\u0e32\u0e14"
-
-    invoke-virtual {v3, v4}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
-
-    move-result v3
-
-    if-eqz v3, :cond_9
-
-    const/4 v3, 0x1
-
-    goto :goto_6
-
-    :cond_9
-    const/4 v3, 0x0
-
-    .line 318
-    :goto_6
-    const/16 v4, 0xc8
-
-    const-wide/16 v9, 0x1
-
-    if-ne v6, v4, :cond_a
-
-    if-nez v3, :cond_a
-
-    .line 319
-    new-instance v3, Ljava/lang/StringBuilder;
-
-    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
-
-    const-string v5, "\u2705 \u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08! "
+    const-string v5, "ms body="
 
     invoke-virtual {v3, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -689,85 +660,61 @@
 
     invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result-object v0
+    move-result-object v3
 
-    const-string v3, " (id.."
+    invoke-virtual {v3}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 
-    invoke-virtual {v0, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v3
 
-    move-result-object v0
+    .line 347
+    invoke-static {v2, v3}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
-    iget-wide v11, v1, Lcom/bot/taxsee/BotEngine$2;->val$orderId:J
+    .line 349
+    iget-object v2, v1, Lcom/bot/taxsee/BotEngine$2;->val$ctx:Landroid/content/Context;
 
-    const-wide/32 v13, 0x186a0
-
-    rem-long/2addr v11, v13
-
-    invoke-virtual {v0, v11, v12}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
-
-    move-result-object v0
-
-    const-string v3, ") "
-
-    invoke-virtual {v0, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v0
-
-    invoke-virtual {v0, v7, v8}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
-
-    move-result-object v0
-
-    const-string v3, "ms"
-
-    invoke-virtual {v0, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v0
-
-    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    move-result-object v0
-
-    invoke-static {v0}, Lcom/bot/taxsee/BotEngine;->access$400(Ljava/lang/String;)V
-
-    .line 320
-    invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$1108()J
-
-    .line 321
-    iget-object v0, v1, Lcom/bot/taxsee/BotEngine$2;->val$ctx:Landroid/content/Context;
-
-    const-string v3, "ok"
-
-    invoke-static {v0, v3, v9, v10}, Lcom/bot/taxsee/BotConfig;->addStat(Landroid/content/Context;Ljava/lang/String;J)V
-
-    .line 322
-    iget-object v0, v1, Lcom/bot/taxsee/BotEngine$2;->val$ctx:Landroid/content/Context;
-
-    const-string v3, "all_ok"
-
-    invoke-static {v0, v3, v9, v10}, Lcom/bot/taxsee/BotConfig;->addStat(Landroid/content/Context;Ljava/lang/String;J)V
-
-    goto :goto_8
-
-    .line 324
-    :cond_a
-    if-eqz v3, :cond_b
-
-    const-string v3, "\u0e07\u0e32\u0e19\u0e16\u0e39\u0e01\u0e08\u0e2d\u0e07/\u0e22\u0e37\u0e19\u0e22\u0e31\u0e19\u0e44\u0e21\u0e48\u0e44\u0e14\u0e49"
-
-    goto :goto_7
-
-    :cond_b
     new-instance v3, Ljava/lang/StringBuilder;
 
     invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
 
-    const-string v5, "code="
+    const-string v5, "ACCEPT id="
 
     invoke-virtual {v3, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v3
 
-    invoke-virtual {v3, v6}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    iget-wide v5, v1, Lcom/bot/taxsee/BotEngine$2;->val$orderId:J
+
+    invoke-virtual {v3, v5, v6}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
+
+    move-result-object v3
+
+    const-string v5, " code="
+
+    invoke-virtual {v3, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v3
+
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+
+    move-result-object v3
+
+    const-string v5, " rt="
+
+    invoke-virtual {v3, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v3
+
+    invoke-virtual {v3, v7, v8}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
+
+    move-result-object v3
+
+    const-string v5, "ms body="
+
+    invoke-virtual {v3, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v3
+
+    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v3
 
@@ -775,29 +722,97 @@
 
     move-result-object v3
 
-    .line 325
-    :goto_7
-    new-instance v5, Ljava/lang/StringBuilder;
+    invoke-static {v2, v3}, Lcom/bot/taxsee/BotEngine;->access$1400(Landroid/content/Context;Ljava/lang/String;)V
 
-    invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
+    .line 350
+    iget-wide v2, v1, Lcom/bot/taxsee/BotEngine$2;->val$timeSec:J
 
-    const-string v7, "\u274c \u0e44\u0e21\u0e48\u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08 "
+    const-wide/16 v5, 0x24
 
-    invoke-virtual {v5, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    cmp-long v9, v2, v5
 
-    move-result-object v5
+    if-nez v9, :cond_c
 
-    invoke-virtual {v5, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    const-string v2, "\u0e25\u0e34\u0e2a\u0e15\u0e4c"
+
+    goto :goto_5
+
+    :cond_c
+    const-string v2, "offer"
+
+    .line 351
+    :goto_5
+    if-eqz v0, :cond_d
+
+    const-string v3, "\u0e02\u0e49\u0e2d\u0e1c\u0e34\u0e14\u0e1e\u0e25\u0e32\u0e14"
+
+    invoke-virtual {v0, v3}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+
+    move-result v0
+
+    if-eqz v0, :cond_d
+
+    const/4 v0, 0x1
+
+    goto :goto_6
+
+    :cond_d
+    const/4 v0, 0x0
+
+    .line 352
+    :goto_6
+    const/16 v3, 0xc8
+
+    const-wide/16 v5, 0x1
+
+    if-ne v4, v3, :cond_e
+
+    if-nez v0, :cond_e
+
+    .line 353
+    new-instance v0, Ljava/lang/StringBuilder;
+
+    invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
+
+    const-string v9, "\u2705 \u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08! "
+
+    invoke-virtual {v0, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v0
 
-    const-string v5, " "
-
-    invoke-virtual {v0, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v0
 
-    invoke-virtual {v0, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    const-string v2, " (id.."
+
+    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    iget-wide v9, v1, Lcom/bot/taxsee/BotEngine$2;->val$orderId:J
+
+    const-wide/32 v11, 0x186a0
+
+    rem-long/2addr v9, v11
+
+    invoke-virtual {v0, v9, v10}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    const-string v2, ") "
+
+    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    invoke-virtual {v0, v7, v8}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    const-string v2, "ms"
+
+    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v0
 
@@ -805,122 +820,341 @@
 
     move-result-object v0
 
-    invoke-static {v0}, Lcom/bot/taxsee/BotEngine;->access$400(Ljava/lang/String;)V
+    invoke-static {v0}, Lcom/bot/taxsee/BotEngine;->access$500(Ljava/lang/String;)V
 
-    .line 326
-    invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$1208()J
+    .line 354
+    invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$1508()J
 
-    .line 327
+    .line 355
     iget-object v0, v1, Lcom/bot/taxsee/BotEngine$2;->val$ctx:Landroid/content/Context;
 
-    const-string v3, "fail"
+    const-string v2, "ok"
 
-    invoke-static {v0, v3, v9, v10}, Lcom/bot/taxsee/BotConfig;->addStat(Landroid/content/Context;Ljava/lang/String;J)V
+    invoke-static {v0, v2, v5, v6}, Lcom/bot/taxsee/BotConfig;->addStat(Landroid/content/Context;Ljava/lang/String;J)V
 
-    .line 329
+    .line 356
+    iget-object v0, v1, Lcom/bot/taxsee/BotEngine$2;->val$ctx:Landroid/content/Context;
+
+    const-string v2, "all_ok"
+
+    invoke-static {v0, v2, v5, v6}, Lcom/bot/taxsee/BotConfig;->addStat(Landroid/content/Context;Ljava/lang/String;J)V
+
+    goto :goto_8
+
+    .line 358
+    :cond_e
+    if-eqz v0, :cond_f
+
+    const-string v0, "\u0e07\u0e32\u0e19\u0e16\u0e39\u0e01\u0e08\u0e2d\u0e07/\u0e22\u0e37\u0e19\u0e22\u0e31\u0e19\u0e44\u0e21\u0e48\u0e44\u0e14\u0e49"
+
+    goto :goto_7
+
+    :cond_f
+    new-instance v0, Ljava/lang/StringBuilder;
+
+    invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
+
+    const-string v7, "code="
+
+    invoke-virtual {v0, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    invoke-virtual {v0, v4}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v0
+
+    .line 359
+    :goto_7
+    new-instance v7, Ljava/lang/StringBuilder;
+
+    invoke-direct {v7}, Ljava/lang/StringBuilder;-><init>()V
+
+    const-string v8, "\u274c \u0e44\u0e21\u0e48\u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08 "
+
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v7
+
+    invoke-virtual {v7, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v2
+
+    const-string v7, " "
+
+    invoke-virtual {v2, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v2
+
+    invoke-virtual {v2, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v0
+
+    invoke-static {v0}, Lcom/bot/taxsee/BotEngine;->access$500(Ljava/lang/String;)V
+
+    .line 360
+    invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$1608()J
+
+    .line 361
+    iget-object v0, v1, Lcom/bot/taxsee/BotEngine$2;->val$ctx:Landroid/content/Context;
+
+    const-string v2, "fail"
+
+    invoke-static {v0, v2, v5, v6}, Lcom/bot/taxsee/BotConfig;->addStat(Landroid/content/Context;Ljava/lang/String;J)V
+
+    .line 363
     :goto_8
     iget-object v0, v1, Lcom/bot/taxsee/BotEngine$2;->val$ctx:Landroid/content/Context;
 
-    if-ne v6, v4, :cond_c
+    if-ne v4, v3, :cond_10
 
-    const-wide/16 v3, 0x15e
+    const-wide/16 v2, 0x15e
 
     goto :goto_9
 
-    :cond_c
-    const-wide/16 v3, 0x96
+    :cond_10
+    const-wide/16 v2, 0x96
 
     :goto_9
-    invoke-static {v0, v3, v4}, Lcom/bot/taxsee/BotEngine;->access$1300(Landroid/content/Context;J)V
+    invoke-static {v0, v2, v3}, Lcom/bot/taxsee/BotEngine;->access$1700(Landroid/content/Context;J)V
+    :try_end_0
+    .catchall {:try_start_0 .. :try_end_0} :catchall_3
 
-    goto :goto_d
+    .line 367
+    invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$1800()Ljava/lang/Object;
 
-    .line 288
-    :cond_d
-    :goto_a
-    const-string v0, "sig EMPTY \u2014 abort"
+    move-result-object v2
 
-    invoke-static {v2, v0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
+    monitor-enter v2
 
-    .line 289
-    const-string v0, "\u274c sig \u0e27\u0e48\u0e32\u0e07 \u2014 abort"
+    :try_start_1
+    invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$1900()Ljava/util/HashSet;
 
-    invoke-static {v0}, Lcom/bot/taxsee/BotEngine;->access$400(Ljava/lang/String;)V
+    move-result-object v0
 
-    .line 290
-    invoke-static/range {v19 .. v19}, Lcom/bot/taxsee/BotEngine;->access$502(Z)Z
+    iget-wide v3, v1, Lcom/bot/taxsee/BotEngine$2;->val$orderId:J
+
+    invoke-static {v3, v4}, Ljava/lang/Long;->valueOf(J)Ljava/lang/Long;
+
+    move-result-object v3
+
+    invoke-virtual {v0, v3}, Ljava/util/HashSet;->remove(Ljava/lang/Object;)Z
+
+    monitor-exit v2
+
+    goto :goto_c
+
+    :catchall_0
+    move-exception v0
+
+    monitor-exit v2
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_0
 
-    .line 333
-    invoke-static/range {v19 .. v19}, Lcom/bot/taxsee/BotEngine;->access$502(Z)Z
+    throw v0
+
+    .line 318
+    :cond_11
+    :goto_a
+    :try_start_2
+    const-string v0, "TAXBOT"
+
+    const-string v2, "sig EMPTY \u2014 abort"
+
+    invoke-static {v0, v2}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
+
+    .line 319
+    const-string v0, "\u274c sig \u0e27\u0e48\u0e32\u0e07 \u2014 abort"
+
+    invoke-static {v0}, Lcom/bot/taxsee/BotEngine;->access$500(Ljava/lang/String;)V
+    :try_end_2
+    .catchall {:try_start_2 .. :try_end_2} :catchall_3
+
+    .line 367
+    invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$1800()Ljava/lang/Object;
+
+    move-result-object v2
+
+    monitor-enter v2
+
+    :try_start_3
+    invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$1900()Ljava/util/HashSet;
+
+    move-result-object v0
+
+    iget-wide v3, v1, Lcom/bot/taxsee/BotEngine$2;->val$orderId:J
+
+    invoke-static {v3, v4}, Ljava/lang/Long;->valueOf(J)Ljava/lang/Long;
+
+    move-result-object v3
+
+    invoke-virtual {v0, v3}, Ljava/util/HashSet;->remove(Ljava/lang/Object;)Z
+
+    monitor-exit v2
+
+    .line 320
+    return-void
+
+    .line 367
+    :catchall_1
+    move-exception v0
+
+    monitor-exit v2
+    :try_end_3
+    .catchall {:try_start_3 .. :try_end_3} :catchall_1
+
+    throw v0
+
+    .line 289
+    :cond_12
+    :goto_b
+    :try_start_4
+    const-string v0, "TAXBOT"
+
+    const-string v2, "no token/udid \u2014 \u0e22\u0e31\u0e07\u0e2d\u0e48\u0e32\u0e19\u0e44\u0e21\u0e48\u0e44\u0e14\u0e49"
+
+    invoke-static {v0, v2}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
+
+    .line 290
+    const-string v0, "\u274c \u0e44\u0e21\u0e48\u0e21\u0e35 token/udid"
+
+    invoke-static {v0}, Lcom/bot/taxsee/BotEngine;->access$500(Ljava/lang/String;)V
+    :try_end_4
+    .catchall {:try_start_4 .. :try_end_4} :catchall_3
+
+    .line 367
+    invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$1800()Ljava/lang/Object;
+
+    move-result-object v2
+
+    monitor-enter v2
+
+    :try_start_5
+    invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$1900()Ljava/util/HashSet;
+
+    move-result-object v0
+
+    iget-wide v3, v1, Lcom/bot/taxsee/BotEngine$2;->val$orderId:J
+
+    invoke-static {v3, v4}, Ljava/lang/Long;->valueOf(J)Ljava/lang/Long;
+
+    move-result-object v3
+
+    invoke-virtual {v0, v3}, Ljava/util/HashSet;->remove(Ljava/lang/Object;)Z
+
+    monitor-exit v2
 
     .line 291
     return-void
 
-    .line 259
-    :cond_e
-    const/16 v19, 0x0
-
-    .line 260
-    :goto_b
-    :try_start_2
-    const-string v0, "no token/udid \u2014 \u0e22\u0e31\u0e07\u0e2d\u0e48\u0e32\u0e19\u0e44\u0e21\u0e48\u0e44\u0e14\u0e49"
-
-    invoke-static {v2, v0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
-
-    .line 261
-    const-string v0, "\u274c \u0e44\u0e21\u0e48\u0e21\u0e35 token/udid"
-
-    invoke-static {v0}, Lcom/bot/taxsee/BotEngine;->access$400(Ljava/lang/String;)V
-
-    .line 262
-    invoke-static/range {v19 .. v19}, Lcom/bot/taxsee/BotEngine;->access$502(Z)Z
-    :try_end_2
-    .catchall {:try_start_2 .. :try_end_2} :catchall_0
-
-    .line 333
-    invoke-static/range {v19 .. v19}, Lcom/bot/taxsee/BotEngine;->access$502(Z)Z
-
-    .line 263
-    return-void
-
-    .line 330
-    :catchall_0
-    move-exception v0
-
-    goto :goto_c
-
-    :catchall_1
-    move-exception v0
-
-    const/16 v19, 0x0
-
-    .line 331
-    :goto_c
-    :try_start_3
-    const-string v3, "doAccept error"
-
-    invoke-static {v2, v3, v0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
-    :try_end_3
-    .catchall {:try_start_3 .. :try_end_3} :catchall_2
-
-    .line 333
-    :goto_d
-    invoke-static/range {v19 .. v19}, Lcom/bot/taxsee/BotEngine;->access$502(Z)Z
-
-    .line 334
-    nop
-
-    .line 335
-    return-void
-
-    .line 333
+    .line 367
     :catchall_2
     move-exception v0
 
-    invoke-static/range {v19 .. v19}, Lcom/bot/taxsee/BotEngine;->access$502(Z)Z
+    monitor-exit v2
+    :try_end_5
+    .catchall {:try_start_5 .. :try_end_5} :catchall_2
 
-    .line 334
+    throw v0
+
+    .line 364
+    :catchall_3
+    move-exception v0
+
+    .line 365
+    :try_start_6
+    const-string v2, "TAXBOT"
+
+    const-string v3, "doAccept error"
+
+    invoke-static {v2, v3, v0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+    :try_end_6
+    .catchall {:try_start_6 .. :try_end_6} :catchall_5
+
+    .line 367
+    invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$1800()Ljava/lang/Object;
+
+    move-result-object v2
+
+    monitor-enter v2
+
+    :try_start_7
+    invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$1900()Ljava/util/HashSet;
+
+    move-result-object v0
+
+    iget-wide v3, v1, Lcom/bot/taxsee/BotEngine$2;->val$orderId:J
+
+    invoke-static {v3, v4}, Ljava/lang/Long;->valueOf(J)Ljava/lang/Long;
+
+    move-result-object v3
+
+    invoke-virtual {v0, v3}, Ljava/util/HashSet;->remove(Ljava/lang/Object;)Z
+
+    monitor-exit v2
+
+    .line 368
+    :goto_c
+    nop
+
+    .line 369
+    return-void
+
+    .line 367
+    :catchall_4
+    move-exception v0
+
+    monitor-exit v2
+    :try_end_7
+    .catchall {:try_start_7 .. :try_end_7} :catchall_4
+
+    throw v0
+
+    :catchall_5
+    move-exception v0
+
+    invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$1800()Ljava/lang/Object;
+
+    move-result-object v2
+
+    monitor-enter v2
+
+    :try_start_8
+    invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$1900()Ljava/util/HashSet;
+
+    move-result-object v3
+
+    iget-wide v4, v1, Lcom/bot/taxsee/BotEngine$2;->val$orderId:J
+
+    invoke-static {v4, v5}, Ljava/lang/Long;->valueOf(J)Ljava/lang/Long;
+
+    move-result-object v4
+
+    invoke-virtual {v3, v4}, Ljava/util/HashSet;->remove(Ljava/lang/Object;)Z
+
+    monitor-exit v2
+    :try_end_8
+    .catchall {:try_start_8 .. :try_end_8} :catchall_6
+
+    .line 368
+    throw v0
+
+    .line 367
+    :catchall_6
+    move-exception v0
+
+    :try_start_9
+    monitor-exit v2
+    :try_end_9
+    .catchall {:try_start_9 .. :try_end_9} :catchall_6
+
     throw v0
 .end method

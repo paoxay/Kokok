@@ -215,6 +215,39 @@ public final class BotOverlay {
         today.setText(BotEngine.todayText(ctx));
         root.addView(today);
 
+        // การ์ดความเร็วจริง (RTT เห็นงาน→ยิง / warm ping) — เทียบก่อน-หลังอัปเกรด
+        final TextView speed = new TextView(ctx);
+        speed.setTextColor(0xFF67E8F9);
+        speed.setTextSize(12);
+        speed.setText(BotEngine.speedText());
+        root.addView(speed);
+
+        // รับงานอัตโนมัติจากเซิร์ฟเวอร์ (auto-assignment) — เซิร์ฟเวอร์จ่ายงานเอง latency 0
+        BotEngine.fetchAutoStateAsync(ctx);
+        final TextView autoStat = new TextView(ctx);
+        autoStat.setTextColor(0xFFFDBA74);
+        autoStat.setTextSize(12);
+        autoStat.setText(BotEngine.autoStateText());
+        root.addView(autoStat);
+        final Button autoBtn = new Button(ctx);
+        autoBtn.setText(autoBtnLabel());
+        root.addView(autoBtn);
+        autoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean target = !BotConfig.isAutoCached(ctx);
+                autoBtn.setEnabled(false);
+                BotEngine.setAutoEnabledAsync(ctx, target);
+                autoBtn.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        try { autoBtn.setEnabled(true); } catch (Throwable ignored) { }
+                    }
+                }, 3000L);
+            }
+        });
+        root.addView(label("(Auto ใช้ราคาขั้นต่ำตามบอท แต่เซิร์ฟเวอร์จำกัดสูงสุด 100,000 กีบ)"));
+
         final android.os.Handler h = new android.os.Handler(android.os.Looper.getMainLooper());
         final Runnable tick = new Runnable() {
             @Override public void run() {
@@ -223,6 +256,9 @@ public final class BotOverlay {
                 try { rating.setText(BotEngine.getRatingDisplay()); } catch (Throwable ignored) { }
                 try { stats.setText(BotEngine.statsText()); } catch (Throwable ignored) { }
                 try { today.setText(BotEngine.todayText(ctx)); } catch (Throwable ignored) { }
+                try { speed.setText(BotEngine.speedText()); } catch (Throwable ignored) { }
+                try { autoStat.setText(BotEngine.autoStateText()); } catch (Throwable ignored) { }
+                try { autoBtn.setText(autoBtnLabel()); } catch (Throwable ignored) { }
                 h.postDelayed(this, 2000L);
             }
         };
@@ -235,12 +271,15 @@ public final class BotOverlay {
         root.addView(label("ระยะห่างสูงสุด (กม.)"));
         final EditText etDist = edit(String.valueOf(BotConfig.getMaxDistanceKm(ctx)));
         root.addView(etDist);
-        root.addView(label("หน่วงก่อนรับ (มิลลิวินาที) — 0 = เร็วที่สุด"));
+        root.addView(label("หน่วงก่อนรับ (มิลลิวินาที) — แนะนำ 0 = ยิงทันที"));
         final EditText etDelay = edit(String.valueOf(BotConfig.getDelayMs(ctx)));
         root.addView(etDelay);
         root.addView(label("ราคาขั้นต่ำงานลิสต์ (กีบ) — งานว่างที่เคลมเอง"));
         final EditText etList = edit(String.valueOf(BotConfig.getListMinPrice(ctx)));
         root.addView(etList);
+        root.addView(label("รอบสแกนลิสต์ (วินาที) — ยิ่งน้อยยิ่งเร็ว (แอปจริง=0.8)"));
+        final EditText etScan = edit(String.valueOf(BotConfig.getSniperSec(ctx)));
+        root.addView(etScan);
 
         Button save = new Button(ctx);
         save.setText("💾 บันทึกการตั้งค่า");
@@ -251,6 +290,7 @@ public final class BotOverlay {
                 try { BotConfig.setMaxDistanceKm(ctx, Double.parseDouble(etDist.getText().toString().trim())); } catch (Exception ignored) { }
                 try { BotConfig.setDelayMs(ctx, Long.parseLong(etDelay.getText().toString().trim())); } catch (Exception ignored) { }
                 try { BotConfig.setListMinPrice(ctx, Long.parseLong(etList.getText().toString().trim())); } catch (Exception ignored) { }
+                try { BotConfig.setSniperSec(ctx, Long.parseLong(etScan.getText().toString().trim())); } catch (Exception ignored) { }
                 toast("บันทึกแล้ว ✓");
             }
         });
@@ -286,6 +326,12 @@ public final class BotOverlay {
         // อนุญาตโฟกัสสำหรับ EditText
         pp.flags &= ~WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
         try { wm.updateViewLayout(panel, pp); } catch (Throwable ignored) { }
+    }
+
+    private static String autoBtnLabel() {
+        return BotConfig.isAutoCached(ctx)
+                ? "🤖 ปิดรับงานอัตโนมัติ (เซิร์ฟเวอร์)"
+                : "🤖 เปิดรับงานอัตโนมัติ (เซิร์ฟเวอร์)";
     }
 
     private static TextView label(String text) {

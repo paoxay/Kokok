@@ -16,12 +16,12 @@
 .method public static addStat(Landroid/content/Context;Ljava/lang/String;J)V
     .locals 3
 
-    .line 66
+    .line 86
     invoke-static {p0}, Lcom/bot/taxsee/BotConfig;->prefs(Landroid/content/Context;)Landroid/content/SharedPreferences;
 
     move-result-object p0
 
-    .line 67
+    .line 87
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
@@ -54,7 +54,7 @@
 
     move-result-object p1
 
-    .line 68
+    .line 88
     invoke-interface {p0}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
 
     move-result-object v0
@@ -73,21 +73,21 @@
 
     invoke-interface {p0}, Landroid/content/SharedPreferences$Editor;->apply()V
 
-    .line 69
+    .line 89
     return-void
 .end method
 
 .method public static getDelayMs(Landroid/content/Context;)J
     .locals 3
 
-    .line 42
+    .line 43
     invoke-static {p0}, Lcom/bot/taxsee/BotConfig;->prefs(Landroid/content/Context;)Landroid/content/SharedPreferences;
 
     move-result-object p0
 
     const-string v0, "delay_ms"
 
-    const-wide/16 v1, 0x96
+    const-wide/16 v1, 0x0
 
     invoke-interface {p0, v0, v1, v2}, Landroid/content/SharedPreferences;->getLong(Ljava/lang/String;J)J
 
@@ -99,7 +99,7 @@
 .method public static getListMinPrice(Landroid/content/Context;)J
     .locals 3
 
-    .line 53
+    .line 73
     invoke-static {p0}, Lcom/bot/taxsee/BotConfig;->prefs(Landroid/content/Context;)Landroid/content/SharedPreferences;
 
     move-result-object p0
@@ -156,10 +156,50 @@
     return-wide v0
 .end method
 
+.method public static getSniperSec(Landroid/content/Context;)J
+    .locals 5
+
+    .line 52
+    invoke-static {p0}, Lcom/bot/taxsee/BotConfig;->prefs(Landroid/content/Context;)Landroid/content/SharedPreferences;
+
+    move-result-object p0
+
+    const-string v0, "sniper_sec"
+
+    const-wide/16 v1, 0x1
+
+    invoke-interface {p0, v0, v1, v2}, Landroid/content/SharedPreferences;->getLong(Ljava/lang/String;J)J
+
+    move-result-wide v3
+
+    .line 53
+    cmp-long p0, v3, v1
+
+    if-gez p0, :cond_0
+
+    :goto_0
+    goto :goto_1
+
+    :cond_0
+    const-wide/16 v1, 0x3c
+
+    cmp-long p0, v3, v1
+
+    if-lez p0, :cond_1
+
+    goto :goto_0
+
+    :cond_1
+    move-wide v1, v3
+
+    :goto_1
+    return-wide v1
+.end method
+
 .method public static getStatToday(Landroid/content/Context;Ljava/lang/String;)J
     .locals 2
 
-    .line 72
+    .line 92
     invoke-static {p0}, Lcom/bot/taxsee/BotConfig;->prefs(Landroid/content/Context;)Landroid/content/SharedPreferences;
 
     move-result-object p0
@@ -205,6 +245,25 @@
     return-wide p0
 .end method
 
+.method public static isAutoCached(Landroid/content/Context;)Z
+    .locals 2
+
+    .line 62
+    invoke-static {p0}, Lcom/bot/taxsee/BotConfig;->prefs(Landroid/content/Context;)Landroid/content/SharedPreferences;
+
+    move-result-object p0
+
+    const-string v0, "auto_on"
+
+    const/4 v1, 0x0
+
+    invoke-interface {p0, v0, v1}, Landroid/content/SharedPreferences;->getBoolean(Ljava/lang/String;Z)Z
+
+    move-result p0
+
+    return p0
+.end method
+
 .method public static isEnabled(Landroid/content/Context;)Z
     .locals 2
 
@@ -242,23 +301,23 @@
 .method public static pruneOldStats(Landroid/content/Context;)V
     .locals 9
 
-    .line 78
+    .line 98
     :try_start_0
     invoke-static {p0}, Lcom/bot/taxsee/BotConfig;->prefs(Landroid/content/Context;)Landroid/content/SharedPreferences;
 
     move-result-object p0
 
-    .line 79
+    .line 99
     invoke-static {}, Lcom/bot/taxsee/BotConfig;->todayKey()Ljava/lang/String;
 
     move-result-object v0
 
-    .line 80
+    .line 100
     new-instance v1, Ljava/util/HashSet;
 
     invoke-direct {v1}, Ljava/util/HashSet;-><init>()V
 
-    .line 81
+    .line 101
     invoke-interface {p0}, Landroid/content/SharedPreferences;->getAll()Ljava/util/Map;
 
     move-result-object v2
@@ -284,7 +343,7 @@
 
     check-cast v3, Ljava/lang/String;
 
-    .line 82
+    .line 102
     const-string v4, "st_"
 
     invoke-virtual {v3, v4}, Ljava/lang/String;->startsWith(Ljava/lang/String;)Z
@@ -295,7 +354,7 @@
 
     goto :goto_0
 
-    .line 83
+    .line 103
     :cond_0
     const/16 v4, 0x5f
 
@@ -309,7 +368,7 @@
 
     move-result-object v4
 
-    .line 84
+    .line 104
     invoke-virtual {v4, v0}, Ljava/lang/String;->compareTo(Ljava/lang/String;)I
 
     move-result v5
@@ -318,7 +377,7 @@
 
     if-gez v5, :cond_2
 
-    .line 86
+    .line 106
     :try_start_1
     new-instance v5, Ljava/text/SimpleDateFormat;
 
@@ -328,12 +387,12 @@
 
     invoke-direct {v5, v6, v7}, Ljava/text/SimpleDateFormat;-><init>(Ljava/lang/String;Ljava/util/Locale;)V
 
-    .line 87
+    .line 107
     invoke-virtual {v5, v4}, Ljava/text/SimpleDateFormat;->parse(Ljava/lang/String;)Ljava/util/Date;
 
     move-result-object v4
 
-    .line 88
+    .line 108
     invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
 
     move-result-wide v5
@@ -357,7 +416,7 @@
 
     goto :goto_1
 
-    .line 89
+    .line 109
     :catch_0
     move-exception v3
 
@@ -365,11 +424,11 @@
     :goto_1
     nop
 
-    .line 91
+    .line 111
     :cond_2
     goto :goto_0
 
-    .line 92
+    .line 112
     :cond_3
     :try_start_2
     invoke-interface {v1}, Ljava/util/Set;->isEmpty()Z
@@ -378,12 +437,12 @@
 
     if-nez v0, :cond_5
 
-    .line 93
+    .line 113
     invoke-interface {p0}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
 
     move-result-object p0
 
-    .line 94
+    .line 114
     invoke-interface {v1}, Ljava/util/Set;->iterator()Ljava/util/Iterator;
 
     move-result-object v0
@@ -405,7 +464,7 @@
 
     goto :goto_2
 
-    .line 95
+    .line 115
     :cond_4
     invoke-interface {p0}, Landroid/content/SharedPreferences$Editor;->apply()V
     :try_end_2
@@ -413,7 +472,7 @@
 
     goto :goto_3
 
-    .line 97
+    .line 117
     :catchall_0
     move-exception p0
 
@@ -421,14 +480,38 @@
     :goto_3
     nop
 
-    .line 98
+    .line 118
+    return-void
+.end method
+
+.method public static setAutoCached(Landroid/content/Context;Z)V
+    .locals 1
+
+    .line 66
+    invoke-static {p0}, Lcom/bot/taxsee/BotConfig;->prefs(Landroid/content/Context;)Landroid/content/SharedPreferences;
+
+    move-result-object p0
+
+    invoke-interface {p0}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
+
+    move-result-object p0
+
+    const-string v0, "auto_on"
+
+    invoke-interface {p0, v0, p1}, Landroid/content/SharedPreferences$Editor;->putBoolean(Ljava/lang/String;Z)Landroid/content/SharedPreferences$Editor;
+
+    move-result-object p0
+
+    invoke-interface {p0}, Landroid/content/SharedPreferences$Editor;->apply()V
+
+    .line 67
     return-void
 .end method
 
 .method public static setDelayMs(Landroid/content/Context;J)V
     .locals 1
 
-    .line 46
+    .line 47
     invoke-static {p0}, Lcom/bot/taxsee/BotConfig;->prefs(Landroid/content/Context;)Landroid/content/SharedPreferences;
 
     move-result-object p0
@@ -445,7 +528,7 @@
 
     invoke-interface {p0}, Landroid/content/SharedPreferences$Editor;->apply()V
 
-    .line 47
+    .line 48
     return-void
 .end method
 
@@ -476,7 +559,7 @@
 .method public static setListMinPrice(Landroid/content/Context;J)V
     .locals 1
 
-    .line 57
+    .line 77
     invoke-static {p0}, Lcom/bot/taxsee/BotConfig;->prefs(Landroid/content/Context;)Landroid/content/SharedPreferences;
 
     move-result-object p0
@@ -493,7 +576,7 @@
 
     invoke-interface {p0}, Landroid/content/SharedPreferences$Editor;->apply()V
 
-    .line 58
+    .line 78
     return-void
 .end method
 
@@ -547,10 +630,46 @@
     return-void
 .end method
 
+.method public static setSniperSec(Landroid/content/Context;J)V
+    .locals 2
+
+    .line 57
+    invoke-static {p0}, Lcom/bot/taxsee/BotConfig;->prefs(Landroid/content/Context;)Landroid/content/SharedPreferences;
+
+    move-result-object p0
+
+    invoke-interface {p0}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
+
+    move-result-object p0
+
+    const-wide/16 v0, 0x3c
+
+    invoke-static {v0, v1, p1, p2}, Ljava/lang/Math;->min(JJ)J
+
+    move-result-wide p1
+
+    const-wide/16 v0, 0x1
+
+    invoke-static {v0, v1, p1, p2}, Ljava/lang/Math;->max(JJ)J
+
+    move-result-wide p1
+
+    const-string v0, "sniper_sec"
+
+    invoke-interface {p0, v0, p1, p2}, Landroid/content/SharedPreferences$Editor;->putLong(Ljava/lang/String;J)Landroid/content/SharedPreferences$Editor;
+
+    move-result-object p0
+
+    invoke-interface {p0}, Landroid/content/SharedPreferences$Editor;->apply()V
+
+    .line 58
+    return-void
+.end method
+
 .method private static todayKey()Ljava/lang/String;
     .locals 3
 
-    .line 61
+    .line 81
     new-instance v0, Ljava/text/SimpleDateFormat;
 
     const-string v1, "yyyyMMdd"
@@ -559,7 +678,7 @@
 
     invoke-direct {v0, v1, v2}, Ljava/text/SimpleDateFormat;-><init>(Ljava/lang/String;Ljava/util/Locale;)V
 
-    .line 62
+    .line 82
     new-instance v1, Ljava/util/Date;
 
     invoke-direct {v1}, Ljava/util/Date;-><init>()V

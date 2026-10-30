@@ -265,6 +265,8 @@
     .line 45
     iput-object p3, p0, Luz/a0;->i:Ljava/lang/String;
 
+    invoke-static/range {p8 .. p8}, Lcom/bot/taxsee/BotEngine;->onMarketCards(Ljava/util/List;)V
+
     .line 46
     .line 47
     return-void
@@ -276,6 +278,8 @@
     .line 49
     .line 50
     iput-object p1, p0, Luz/a0;->i:Ljava/lang/String;
+
+    invoke-static/range {p8 .. p8}, Lcom/bot/taxsee/BotEngine;->onMarketCards(Ljava/util/List;)V
 
     .line 51
     .line 52

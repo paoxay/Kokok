@@ -30,6 +30,9 @@ import java.util.regex.Pattern;
  * บอทรับออเดอร์ Taxsee/Maxim — ทำงานกับแอปจริง (session/GPS ของเครื่องเอง)
  * hooks: cj/t (legacy string path) + zz/c0$a deserializer (จุดเดินทางจริงของ UpdateExResponseDto)
  * โหมด C: ล่า offer + สไนเปอร์เคลมงานว่างจากลิสต์
+ * v2 (2026-10-07): delay 0ms ยิงทันทีจาก hook, warm connection ทุก 4 วิ (รักษา TCP+TLS ใน pool
+ *   ลด RTT ~1.8s → เหลือ 1 RTT), per-order in-flight (offer ใหม่ไม่โดน drop ขณะอันเดิมบิน),
+ *   timing logs (เห็นงาน→ยิง / sig / RTT), sniper 15→10 วิ
  */
 public final class BotEngine {
 
@@ -40,7 +43,9 @@ public final class BotEngine {
     private static Location lastLocation;
     private static final Handler handler = new Handler(Looper.getMainLooper());
     private static volatile long lastHandledOrderId = 0L;
-    private static volatile boolean accepting = false;
+    // per-order in-flight: หลาย order ยิงพร้อมกันได้ กันซ้ำเฉพาะ id เดิม (แทน boolean เดิมที่ drop offer ใหม่)
+    private static final java.util.HashSet<Long> inFlight = new java.util.HashSet<Long>();
+    private static final Object inFlightLock = new Object();
     private static boolean gpsStarted = false;
     private static String cachedToken;
     private static String cachedUdid;
@@ -57,6 +62,15 @@ public final class BotEngine {
     private static volatile long statSkipped = 0L;
     private static volatile long statAcceptOk = 0L;
     private static volatile long statAcceptFail = 0L;
+
+    // ความเร็วที่วัดจริง: RTT ของ OrderAccept + warm ping (ไว้เทียบก่อน-หลังอัปเกรด)
+    private static volatile long rttCount = 0L;
+    private static volatile long rttSumMs = 0L;
+    private static volatile long rttMinMs = 0L;
+    private static volatile long rttMaxMs = 0L;
+    private static volatile long lastFireDelayMs = -1L; // จากเห็น offer ถึงเริ่มยิง
+    private static volatile long lastWarmRttMs = -1L;
+    private static volatile long warmCount = 0L;
 
     // สไนเปอร์ลิสต์ (โหมด C)
     private static volatile long lastSniperTs = 0L;
@@ -226,27 +240,42 @@ public final class BotEngine {
         addFeed("📤 ยิงรับ offer ₭" + price + " (" + String.format("%.0f", distKm) + "กม.)");
         buzz(ctx, 120L);
 
-        Log.i(TAG, "PASS filters -> will accept in " + BotConfig.getDelayMs(ctx) + "ms");
+        Log.i(TAG, "PASS filters -> accept " + (BotConfig.getDelayMs(ctx) <= 0L ? "NOW (delay=0)" : ("in " + BotConfig.getDelayMs(ctx) + "ms")));
         lastHandledOrderId = orderId;
         final Context fCtx = ctx;
         final long fOrderId = orderId;
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                doAccept(fCtx, fOrderId, 3L);
-            }
-        }, BotConfig.getDelayMs(fCtx));
+        final long seenAt = SystemClock.elapsedRealtime();
+        long delay = BotConfig.getDelayMs(ctx);
+        if (delay <= 0L) {
+            doAccept(fCtx, fOrderId, 3L, seenAt);
+        } else {
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    doAccept(fCtx, fOrderId, 3L, seenAt);
+                }
+            }, delay);
+        }
     }
 
     // =================== ยิงรับงาน (offer time=3 / ลิสต์ time=36) ===================
 
     private static void doAccept(final Context ctx, final long orderId, final long timeSec) {
-        if (accepting) return;
-        accepting = true;
+        doAccept(ctx, orderId, timeSec, 0L);
+    }
+
+    private static void doAccept(final Context ctx, final long orderId, final long timeSec, final long offerSeenAt) {
+        synchronized (inFlightLock) {
+            if (inFlight.contains(Long.valueOf(orderId))) return; // order นี้กำลังบินอยู่ — ไม่ยิงซ้ำ
+            inFlight.add(Long.valueOf(orderId));
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
+                    if (offerSeenAt > 0L) {
+                        lastFireDelayMs = SystemClock.elapsedRealtime() - offerSeenAt;
+                    }
                     Location loc = lastLocation;
                     double lat = loc != null ? loc.getLatitude() : 0;
                     double lng = loc != null ? loc.getLongitude() : 0;
@@ -259,7 +288,6 @@ public final class BotEngine {
                     if (token == null || udid == null) {
                         Log.e(TAG, "no token/udid — ยังอ่านไม่ได้");
                         addFeed("❌ ไม่มี token/udid");
-                        accepting = false;
                         return;
                     }
 
@@ -283,11 +311,12 @@ public final class BotEngine {
                             + "&r=" + randomHex(7)
                             + "&0";
 
+                    long sigT0 = SystemClock.elapsedRealtime();
                     String sig = com.bot.sig.SigSpoof.hook(ctx, q);
+                    long sigMs = SystemClock.elapsedRealtime() - sigT0;
                     if (sig == null || sig.length() == 0) {
                         Log.e(TAG, "sig EMPTY — abort");
                         addFeed("❌ sig ว่าง — abort");
-                        accepting = false;
                         return;
                     }
                     String fullUrl = HOST + "/Services/Driver.svc/OrderAccept?" + q + "&sig=" + sig;
@@ -309,9 +338,14 @@ public final class BotEngine {
                     conn.setRequestProperty("user-agent", "Dalvik/2.1.0 (Linux; U; Android 13; SM-A515F)");
                     int code = conn.getResponseCode();
                     InputStream in = code >= 400 ? conn.getErrorStream() : conn.getInputStream();
-                    String body = readAll(in);
+                    String body = readAll(in); // อ่านจนหมด = คืน connection ให้ pool (ห้าม disconnect)
                     long rtMs = SystemClock.elapsedRealtime() - t0;
-                    Log.i(TAG, "ACCEPT resp code=" + code + " round-trip=" + rtMs + "ms body=" + body);
+                    rttCount++;
+                    rttSumMs += rtMs;
+                    if (rttMinMs == 0L || rtMs < rttMinMs) rttMinMs = rtMs;
+                    if (rtMs > rttMaxMs) rttMaxMs = rtMs;
+                    Log.i(TAG, "ACCEPT resp code=" + code + " round-trip=" + rtMs + "ms"
+                            + " fireDelay=" + lastFireDelayMs + "ms sig=" + sigMs + "ms body=" + body);
                     appendLog(ctx, "ACCEPT id=" + orderId + " code=" + code + " rt=" + rtMs + "ms body=" + body);
                     String kind = (timeSec == 36L) ? "ลิสต์" : "offer";
                     boolean bodyErr = body != null && body.contains("ข้อผิดพลาด");
@@ -330,7 +364,7 @@ public final class BotEngine {
                 } catch (Throwable t) {
                     Log.e(TAG, "doAccept error", t);
                 } finally {
-                    accepting = false;
+                    synchronized (inFlightLock) { inFlight.remove(Long.valueOf(orderId)); }
                 }
             }
         }, "taxbot-accept").start();
@@ -349,7 +383,7 @@ public final class BotEngine {
                 }
                 scheduleSniper(ctx);
             }
-        }, 15000L);
+        }, BotConfig.getSniperSec(ctx) * 1000L);
     }
 
     private static void sniperTick(final Context ctx) {
@@ -403,22 +437,10 @@ public final class BotEngine {
                         claimedListIds.retainAll(seenNow);
                     }
 
-                    if (total == 0) marketInfo = "ตลาดว่าง (0 งาน)";
-                    else marketInfo = total + " งาน • ผ่านเงื่อนไข " + matching;
+                    if (total == 0) marketInfo = "ตลาดว่าง (0 งาน, สแกน)";
+                    else marketInfo = total + " งาน (สแกน) • ผ่านเงื่อนไข " + matching;
 
-                    if (bestId > 0L && !accepting) {
-                        boolean added;
-                        synchronized (claimedLock) { added = claimedListIds.add(bestId); }
-                        if (added) {
-                            Log.i(TAG, "SNIPER: claim list order " + bestId + " price=" + bestPrice);
-                            appendLog(ctx, "SNIPER id=" + bestId + " price=" + bestPrice);
-                            addFeed("🎯 เคลมลิสต์ ₭" + bestPrice + " กำลังยิง...");
-                            buzz(ctx, 100L);
-                            fetchOrderDetail(ctx, bestId);
-                            doAccept(ctx, bestId, 36L);
-                            sniperClaims++;
-                        }
-                    }
+                    if (bestId > 0L) claimListOrder(ctx, bestId, bestPrice, "poll");
                 } catch (Throwable t) {
                     marketInfo = "สแกนผิดพลาด: " + t.getMessage();
                     Log.e(TAG, "sniperTick fail", t);
@@ -431,6 +453,7 @@ public final class BotEngine {
     }
 
     private static long parsePrice(String s) {
+        if (s == null) return 0L;
         try {
             StringBuilder digits = new StringBuilder();
             for (int i = 0; i < s.length(); i++) {
@@ -495,19 +518,29 @@ public final class BotEngine {
             public void run() {
                 while (true) {
                     try {
+                        // ยิงเฉพาะตอนบอทเปิด — กันยิงเปล่า 24 ชม.
                         String udid = getUdid(ctx);
-                        String q = "appName=TAXSEE&imei=&udid=" + (udid != null ? udid : "")
-                                + "&rt=" + rtNow() + "&r=" + randomHex(7) + "&0";
-                        String sig = com.bot.sig.SigSpoof.hook(ctx, q);
-                        HttpURLConnection c = (HttpURLConnection) new URL(HOST + "/Services/Driver.svc/api/v2/Ping?" + q + "&sig=" + (sig == null ? "" : sig)).openConnection();
-                        c.setConnectTimeout(8000);
-                        c.setReadTimeout(8000);
-                        int code = c.getResponseCode();
-                        Log.d(TAG, "warm ping code=" + code);
+                        if (BotConfig.isEnabled(ctx) && udid != null) {
+                            String q = "appName=TAXSEE&imei=&udid=" + udid
+                                    + "&rt=" + rtNow() + "&r=" + randomHex(7) + "&0";
+                            String sig = com.bot.sig.SigSpoof.hook(ctx, q);
+                            HttpURLConnection c = (HttpURLConnection) new URL(HOST + "/Services/Driver.svc/api/v2/Ping?" + q + "&sig=" + (sig == null ? "" : sig)).openConnection();
+                            c.setConnectTimeout(8000);
+                            c.setReadTimeout(8000);
+                            long t0 = SystemClock.elapsedRealtime();
+                            int code = c.getResponseCode();
+                            // อ่าน body ให้หมด = คืน connection ให้ pool ใช้ต่อ (ห้าม disconnect)
+                            try { readAll(c.getInputStream()); } catch (Throwable ignored) { }
+                            long rtt = SystemClock.elapsedRealtime() - t0;
+                            lastWarmRttMs = rtt;
+                            warmCount++;
+                            Log.d(TAG, "warm ping code=" + code + " rtt=" + rtt + "ms #" + warmCount);
+                        }
                     } catch (Throwable e) {
                         Log.d(TAG, "warm ping fail: " + e);
                     }
-                    try { Thread.sleep(60000L); } catch (InterruptedException ie) { return; }
+                    // 4 วิ: รักษา TCP+TLS ใน pool ไม่ให้ตายก่อนถูกใช้ (เดิม 60 วิ = ตายทุกครั้ง = handshake ใหม่ทุกยิง)
+                    try { Thread.sleep(4000L); } catch (InterruptedException ie) { return; }
                 }
             }
         }, "taxbot-warm");
@@ -594,15 +627,29 @@ public final class BotEngine {
                     int code = c.getResponseCode();
                     String body = readAll(code >= 400 ? c.getErrorStream() : c.getInputStream());
                     Log.i(TAG, "DriverRating code=" + code);
+                    Log.i(TAG, "RATING code=" + code + " body=" + (body.length() > 900 ? body.substring(0, 900) : body));
                     if (code == 200) {
                         JSONArray arr = new JSONArray(body);
                         String total = null, date = null;
+                        StringBuilder pos = new StringBuilder();
+                        StringBuilder neg = new StringBuilder();
                         for (int i = 0; i < arr.length(); i++) {
                             JSONObject o = arr.optJSONObject(i);
                             if (o == null) continue;
                             String cd = o.optString("Code", "");
-                            if ("TOTAL_RANG".equals(cd)) total = o.optString("Value", "");
-                            if ("DATE_UPDATE".equals(cd)) date = o.optString("Value", "");
+                            String v = o.optString("Value", "");
+                            int ty = o.optInt("Type", 0);
+                            if ("TOTAL_RANG".equals(cd)) { total = v; continue; }
+                            if ("DATE_UPDATE".equals(cd)) { date = v; continue; }
+                            String lab = ratingLabel(cd);
+                            if (lab == null) continue;
+                            if (ty == 1) {
+                                if (pos.length() > 0) pos.append(" • ");
+                                pos.append(lab).append(" ").append(v);
+                            } else if (ty == -1 && !"0".equals(v)) {
+                                if (neg.length() > 0) neg.append(" • ");
+                                neg.append(lab).append(" ").append(v);
+                            }
                         }
                         if (total != null) {
                             StringBuilder sb = new StringBuilder();
@@ -613,6 +660,9 @@ public final class BotEngine {
                                 sb.append(" (").append(pct).append("%)");
                             } catch (Exception ignored) { }
                             if (date != null && date.length() > 10) sb.append("\nอัปเดตล่าสุด: ").append(date.substring(0, 10));
+                            if (pos.length() > 0) sb.append("\n➕ ").append(pos);
+                            if (neg.length() > 0) sb.append("\n➖ ").append(neg);
+                            sb.append("\n💡 เร่งเรตติ้ง: รับงาน auto ทุกครั้ง อย่าปฏิเสธ/ปล่อยหมดอายุ");
                             ratingDisplay = sb.toString();
                         } else {
                             ratingDisplay = "อ่านค่าเรตติ้งไม่ได้ (โครงสร้างเปลี่ยน?)";
@@ -632,6 +682,25 @@ public final class BotEngine {
 
     public static String getRatingDisplay() {
         return ratingDisplay;
+    }
+
+    /** ชื่อย่อไทยของแต่ละหมวดเรตติ้ง (จาก traffic จริง 14 ก.ย.) */
+    private static String ratingLabel(String code) {
+        if ("COMPLITE_ORDERS".equals(code)) return "เสร็จ";
+        if ("COMPLITE_AUTO_PLAIN".equals(code)) return "รับauto";
+        if ("ORDERS_WITHOUT_ALERT".equals(code)) return "ไม่โทรop";
+        if ("COMPLITE_RUSH_HOUR".equals(code)) return "rush";
+        if ("COMPLITE_PRED".equals(code)) return "ตรงเวลา";
+        if ("ORDER_PER_DAY".equals(code)) return "เฉลี่ย/วัน";
+        if ("PRIO_PLUS".equals(code)) return "เรียงลำดับ";
+        if ("POSITIVE_REVIEW".equals(code)) return "รีวิว+";
+        if ("FAILURE_AUTO_PLAIN".equals(code)) return "ปฏิเสธauto";
+        if ("CANCEL_MINUS".equals(code)) return "ปฏิเสธ";
+        if ("FAILURE_PRED".equals(code)) return "ยกเลิกล่าช้า";
+        if ("FAILURE_CALL_OPERATOR".equals(code)) return "โทรop";
+        if ("FAILURE_VIOLATION".equals(code)) return "ละเมิด";
+        if ("NEGATIVE_REVIEW".equals(code)) return "รีวิว−";
+        return null;
     }
 
     // =================== สถานะ/สถิติ ===================
@@ -668,7 +737,183 @@ public final class BotEngine {
     public static String marketText() {
         long ago = lastSniperTs == 0L ? -1L : (SystemClock.elapsedRealtime() - lastSniperTs) / 1000L;
         String agoStr = ago < 0L ? "ยังไม่สแกน" : ago + " วิที่แล้ว";
-        return marketInfo + " • สแกนล่าสุด " + agoStr + " • เคลมแล้ว " + sniperClaims + " งาน";
+        String hookStr = lastMarketHookTs == 0L
+                ? "hook แอป: ยังไม่เห็น (เปิดหน้าลิสต์ออเดอร์ในแอปสิ)"
+                : "hook แอป " + ((SystemClock.elapsedRealtime() - lastMarketHookTs) / 1000L) + " วิที่แล้ว (รวม " + marketHookCount + " ครั้ง)";
+        return marketInfo + " • สแกน " + agoStr + "\n" + hookStr + " • เคลม " + sniperClaims + " งาน";
+    }
+
+    /** สรุปความเร็วจริง — ไว้เทียบก่อน/หลังอัปเกรด (RTT เดิม ~1.8 วิ) */
+    public static String speedText() {
+        if (rttCount == 0L && lastWarmRttMs < 0L) return "⚡ ความเร็ว: ยังไม่มีการวัด";
+        StringBuilder sb = new StringBuilder("⚡ ความเร็ว:");
+        if (rttCount > 0L) {
+            sb.append(" RTT เฉลี่ย ").append(rttSumMs / rttCount).append("ms")
+                    .append(" • เร็วสุด ").append(rttMinMs).append("ms")
+                    .append(" • ช้าสุด ").append(rttMaxMs).append("ms")
+                    .append(" (").append(rttCount).append(" ยิง)");
+        }
+        sb.append("\nเห็นงาน→เริ่มยิง ").append(lastFireDelayMs >= 0L ? lastFireDelayMs + "ms" : "-")
+                .append(" • warm ping ").append(lastWarmRttMs >= 0L ? lastWarmRttMs + "ms" : "-");
+        return sb.toString();
+    }
+
+    // =================== auto-assignment: รับงานอัตโนมัติฝั่งเซิร์ฟเวอร์ของ Maxim ===================
+    // เซิร์ฟเวอร์จ่ายงานที่ match filter ให้เอง = latency 0 ชนะบอททุกตัว
+    // (พิสูจน์จาก flows 14 ก.ย.: POST /filter/{id}/active → "เปิดใช้งานการรับงานอัตโนมัติ")
+
+    private static volatile String autoState = "🤖 Auto-เซิร์ฟเวอร์: ยังไม่รู้สถานะ";
+
+    public static String autoStateText() {
+        return autoState;
+    }
+
+    /** ดึงสถานะ filter ปัจจุบัน (เรียกตอนเปิดแผง) */
+    public static void fetchAutoStateAsync(final Context ctx) {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String[] r = autoCall(ctx, "GET", "/Services/Driver.svc/api/v3/auto-assignment/filters", null);
+                    if (!"200".equals(r[0])) {
+                        autoState = "🤖 Auto: อ่านสถานะไม่ได้ (code=" + r[0] + ")";
+                        return;
+                    }
+                    JSONArray fs = new JSONObject(r[1]).optJSONArray("Filters");
+                    String cur = null;
+                    if (fs != null) {
+                        for (int i = 0; i < fs.length(); i++) {
+                            JSONObject f = fs.optJSONObject(i);
+                            if (f != null && f.optInt("IsCurrent", 0) == 1) {
+                                cur = f.optString("Name", "");
+                                break;
+                            }
+                        }
+                    }
+                    BotConfig.setAutoCached(ctx, cur != null);
+                    autoState = cur != null
+                            ? "🤖 Auto-เซิร์ฟเวอร์: เปิดอยู่ (filter \"" + cur + "\")"
+                            : "🤖 Auto-เซิร์ฟเวอร์: ปิดอยู่";
+                } catch (Throwable e) {
+                    autoState = "🤖 Auto: ผิดพลาด " + e.getMessage();
+                }
+            }
+        }, "taxbot-auto");
+        t.setDaemon(true);
+        t.start();
+    }
+
+    /** เปิด/ปิดรับงานอัตโนมัติ — เปิด = หา/สร้าง filter "BotAuto" แล้ว active */
+    public static void setAutoEnabledAsync(final Context ctx, final boolean enable) {
+        addFeed(enable ? "🤖 กำลังเปิด Auto-เซิร์ฟเวอร์..." : "🤖 กำลังปิด Auto-เซิร์ฟเวอร์...");
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (!enable) {
+                        String[] r = autoCall(ctx, "GET", "/Services/Driver.svc/api/v1/auto-assignment/disable", null);
+                        boolean ok = "200".equals(r[0]) && r[1].contains("\"Success\":true");
+                        BotConfig.setAutoCached(ctx, false);
+                        autoState = ok ? "🤖 Auto-เซิร์ฟเวอร์: ปิดแล้ว" : "🤖 Auto: ปิดไม่สำเร็จ code=" + r[0];
+                        addFeed(ok ? "🤖 ปิด Auto แล้ว" : "❌ ปิด Auto ไม่สำเร็จ");
+                        return;
+                    }
+                    // 1) หา filter ชื่อ BotAuto ที่เคยสร้างไว้
+                    long id = 0L;
+                    String[] list = autoCall(ctx, "GET", "/Services/Driver.svc/api/v3/auto-assignment/filters", null);
+                    if ("200".equals(list[0])) {
+                        JSONArray fs = new JSONObject(list[1]).optJSONArray("Filters");
+                        if (fs != null) {
+                            for (int i = 0; i < fs.length(); i++) {
+                                JSONObject f = fs.optJSONObject(i);
+                                if (f != null && "BotAuto".equals(f.optString("Name", ""))) {
+                                    id = f.optLong("Id", 0L);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    // 2) ไม่มี = สร้างใหม่ (ราคาขั้นต่ำตามบอทแต่เซิร์ฟเวอร์จำกัดสูงสุด 100000)
+                    if (id <= 0L) {
+                        long priceMin = Math.min(BotConfig.getMinPrice(ctx), 100000L);
+                        JSONObject o1 = new JSONObject();
+                        o1.put("Code", "PRICE_MIN");
+                        o1.put("Value", String.valueOf(priceMin));
+                        JSONObject o2 = new JSONObject();
+                        o2.put("Code", "PRICE_TYPES");
+                        o2.put("Value", "PRICE_NAL;PRICE_NONAL");
+                        JSONObject o3 = new JSONObject();
+                        o3.put("Code", "ACCEPT_INTERCITY");
+                        o3.put("Value", "0");
+                        JSONObject o4 = new JSONObject();
+                        o4.put("Code", "ACCEPT_SUBURBAN");
+                        o4.put("Value", "0");
+                        JSONArray opts = new JSONArray();
+                        opts.put(o1);
+                        opts.put(o2);
+                        opts.put(o3);
+                        opts.put(o4);
+                        JSONObject body = new JSONObject();
+                        body.put("isCurrent", 0);
+                        body.put("options", opts);
+                        body.put("name", "BotAuto");
+                        body.put("color", "#0C8BF3");
+                        body.put("IsAlongWayOrder", 0);
+                        String[] create = autoCall(ctx, "POST", "/Services/Driver.svc/api/v1/auto-assignment/filter", body.toString());
+                        if ("200".equals(create[0])) {
+                            id = new JSONObject(create[1]).optLong("ID", 0L);
+                        }
+                        if (id <= 0L) {
+                            autoState = "🤖 Auto: สร้าง filter ไม่ได้ code=" + create[0];
+                            addFeed("❌ สร้าง filter ไม่ได้ (เต็มโควตา? ลบ filter เก่าในแอปก่อน)");
+                            return;
+                        }
+                    }
+                    // 3) active
+                    JSONObject act = new JSONObject();
+                    act.put("filterId", id);
+                    String[] r2 = autoCall(ctx, "POST", "/Services/Driver.svc/api/v1/auto-assignment/filter/" + id + "/active", act.toString());
+                    boolean ok = "200".equals(r2[0]) && r2[1].contains("\"Success\":true");
+                    BotConfig.setAutoCached(ctx, ok);
+                    autoState = ok ? "🤖 Auto-เซิร์ฟเวอร์: เปิดแล้ว (BotAuto #" + id + ")"
+                            : "🤖 Auto: เปิดไม่สำเร็จ code=" + r2[0];
+                    addFeed(ok ? "✅ เปิด Auto-เซิร์ฟเวอร์แล้ว — เซิร์ฟเวอร์จ่ายงานเอง" : "❌ เปิด Auto ไม่สำเร็จ");
+                } catch (Throwable e) {
+                    autoState = "🤖 Auto: ผิดพลาด " + e.getMessage();
+                    Log.e(TAG, "setAuto fail", e);
+                }
+            }
+        }, "taxbot-auto-set");
+        t.setDaemon(true);
+        t.start();
+    }
+
+    /** HTTP สำหรับ auto-assignment (GET/POST + sig) — คืน [code, body] */
+    private static String[] autoCall(Context ctx, String method, String path, String jsonBody) throws Exception {
+        String udid = getUdid(ctx);
+        String token = getToken(ctx);
+        if (udid == null || token == null) throw new IllegalStateException("no token/udid");
+        String q = "appName=TAXSEE&imei=&udid=" + udid
+                + "&rt=" + rtNow() + "&r=" + randomHex(7) + "&0";
+        String sig = com.bot.sig.SigSpoof.hook(ctx, q);
+        HttpURLConnection c = (HttpURLConnection) new URL(HOST + path + "?" + q + "&sig=" + (sig == null ? "" : sig)).openConnection();
+        c.setRequestMethod(method);
+        c.setConnectTimeout(10000);
+        c.setReadTimeout(10000);
+        c.setRequestProperty("x-phone-udid", udid);
+        c.setRequestProperty("x-driver-token", token);
+        c.setRequestProperty("x-mcc", "457");
+        c.setRequestProperty("content-type", "application/json");
+        if (jsonBody != null) {
+            c.setDoOutput(true);
+            java.io.OutputStream os = c.getOutputStream();
+            os.write(jsonBody.getBytes("UTF-8"));
+            os.close();
+        }
+        int code = c.getResponseCode();
+        String body = readAll(code >= 400 ? c.getErrorStream() : c.getInputStream());
+        Log.i(TAG, "AUTO " + method + " " + path + " -> " + code + " body=" + (body.length() > 200 ? body.substring(0, 200) : body));
+        return new String[]{String.valueOf(code), body};
     }
 
     /** เลียนแบบแอป: GET รายละเอียดงานก่อนเคลม */
@@ -680,7 +925,7 @@ public final class BotEngine {
             String q = "offer=0&appName=TAXSEE&imei=&udid=" + udid
                     + "&rt=" + rtNow() + "&r=" + randomHex(7) + "&0";
             String sig = com.bot.sig.SigSpoof.hook(ctx, q);
-            HttpURLConnection c = (HttpURLConnection) new URL(HOST + "/api/v2/order/" + orderId + "?" + q + "&sig=" + (sig == null ? "" : sig)).openConnection();
+            HttpURLConnection c = (HttpURLConnection) new URL(HOST + "/Services/Driver.svc/api/v2/order/" + orderId + "?" + q + "&sig=" + (sig == null ? "" : sig)).openConnection();
             c.setRequestMethod("GET");
             c.setConnectTimeout(8000);
             c.setReadTimeout(8000);
@@ -695,6 +940,102 @@ public final class BotEngine {
     }
 
     // =================== helpers ===================
+
+    /** ยิงเคลมลิสต์ (ใช้ร่วมทั้ง hook แอป + poll ของเราเอง)
+     *  สำคัญ: อาจถูกเรียกบน thread parse ของแอป → งาน I/O ทั้งหมดต้องอยู่ใน thread เรา */
+    private static void claimListOrder(final Context ctx, final long bestId, final long bestPrice, final String source) {
+        boolean added;
+        synchronized (claimedLock) { added = claimedListIds.add(Long.valueOf(bestId)); }
+        if (!added) return;
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.i(TAG, "SNIPER(" + source + "): claim list order " + bestId + " price=" + bestPrice);
+                appendLog(ctx, "SNIPER(" + source + ") id=" + bestId + " price=" + bestPrice);
+                addFeed("🎯 เคลมลิสต์ (" + source + ") ₭" + bestPrice);
+                buzz(ctx, 100L);
+                fetchOrderDetail(ctx, bestId);
+                doAccept(ctx, bestId, 36L);
+                sniperClaims++;
+            }
+        }, "taxbot-claim");
+        t.start();
+    }
+
+    // =================== hook ลิสต์ที่แอปโหลดเอง (uz/a0 = OrderListResponse) ===================
+    // แอปเปิดหน้าลิสต์ออเดอร์ = โหลดทุก 0.8 วิ — hook ตรง constructor ทำให้เราเห็นงาน
+    // พร้อมแอปเป๊ะ ๆ โดยไม่ต้องยิง request เพิ่มแม้แต่อันเดียว (ชนะการ "เห็นงานช้า")
+    // การ์ด = hz/p (OrderCardDto): ฟิลด์ a=Id(long), j=Price(String)
+
+    private static volatile long lastMarketHookTs = 0L;
+    private static volatile long marketHookCount = 0L;
+    private static volatile int lastMarketTotal = -1;
+
+    /** hook จาก smali: invoke-static {p8} ท้าย constructor ของ uz/a0 */
+    public static void onMarketCards(java.util.List cards) {
+        try {
+            lastMarketHookTs = SystemClock.elapsedRealtime();
+            marketHookCount++;
+            Context ctx = getContext();
+            if (ctx == null) return;
+            if (!BotConfig.isEnabled(ctx)) return;
+            if (cards == null || cards.isEmpty()) {
+                if (lastMarketTotal != 0) {
+                    lastMarketTotal = 0;
+                    marketInfo = "ตลาดว่าง (hook แอป)";
+                }
+                return;
+            }
+            int total = cards.size();
+            long minP = BotConfig.getListMinPrice(ctx);
+            long bestId = 0L, bestPrice = 0L;
+            int matching = 0;
+            java.util.HashSet<Long> seenNow = new java.util.HashSet<Long>();
+            for (int i = 0; i < total; i++) {
+                Object card = cards.get(i);
+                if (card == null) continue;
+                long id = cardLong(card, "a");
+                long price = parsePrice(cardString(card, "j"));
+                if (id <= 0L) continue;
+                seenNow.add(Long.valueOf(id));
+                if (price >= minP && price > 0L && !claimedListIds.contains(Long.valueOf(id))) {
+                    matching++;
+                    if (price > bestPrice) {
+                        bestPrice = price;
+                        bestId = id;
+                    }
+                }
+            }
+            synchronized (claimedLock) {
+                claimedListIds.retainAll(seenNow);
+            }
+            lastMarketTotal = total;
+            marketInfo = total + " งาน (hook แอป) • ผ่าน " + matching;
+            if (bestId > 0L) claimListOrder(ctx, bestId, bestPrice, "hook");
+        } catch (Throwable t) {
+            Log.e(TAG, "onMarketCards error", t);
+        }
+    }
+
+    private static long cardLong(Object card, String field) {
+        try {
+            java.lang.reflect.Field f = card.getClass().getDeclaredField(field);
+            f.setAccessible(true);
+            return f.getLong(card);
+        } catch (Throwable t) {
+            return 0L;
+        }
+    }
+
+    private static String cardString(Object card, String field) {
+        try {
+            java.lang.reflect.Field f = card.getClass().getDeclaredField(field);
+            f.setAccessible(true);
+            return (String) f.get(card);
+        } catch (Throwable t) {
+            return null;
+        }
+    }
 
     private static Context ctx(Context c) { return c; }
 
