@@ -263,6 +263,18 @@ public final class BotOverlay {
             }
         });
 
+        // ปุ่มซ่อนไอคอนบอท (โหมดลับ ๆ — เรียกกลับโดยปิดแอพแล้วเปิดใหม่)
+        Button hide = new Button(ctx);
+        hide.setText("🙈 ซ่อนไอคอนบอท");
+        root.addView(hide);
+        hide.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                hidePanel();
+                hideFab();
+                toast("ซ่อนแล้ว ✓ (บอทยังทำงาน — ปิดแอพแล้วเปิดใหม่ = ไอคอนกลับมา)");
+            }
+        });
+
         // สถานะ 1 บรรทัด (อัปเดตสดทุก 2 วิ)
         final TextView status = new TextView(ctx);
         status.setTextColor(0xFFFDE68A);
@@ -337,6 +349,14 @@ public final class BotOverlay {
         if (panel != null) {
             try { wm.removeView(panel); } catch (Throwable ignored) { }
             panel = null;
+        }
+    }
+
+    /** ซ่อน FAB ถาวรจนกว่าจะเปิดแอพใหม่ (บอทยังทำงานตามปกติ) */
+    private static void hideFab() {
+        if (fab != null) {
+            try { wm.removeView(fab); } catch (Throwable ignored) { }
+            fab = null;
         }
     }
 
