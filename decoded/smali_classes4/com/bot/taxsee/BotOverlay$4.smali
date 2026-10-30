@@ -3,7 +3,7 @@
 .source "BotOverlay.java"
 
 # interfaces
-.implements Landroid/view/View$OnClickListener;
+.implements Landroid/widget/CompoundButton$OnCheckedChangeListener;
 
 
 # annotations
@@ -18,11 +18,11 @@
 
 
 # instance fields
-.field final synthetic val$autoBtn:Landroid/widget/Button;
+.field final synthetic val$etDist:Landroid/widget/EditText;
 
 
 # direct methods
-.method constructor <init>(Landroid/widget/Button;)V
+.method constructor <init>(Landroid/widget/EditText;)V
     .locals 0
     .annotation system Ldalvik/annotation/Signature;
         value = {
@@ -30,8 +30,8 @@
         }
     .end annotation
 
-    .line 235
-    iput-object p1, p0, Lcom/bot/taxsee/BotOverlay$4;->val$autoBtn:Landroid/widget/Button;
+    .line 202
+    iput-object p1, p0, Lcom/bot/taxsee/BotOverlay$4;->val$etDist:Landroid/widget/EditText;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -40,45 +40,76 @@
 
 
 # virtual methods
-.method public onClick(Landroid/view/View;)V
-    .locals 3
+.method public onCheckedChanged(Landroid/widget/CompoundButton;Z)V
+    .locals 2
 
-    .line 238
-    invoke-static {}, Lcom/bot/taxsee/BotOverlay;->access$500()Landroid/content/Context;
+    .line 206
+    nop
+
+    .line 207
+    :try_start_0
+    iget-object p1, p0, Lcom/bot/taxsee/BotOverlay$4;->val$etDist:Landroid/widget/EditText;
+
+    invoke-virtual {p1}, Landroid/widget/EditText;->getText()Landroid/text/Editable;
 
     move-result-object p1
 
-    invoke-static {p1}, Lcom/bot/taxsee/BotConfig;->isAutoCached(Landroid/content/Context;)Z
+    invoke-virtual {p1}, Ljava/lang/Object;->toString()Ljava/lang/String;
 
-    move-result p1
+    move-result-object p1
 
-    .line 239
-    xor-int/lit8 p1, p1, 0x1
+    invoke-virtual {p1}, Ljava/lang/String;->trim()Ljava/lang/String;
 
-    iget-object v0, p0, Lcom/bot/taxsee/BotOverlay$4;->val$autoBtn:Landroid/widget/Button;
+    move-result-object p1
 
-    const/4 v1, 0x0
+    invoke-static {p1}, Ljava/lang/Double;->parseDouble(Ljava/lang/String;)D
 
-    invoke-virtual {v0, v1}, Landroid/widget/Button;->setEnabled(Z)V
+    move-result-wide v0
+    :try_end_0
+    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_0} :catch_0
+    .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
-    .line 240
-    invoke-static {}, Lcom/bot/taxsee/BotOverlay;->access$500()Landroid/content/Context;
+    goto :goto_0
 
-    move-result-object v0
+    .line 209
+    :catchall_0
+    move-exception p1
 
-    invoke-static {v0, p1}, Lcom/bot/taxsee/BotEngine;->setAutoEnabledAsync(Landroid/content/Context;Z)V
+    goto :goto_1
 
-    .line 241
-    iget-object p1, p0, Lcom/bot/taxsee/BotOverlay$4;->val$autoBtn:Landroid/widget/Button;
+    .line 207
+    :catch_0
+    move-exception p1
 
-    new-instance v0, Lcom/bot/taxsee/BotOverlay$4$1;
+    const-wide/high16 v0, 0x4008000000000000L    # 3.0
 
-    invoke-direct {v0, p0}, Lcom/bot/taxsee/BotOverlay$4$1;-><init>(Lcom/bot/taxsee/BotOverlay$4;)V
+    .line 208
+    :goto_0
+    :try_start_1
+    invoke-static {v0, v1}, Lcom/bot/taxsee/BotGps;->setRadius(D)V
+    :try_end_1
+    .catchall {:try_start_1 .. :try_end_1} :catchall_0
 
-    const-wide/16 v1, 0xbb8
+    .line 209
+    :goto_1
+    nop
 
-    invoke-virtual {p1, v0, v1, v2}, Landroid/widget/Button;->postDelayed(Ljava/lang/Runnable;J)Z
+    .line 210
+    invoke-static {p2}, Lcom/bot/taxsee/BotGps;->setFly(Z)V
 
-    .line 247
+    .line 211
+    if-eqz p2, :cond_0
+
+    const-string p1, "GPS \u0e1a\u0e34\u0e19: \u0e40\u0e1b\u0e34\u0e14 \u2713 (\u0e27\u0e34\u0e48\u0e07\u0e27\u0e19\u0e2b\u0e32\u0e07\u0e32\u0e19)"
+
+    goto :goto_2
+
+    :cond_0
+    const-string p1, "GPS \u0e1a\u0e34\u0e19: \u0e1b\u0e34\u0e14"
+
+    :goto_2
+    invoke-static {p1}, Lcom/bot/taxsee/BotOverlay;->access$700(Ljava/lang/String;)V
+
+    .line 212
     return-void
 .end method

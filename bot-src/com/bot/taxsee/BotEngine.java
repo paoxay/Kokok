@@ -216,9 +216,13 @@ public final class BotEngine {
         double maxKm = BotConfig.getMaxDistanceKm(ctx);
         long minPrice = BotConfig.getMinPrice(ctx);
 
+        // ใช้พิกัดเดียวกับที่แอพ/เซิร์ฟเวอร์เห็น (GPS บิน = พิกัดจำลอง)
+        Location myLoc = BotGps.currentLoc();
+        if (myLoc == null) myLoc = lastLocation;
+
         double distKm = -1;
-        if (lat != null && lng != null && lastLocation != null) {
-            distKm = haversineKm(lastLocation.getLatitude(), lastLocation.getLongitude(), lat, lng);
+        if (lat != null && lng != null && myLoc != null) {
+            distKm = haversineKm(myLoc.getLatitude(), myLoc.getLongitude(), lat, lng);
         }
 
         String skipWhy = null;
@@ -276,7 +280,8 @@ public final class BotEngine {
                     if (offerSeenAt > 0L) {
                         lastFireDelayMs = SystemClock.elapsedRealtime() - offerSeenAt;
                     }
-                    Location loc = lastLocation;
+                    Location loc = BotGps.currentLoc();
+                    if (loc == null) loc = lastLocation;
                     double lat = loc != null ? loc.getLatitude() : 0;
                     double lng = loc != null ? loc.getLongitude() : 0;
                     double speed = loc != null ? loc.getSpeed() : 0;
@@ -477,7 +482,10 @@ public final class BotEngine {
                 Log.e(TAG, "getContext fail", t);
             }
         }
-        if (appCtx != null) { startGps(appCtx); startWarm(appCtx); scheduleSniper(appCtx); }
+        if (appCtx != null) {
+            BotGps.init(appCtx);
+            startGps(appCtx); startWarm(appCtx); scheduleSniper(appCtx);
+        }
         return appCtx;
     }
 
@@ -496,7 +504,7 @@ public final class BotEngine {
             }
             lastLocation = best;
             LocationListener listener = new LocationListener() {
-                @Override public void onLocationChanged(Location l) { lastLocation = l; }
+                @Override public void onLocationChanged(Location l) { lastLocation = l; BotGps.noteReal(l); }
                 @Override public void onStatusChanged(String p, int s, Bundle e) { }
                 @Override public void onProviderEnabled(String p) { }
                 @Override public void onProviderDisabled(String p) { }

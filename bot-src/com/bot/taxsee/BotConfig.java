@@ -57,6 +57,15 @@ public final class BotConfig {
         prefs(ctx).edit().putLong("sniper_sec", Math.max(1L, Math.min(60L, v))).apply();
     }
 
+    /** 🛫 GPS บินวนในรัศมี (จำลองเคลื่อนที่หางาน) — default ปิด */
+    public static boolean isGpsFly(Context ctx) {
+        return prefs(ctx).getBoolean("gps_fly", false);
+    }
+
+    public static void setGpsFly(Context ctx, boolean v) {
+        prefs(ctx).edit().putBoolean("gps_fly", v).apply();
+    }
+
     /** แคชสถานะ auto-assignment ล่าสุดที่รู้จากเซิร์ฟเวอร์ (ไว้แสดงต่อเนื่อง) */
     public static boolean isAutoCached(Context ctx) {
         return prefs(ctx).getBoolean("auto_on", false);

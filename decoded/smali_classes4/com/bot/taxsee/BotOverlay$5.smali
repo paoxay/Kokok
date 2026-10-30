@@ -3,7 +3,7 @@
 .source "BotOverlay.java"
 
 # interfaces
-.implements Ljava/lang/Runnable;
+.implements Landroid/view/View$OnClickListener;
 
 
 # annotations
@@ -18,25 +18,13 @@
 
 
 # instance fields
-.field final synthetic val$autoBtn:Landroid/widget/Button;
+.field final synthetic val$etDist:Landroid/widget/EditText;
 
-.field final synthetic val$autoStat:Landroid/widget/TextView;
-
-.field final synthetic val$h:Landroid/os/Handler;
-
-.field final synthetic val$rating:Landroid/widget/TextView;
-
-.field final synthetic val$speed:Landroid/widget/TextView;
-
-.field final synthetic val$stats:Landroid/widget/TextView;
-
-.field final synthetic val$status:Landroid/widget/TextView;
-
-.field final synthetic val$today:Landroid/widget/TextView;
+.field final synthetic val$etPrice:Landroid/widget/EditText;
 
 
 # direct methods
-.method constructor <init>(Landroid/widget/TextView;Landroid/widget/TextView;Landroid/widget/TextView;Landroid/widget/TextView;Landroid/widget/TextView;Landroid/widget/TextView;Landroid/widget/Button;Landroid/os/Handler;)V
+.method constructor <init>(Landroid/widget/EditText;Landroid/widget/EditText;)V
     .locals 0
     .annotation system Ldalvik/annotation/Signature;
         value = {
@@ -44,22 +32,10 @@
         }
     .end annotation
 
-    .line 252
-    iput-object p1, p0, Lcom/bot/taxsee/BotOverlay$5;->val$status:Landroid/widget/TextView;
+    .line 219
+    iput-object p1, p0, Lcom/bot/taxsee/BotOverlay$5;->val$etPrice:Landroid/widget/EditText;
 
-    iput-object p2, p0, Lcom/bot/taxsee/BotOverlay$5;->val$rating:Landroid/widget/TextView;
-
-    iput-object p3, p0, Lcom/bot/taxsee/BotOverlay$5;->val$stats:Landroid/widget/TextView;
-
-    iput-object p4, p0, Lcom/bot/taxsee/BotOverlay$5;->val$today:Landroid/widget/TextView;
-
-    iput-object p5, p0, Lcom/bot/taxsee/BotOverlay$5;->val$speed:Landroid/widget/TextView;
-
-    iput-object p6, p0, Lcom/bot/taxsee/BotOverlay$5;->val$autoStat:Landroid/widget/TextView;
-
-    iput-object p7, p0, Lcom/bot/taxsee/BotOverlay$5;->val$autoBtn:Landroid/widget/Button;
-
-    iput-object p8, p0, Lcom/bot/taxsee/BotOverlay$5;->val$h:Landroid/os/Handler;
+    iput-object p2, p0, Lcom/bot/taxsee/BotOverlay$5;->val$etDist:Landroid/widget/EditText;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -68,169 +44,93 @@
 
 
 # virtual methods
-.method public run()V
-    .locals 3
+.method public onClick(Landroid/view/View;)V
+    .locals 2
 
-    .line 254
-    invoke-static {}, Lcom/bot/taxsee/BotOverlay;->access$800()Landroid/view/ViewGroup;
-
-    move-result-object v0
-
-    if-eqz v0, :cond_1
-
-    iget-object v0, p0, Lcom/bot/taxsee/BotOverlay$5;->val$status:Landroid/widget/TextView;
-
-    if-nez v0, :cond_0
-
-    goto :goto_7
-
-    .line 255
-    :cond_0
+    .line 222
     :try_start_0
-    iget-object v0, p0, Lcom/bot/taxsee/BotOverlay$5;->val$status:Landroid/widget/TextView;
+    iget-object p1, p0, Lcom/bot/taxsee/BotOverlay$5;->val$etPrice:Landroid/widget/EditText;
 
+    invoke-virtual {p1}, Landroid/widget/EditText;->getText()Landroid/text/Editable;
+
+    move-result-object p1
+
+    invoke-virtual {p1}, Ljava/lang/Object;->toString()Ljava/lang/String;
+
+    move-result-object p1
+
+    invoke-virtual {p1}, Ljava/lang/String;->trim()Ljava/lang/String;
+
+    move-result-object p1
+
+    invoke-static {p1}, Ljava/lang/Long;->parseLong(Ljava/lang/String;)J
+
+    move-result-wide v0
+
+    .line 223
     invoke-static {}, Lcom/bot/taxsee/BotOverlay;->access$500()Landroid/content/Context;
 
-    move-result-object v1
+    move-result-object p1
 
-    invoke-static {v1}, Lcom/bot/taxsee/BotEngine;->statusText(Landroid/content/Context;)Ljava/lang/String;
-
-    move-result-object v1
-
-    invoke-virtual {v0, v1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+    invoke-static {p1, v0, v1}, Lcom/bot/taxsee/BotConfig;->setMinPrice(Landroid/content/Context;J)V
     :try_end_0
-    .catchall {:try_start_0 .. :try_end_0} :catchall_0
+    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_0} :catch_0
 
     goto :goto_0
 
-    :catchall_0
-    move-exception v0
+    .line 224
+    :catch_0
+    move-exception p1
 
-    .line 256
     :goto_0
+    nop
+
+    .line 226
     :try_start_1
-    iget-object v0, p0, Lcom/bot/taxsee/BotOverlay$5;->val$rating:Landroid/widget/TextView;
+    iget-object p1, p0, Lcom/bot/taxsee/BotOverlay$5;->val$etDist:Landroid/widget/EditText;
 
-    invoke-static {}, Lcom/bot/taxsee/BotEngine;->getRatingDisplay()Ljava/lang/String;
+    invoke-virtual {p1}, Landroid/widget/EditText;->getText()Landroid/text/Editable;
 
-    move-result-object v1
+    move-result-object p1
 
-    invoke-virtual {v0, v1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+    invoke-virtual {p1}, Ljava/lang/Object;->toString()Ljava/lang/String;
+
+    move-result-object p1
+
+    invoke-virtual {p1}, Ljava/lang/String;->trim()Ljava/lang/String;
+
+    move-result-object p1
+
+    invoke-static {p1}, Ljava/lang/Double;->parseDouble(Ljava/lang/String;)D
+
+    move-result-wide v0
+
+    .line 227
+    invoke-static {}, Lcom/bot/taxsee/BotOverlay;->access$500()Landroid/content/Context;
+
+    move-result-object p1
+
+    invoke-static {p1, v0, v1}, Lcom/bot/taxsee/BotConfig;->setMaxDistanceKm(Landroid/content/Context;D)V
+
+    .line 228
+    invoke-static {v0, v1}, Lcom/bot/taxsee/BotGps;->setRadius(D)V
     :try_end_1
-    .catchall {:try_start_1 .. :try_end_1} :catchall_1
+    .catch Ljava/lang/Exception; {:try_start_1 .. :try_end_1} :catch_1
 
     goto :goto_1
 
-    :catchall_1
-    move-exception v0
+    .line 229
+    :catch_1
+    move-exception p1
 
-    .line 257
     :goto_1
-    :try_start_2
-    iget-object v0, p0, Lcom/bot/taxsee/BotOverlay$5;->val$stats:Landroid/widget/TextView;
+    nop
 
-    invoke-static {}, Lcom/bot/taxsee/BotEngine;->statsText()Ljava/lang/String;
+    .line 230
+    const-string p1, "\u0e1a\u0e31\u0e19\u0e17\u0e36\u0e01\u0e41\u0e25\u0e49\u0e27 \u2713"
 
-    move-result-object v1
+    invoke-static {p1}, Lcom/bot/taxsee/BotOverlay;->access$700(Ljava/lang/String;)V
 
-    invoke-virtual {v0, v1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
-    :try_end_2
-    .catchall {:try_start_2 .. :try_end_2} :catchall_2
-
-    goto :goto_2
-
-    :catchall_2
-    move-exception v0
-
-    .line 258
-    :goto_2
-    :try_start_3
-    iget-object v0, p0, Lcom/bot/taxsee/BotOverlay$5;->val$today:Landroid/widget/TextView;
-
-    invoke-static {}, Lcom/bot/taxsee/BotOverlay;->access$500()Landroid/content/Context;
-
-    move-result-object v1
-
-    invoke-static {v1}, Lcom/bot/taxsee/BotEngine;->todayText(Landroid/content/Context;)Ljava/lang/String;
-
-    move-result-object v1
-
-    invoke-virtual {v0, v1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
-    :try_end_3
-    .catchall {:try_start_3 .. :try_end_3} :catchall_3
-
-    goto :goto_3
-
-    :catchall_3
-    move-exception v0
-
-    .line 259
-    :goto_3
-    :try_start_4
-    iget-object v0, p0, Lcom/bot/taxsee/BotOverlay$5;->val$speed:Landroid/widget/TextView;
-
-    invoke-static {}, Lcom/bot/taxsee/BotEngine;->speedText()Ljava/lang/String;
-
-    move-result-object v1
-
-    invoke-virtual {v0, v1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
-    :try_end_4
-    .catchall {:try_start_4 .. :try_end_4} :catchall_4
-
-    goto :goto_4
-
-    :catchall_4
-    move-exception v0
-
-    .line 260
-    :goto_4
-    :try_start_5
-    iget-object v0, p0, Lcom/bot/taxsee/BotOverlay$5;->val$autoStat:Landroid/widget/TextView;
-
-    invoke-static {}, Lcom/bot/taxsee/BotEngine;->autoStateText()Ljava/lang/String;
-
-    move-result-object v1
-
-    invoke-virtual {v0, v1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
-    :try_end_5
-    .catchall {:try_start_5 .. :try_end_5} :catchall_5
-
-    goto :goto_5
-
-    :catchall_5
-    move-exception v0
-
-    .line 261
-    :goto_5
-    :try_start_6
-    iget-object v0, p0, Lcom/bot/taxsee/BotOverlay$5;->val$autoBtn:Landroid/widget/Button;
-
-    invoke-static {}, Lcom/bot/taxsee/BotOverlay;->access$900()Ljava/lang/String;
-
-    move-result-object v1
-
-    invoke-virtual {v0, v1}, Landroid/widget/Button;->setText(Ljava/lang/CharSequence;)V
-    :try_end_6
-    .catchall {:try_start_6 .. :try_end_6} :catchall_6
-
-    goto :goto_6
-
-    :catchall_6
-    move-exception v0
-
-    .line 262
-    :goto_6
-    iget-object v0, p0, Lcom/bot/taxsee/BotOverlay$5;->val$h:Landroid/os/Handler;
-
-    const-wide/16 v1, 0x7d0
-
-    invoke-virtual {v0, p0, v1, v2}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
-
-    .line 263
-    return-void
-
-    .line 254
-    :cond_1
-    :goto_7
+    .line 231
     return-void
 .end method

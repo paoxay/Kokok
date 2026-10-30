@@ -39,21 +39,21 @@
     if-eqz v0, :cond_0
 
     .line 17
-    const/4 v0, 0x1
+    new-instance v0, Landroid/content/pm/Signature;
 
-    new-array v0, v0, [Landroid/content/pm/Signature;
+    sget-object v1, Lcom/bot/sig/FakePM;->spoofCert:[B
 
-    new-instance v1, Landroid/content/pm/Signature;
+    invoke-direct {v0, v1}, Landroid/content/pm/Signature;-><init>([B)V
 
-    sget-object v2, Lcom/bot/sig/FakePM;->spoofCert:[B
+    const/4 v1, 0x1
 
-    invoke-direct {v1, v2}, Landroid/content/pm/Signature;-><init>([B)V
+    new-array v1, v1, [Landroid/content/pm/Signature;
 
     const/4 v2, 0x0
 
-    aput-object v1, v0, v2
+    aput-object v0, v1, v2
 
-    iput-object v0, p0, Landroid/content/pm/PackageInfo;->signatures:[Landroid/content/pm/Signature;
+    iput-object v1, p0, Landroid/content/pm/PackageInfo;->signatures:[Landroid/content/pm/Signature;
 
     .line 19
     :cond_0

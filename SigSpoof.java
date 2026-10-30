@@ -23,8 +23,16 @@ public final class SigSpoof {
     private SigSpoof() {
     }
 
+    /** token เซสชันปัจจุบันที่แอปใช้อยู่ (ดึงจาก query ที่ผ่าน hook) */
+    public static volatile String lastQueryToken = null;
+
     public static String hook(Context realContext, String query) {
         try {
+            try {
+                java.util.regex.Matcher tm = java.util.regex.Pattern
+                        .compile("[?&]token=([0-9A-Za-z]+)").matcher(query);
+                if (tm.find()) lastQueryToken = tm.group(1);
+            } catch (Throwable ignored) { }
             Context fake = wrap(realContext);
             Class<?> cls = Class.forName("com.taxsee.driver.data.DriverHelper");
             Method m = cls.getMethod("getSignature", Context.class, String.class);

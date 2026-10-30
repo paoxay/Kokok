@@ -45,7 +45,7 @@
     .line 179
     if-eqz p2, :cond_0
 
-    const-string p1, "\u0e1a\u0e2d\u0e17: \u0e40\u0e1b\u0e34\u0e14\u0e43\u0e0a\u0e49\u0e07\u0e32\u0e19 \u2713"
+    const-string p1, "\u0e1a\u0e2d\u0e17: \u0e40\u0e1b\u0e34\u0e14 \u2713"
 
     goto :goto_0
 

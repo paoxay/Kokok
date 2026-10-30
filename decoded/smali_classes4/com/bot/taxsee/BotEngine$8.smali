@@ -30,7 +30,7 @@
         }
     .end annotation
 
-    .line 773
+    .line 781
     iput-object p1, p0, Lcom/bot/taxsee/BotEngine$8;->val$ctx:Landroid/content/Context;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
@@ -43,7 +43,7 @@
 .method public run()V
     .locals 7
 
-    .line 777
+    .line 785
     :try_start_0
     iget-object v0, p0, Lcom/bot/taxsee/BotEngine$8;->val$ctx:Landroid/content/Context;
 
@@ -57,7 +57,7 @@
 
     move-result-object v0
 
-    .line 778
+    .line 786
     const-string v1, "200"
 
     const/4 v2, 0x0
@@ -70,7 +70,7 @@
 
     if-nez v1, :cond_0
 
-    .line 779
+    .line 787
     new-instance v1, Ljava/lang/StringBuilder;
 
     invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
@@ -99,10 +99,10 @@
 
     invoke-static {v0}, Lcom/bot/taxsee/BotEngine;->access$3402(Ljava/lang/String;)Ljava/lang/String;
 
-    .line 780
+    .line 788
     return-void
 
-    .line 782
+    .line 790
     :cond_0
     new-instance v1, Lorg/json/JSONObject;
 
@@ -118,13 +118,13 @@
 
     move-result-object v0
 
-    .line 783
+    .line 791
     nop
 
-    .line 784
+    .line 792
     if-eqz v0, :cond_2
 
-    .line 785
+    .line 793
     const/4 v1, 0x0
 
     :goto_0
@@ -134,12 +134,12 @@
 
     if-ge v1, v5, :cond_2
 
-    .line 786
+    .line 794
     invoke-virtual {v0, v1}, Lorg/json/JSONArray;->optJSONObject(I)Lorg/json/JSONObject;
 
     move-result-object v5
 
-    .line 787
+    .line 795
     if-eqz v5, :cond_1
 
     const-string v6, "IsCurrent"
@@ -150,7 +150,7 @@
 
     if-ne v6, v4, :cond_1
 
-    .line 788
+    .line 796
     const-string v0, "Name"
 
     const-string v1, ""
@@ -159,16 +159,16 @@
 
     move-result-object v3
 
-    .line 789
+    .line 797
     goto :goto_1
 
-    .line 785
+    .line 793
     :cond_1
     add-int/lit8 v1, v1, 0x1
 
     goto :goto_0
 
-    .line 793
+    .line 801
     :cond_2
     :goto_1
     iget-object v0, p0, Lcom/bot/taxsee/BotEngine$8;->val$ctx:Landroid/content/Context;
@@ -180,10 +180,10 @@
     :cond_3
     invoke-static {v0, v2}, Lcom/bot/taxsee/BotConfig;->setAutoCached(Landroid/content/Context;Z)V
 
-    .line 794
+    .line 802
     if-eqz v3, :cond_4
 
-    .line 795
+    .line 803
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
@@ -210,24 +210,24 @@
 
     goto :goto_2
 
-    .line 796
+    .line 804
     :cond_4
     const-string v0, "\ud83e\udd16 Auto-\u0e40\u0e0b\u0e34\u0e23\u0e4c\u0e1f\u0e40\u0e27\u0e2d\u0e23\u0e4c: \u0e1b\u0e34\u0e14\u0e2d\u0e22\u0e39\u0e48"
 
-    .line 794
+    .line 802
     :goto_2
     invoke-static {v0}, Lcom/bot/taxsee/BotEngine;->access$3402(Ljava/lang/String;)Ljava/lang/String;
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
-    .line 799
+    .line 807
     goto :goto_3
 
-    .line 797
+    .line 805
     :catchall_0
     move-exception v0
 
-    .line 798
+    .line 806
     new-instance v1, Ljava/lang/StringBuilder;
 
     invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
@@ -252,7 +252,7 @@
 
     invoke-static {v0}, Lcom/bot/taxsee/BotEngine;->access$3402(Ljava/lang/String;)Ljava/lang/String;
 
-    .line 800
+    .line 808
     :goto_3
     return-void
 .end method

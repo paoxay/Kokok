@@ -327,6 +327,11 @@
     .line 22
     iget-object v1, p0, Lox/v;->b:Lmx/k;
 
+    # TAXBOT GPS HOOK: แปลงพิกัดแรก (lastKnown) ก่อนส่งเข้า sink ของแอพ
+    invoke-static {v0}, Lcom/bot/taxsee/BotGps;->transform(Landroid/location/Location;)Landroid/location/Location;
+
+    move-result-object v0
+
     .line 23
     .line 24
     invoke-interface {v1, v0}, Lmx/k;->onLocationChanged(Landroid/location/Location;)V

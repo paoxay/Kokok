@@ -15,13 +15,13 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 /**
- * FAB + แผงตั้งค่าบอท (ไทย) — สไตล์เดียวกับบอท Flash/KOKOK
+ * FAB + แผงบอทแบบมินิมอล (ไทย) — มีแค่ของจำเป็น:
+ * สวิตช์รับงาน / ราคาขั้นต่ำ / ระยะรับงาน (กม.) / สวิตช์ GPS บินวนในรัศมี / บันทึก / สถานะ 1 บรรทัด
  * เรียกครั้งแรกจาก BotOverlay.show(context)
  */
 public final class BotOverlay {
@@ -29,7 +29,6 @@ public final class BotOverlay {
     private static WindowManager wm;
     private static View fab;
     private static ViewGroup panel;
-    private static TextView logView;
     private static Context ctx;
 
     private BotOverlay() {
@@ -39,6 +38,7 @@ public final class BotOverlay {
         try {
             if (!isMainProcess()) return; // กันสร้างซ้ำในโปรเซส service
             ctx = context.getApplicationContext();
+            BotGps.init(ctx);
             if (!hasOverlayPermission(ctx)) {
                 Toast.makeText(ctx, "บอท: กรุณาเปิดสิทธิ์แสดงบนแอปอื่น", Toast.LENGTH_LONG).show();
                 return;
@@ -139,7 +139,7 @@ public final class BotOverlay {
         showPanel();
     }
 
-    @SuppressLint("InflateParams")
+    @SuppressLint({"RtlHardcoded", "UseSwitchCompatOrMaterialCode", "InflateParams"})
     private static void showPanel() {
         LinearLayout root = new LinearLayout(ctx);
         root.setOrientation(LinearLayout.VERTICAL);
@@ -150,7 +150,7 @@ public final class BotOverlay {
         bg.setStroke(dp(1), 0xFF475569);
         root.setBackground(bg);
 
-        // header
+        // หัวเรื่อง (แตะ = ปิด)
         TextView title = new TextView(ctx);
         title.setText("\uD83E\uDD16 บอทรับออเดอร์   ✕");
         title.setTextColor(Color.WHITE);
@@ -160,14 +160,14 @@ public final class BotOverlay {
             @Override public void onClick(View v) { hidePanel(); }
         });
 
-        // switch เปิด/ปิด
+        // สวิตช์หลัก: รับออเดอร์อัตโนมัติ
         LinearLayout swRow = new LinearLayout(ctx);
         swRow.setOrientation(LinearLayout.HORIZONTAL);
         swRow.setGravity(Gravity.CENTER_VERTICAL);
         final Switch sw = new Switch(ctx);
         sw.setChecked(BotConfig.isEnabled(ctx));
         TextView swLabel = new TextView(ctx);
-        swLabel.setText("  เปิดรับออเดอร์อัตโนมัติ");
+        swLabel.setText("  รับออเดอร์อัตโนมัติ");
         swLabel.setTextColor(Color.WHITE);
         swRow.addView(sw); swRow.addView(swLabel);
         root.addView(swRow);
@@ -176,137 +176,76 @@ public final class BotOverlay {
             public void onCheckedChanged(android.widget.CompoundButton b, boolean isChecked) {
                 BotConfig.setEnabled(ctx, isChecked);
                 updateFabColor();
-                toast(isChecked ? "บอท: เปิดใช้งาน ✓" : "บอท: ปิดแล้ว");
+                toast(isChecked ? "บอท: เปิด ✓" : "บอท: ปิดแล้ว");
             }
         });
 
-        // แถบสถานะ (heartbeat) — อัปเดตสดทุก 2 วิ ตอนแผงเปิด
-        final TextView status = new TextView(ctx);
-        status.setTextColor(0xFFFDE68A);
-        status.setTextSize(12);
-        status.setText(BotEngine.statusText(ctx));
-        root.addView(status);
-
-        // การ์ดตลาดงานว่าง (สไนเปอร์)
-        final TextView market = new TextView(ctx);
-        market.setTextColor(0xFFFDA4AF);
-        market.setTextSize(12);
-        market.setText("🎯 " + BotEngine.marketText());
-        root.addView(market);
-
-        // การ์ดเรตติ้งจริง → เป้าหมาย 0.99
-        BotEngine.fetchRatingAsync(ctx);
-        final TextView rating = new TextView(ctx);
-        rating.setTextColor(0xFF93C5FD);
-        rating.setTextSize(13);
-        rating.setText(BotEngine.getRatingDisplay());
-        root.addView(rating);
-
-        // สถิติการทดลอง (เสนอ/ผ่าน/รับ)
-        BotConfig.pruneOldStats(ctx);
-        final TextView stats = new TextView(ctx);
-        stats.setTextColor(0xFF86EFAC);
-        stats.setTextSize(12);
-        stats.setText(BotEngine.statsText());
-        root.addView(stats);
-        final TextView today = new TextView(ctx);
-        today.setTextColor(0xFFFCA5A5);
-        today.setTextSize(12);
-        today.setText(BotEngine.todayText(ctx));
-        root.addView(today);
-
-        // การ์ดความเร็วจริง (RTT เห็นงาน→ยิง / warm ping) — เทียบก่อน-หลังอัปเกรด
-        final TextView speed = new TextView(ctx);
-        speed.setTextColor(0xFF67E8F9);
-        speed.setTextSize(12);
-        speed.setText(BotEngine.speedText());
-        root.addView(speed);
-
-        // รับงานอัตโนมัติจากเซิร์ฟเวอร์ (auto-assignment) — เซิร์ฟเวอร์จ่ายงานเอง latency 0
-        BotEngine.fetchAutoStateAsync(ctx);
-        final TextView autoStat = new TextView(ctx);
-        autoStat.setTextColor(0xFFFDBA74);
-        autoStat.setTextSize(12);
-        autoStat.setText(BotEngine.autoStateText());
-        root.addView(autoStat);
-        final Button autoBtn = new Button(ctx);
-        autoBtn.setText(autoBtnLabel());
-        root.addView(autoBtn);
-        autoBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean target = !BotConfig.isAutoCached(ctx);
-                autoBtn.setEnabled(false);
-                BotEngine.setAutoEnabledAsync(ctx, target);
-                autoBtn.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        try { autoBtn.setEnabled(true); } catch (Throwable ignored) { }
-                    }
-                }, 3000L);
-            }
-        });
-        root.addView(label("(Auto ใช้ราคาขั้นต่ำตามบอท แต่เซิร์ฟเวอร์จำกัดสูงสุด 100,000 กีบ)"));
-
-        final android.os.Handler h = new android.os.Handler(android.os.Looper.getMainLooper());
-        final Runnable tick = new Runnable() {
-            @Override public void run() {
-                if (panel == null || status == null) return;
-                try { status.setText(BotEngine.statusText(ctx)); } catch (Throwable ignored) { }
-                try { rating.setText(BotEngine.getRatingDisplay()); } catch (Throwable ignored) { }
-                try { stats.setText(BotEngine.statsText()); } catch (Throwable ignored) { }
-                try { today.setText(BotEngine.todayText(ctx)); } catch (Throwable ignored) { }
-                try { speed.setText(BotEngine.speedText()); } catch (Throwable ignored) { }
-                try { autoStat.setText(BotEngine.autoStateText()); } catch (Throwable ignored) { }
-                try { autoBtn.setText(autoBtnLabel()); } catch (Throwable ignored) { }
-                h.postDelayed(this, 2000L);
-            }
-        };
-        h.postDelayed(tick, 2000L);
-
-        // inputs
+        // ตั้งค่า: ราคาขั้นต่ำ + ระยะรับงาน
         root.addView(label("ราคาขั้นต่ำ (กีบ)"));
         final EditText etPrice = edit(String.valueOf(BotConfig.getMinPrice(ctx)));
         root.addView(etPrice);
-        root.addView(label("ระยะห่างสูงสุด (กม.)"));
+        root.addView(label("ระยะรับงาน (กม.)"));
         final EditText etDist = edit(String.valueOf(BotConfig.getMaxDistanceKm(ctx)));
         root.addView(etDist);
-        root.addView(label("หน่วงก่อนรับ (มิลลิวินาที) — แนะนำ 0 = ยิงทันที"));
-        final EditText etDelay = edit(String.valueOf(BotConfig.getDelayMs(ctx)));
-        root.addView(etDelay);
-        root.addView(label("ราคาขั้นต่ำงานลิสต์ (กีบ) — งานว่างที่เคลมเอง"));
-        final EditText etList = edit(String.valueOf(BotConfig.getListMinPrice(ctx)));
-        root.addView(etList);
-        root.addView(label("รอบสแกนลิสต์ (วินาที) — ยิ่งน้อยยิ่งเร็ว (แอปจริง=0.8)"));
-        final EditText etScan = edit(String.valueOf(BotConfig.getSniperSec(ctx)));
-        root.addView(etScan);
 
+        // สวิตช์ GPS บินวนในรัศมี
+        LinearLayout flyRow = new LinearLayout(ctx);
+        flyRow.setOrientation(LinearLayout.HORIZONTAL);
+        flyRow.setGravity(Gravity.CENTER_VERTICAL);
+        final Switch flySw = new Switch(ctx);
+        flySw.setChecked(BotGps.isFlying());
+        TextView flyLabel = new TextView(ctx);
+        flyLabel.setText("  🛫 GPS บินวนในรัศมี (หางาน)");
+        flyLabel.setTextColor(Color.WHITE);
+        flyRow.addView(flySw); flyRow.addView(flyLabel);
+        root.addView(flyRow);
+        flySw.setOnCheckedChangeListener(new android.widget.CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(android.widget.CompoundButton b, boolean isChecked) {
+                try {
+                    double km = 3.0;
+                    try { km = Double.parseDouble(etDist.getText().toString().trim()); } catch (Exception ignored) { }
+                    BotGps.setRadius(km);
+                } catch (Throwable ignored) { }
+                BotGps.setFly(isChecked);
+                toast(isChecked ? "GPS บิน: เปิด ✓ (วิ่งวนหางาน)" : "GPS บิน: ปิด");
+            }
+        });
+
+        // ปุ่มบันทึก
         Button save = new Button(ctx);
-        save.setText("💾 บันทึกการตั้งค่า");
+        save.setText("💾 บันทึก");
         root.addView(save);
         save.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
-                try { BotConfig.setMinPrice(ctx, Long.parseLong(etPrice.getText().toString().trim())); } catch (Exception ignored) { }
-                try { BotConfig.setMaxDistanceKm(ctx, Double.parseDouble(etDist.getText().toString().trim())); } catch (Exception ignored) { }
-                try { BotConfig.setDelayMs(ctx, Long.parseLong(etDelay.getText().toString().trim())); } catch (Exception ignored) { }
-                try { BotConfig.setListMinPrice(ctx, Long.parseLong(etList.getText().toString().trim())); } catch (Exception ignored) { }
-                try { BotConfig.setSniperSec(ctx, Long.parseLong(etScan.getText().toString().trim())); } catch (Exception ignored) { }
+                try {
+                    long p = Long.parseLong(etPrice.getText().toString().trim());
+                    BotConfig.setMinPrice(ctx, p);
+                } catch (Exception ignored) { }
+                try {
+                    double km = Double.parseDouble(etDist.getText().toString().trim());
+                    BotConfig.setMaxDistanceKm(ctx, km);
+                    BotGps.setRadius(km);
+                } catch (Exception ignored) { }
                 toast("บันทึกแล้ว ✓");
             }
         });
 
-        // log
-        logView = new TextView(ctx);
-        logView.setTypeface(android.graphics.Typeface.MONOSPACE);
-        logView.setTextSize(11);
-        logView.setTextColor(0xFFA7F3D0);
-        logView.setText("บอทพร้อมทำงาน — log ดูที่ logcat: TAXBOT\n");
-        ScrollView sc = new ScrollView(ctx);
-        sc.addView(logView);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(120));
-        sc.setLayoutParams(lp);
-        root.addView(sc);
+        // สถานะ 1 บรรทัด (อัปเดตสดทุก 2 วิ)
+        final TextView status = new TextView(ctx);
+        status.setTextColor(0xFFFDE68A);
+        status.setTextSize(12);
+        status.setText(shortStatus());
+        root.addView(status);
+        final android.os.Handler h = new android.os.Handler(android.os.Looper.getMainLooper());
+        final Runnable tick = new Runnable() {
+            @Override public void run() {
+                if (panel == null || status == null) return;
+                try { status.setText(shortStatus()); } catch (Throwable ignored) { }
+                h.postDelayed(this, 2000L);
+            }
+        };
+        h.postDelayed(tick, 2000L);
 
         panel = root;
         WindowManager.LayoutParams pp = new WindowManager.LayoutParams(
@@ -318,20 +257,22 @@ public final class BotOverlay {
         pp.gravity = Gravity.BOTTOM;
         pp.y = dp(20);
         pp.flags |= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-        // ให้พิมพ์ได้: focusable ตอนแตะ
-        root.setOnTouchListener(new View.OnTouchListener() {
-            @Override public boolean onTouch(View v, MotionEvent e) { return false; }
-        });
         wm.addView(panel, pp);
-        // อนุญาตโฟกัสสำหรับ EditText
+        // ให้พิมพ์ได้: โฟกัสได้ตอนแตะ
         pp.flags &= ~WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
         try { wm.updateViewLayout(panel, pp); } catch (Throwable ignored) { }
     }
 
-    private static String autoBtnLabel() {
-        return BotConfig.isAutoCached(ctx)
-                ? "🤖 ปิดรับงานอัตโนมัติ (เซิร์ฟเวอร์)"
-                : "🤖 เปิดรับงานอัตโนมัติ (เซิร์ฟเวอร์)";
+    /** สถานะรวมบรรทัดเดียว: บอท + GPS บิน + ผลงานวันนี้ */
+    private static String shortStatus() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(BotConfig.isEnabled(ctx) ? "🟢 บอทเปิด" : "⚪ บอทปิด");
+        String fly = BotGps.shortStatus();
+        if (fly.length() > 0) sb.append(" • ").append(fly);
+        long ok = BotConfig.getStatToday(ctx, "ok");
+        long offers = BotConfig.getStatToday(ctx, "offers");
+        sb.append(" • วันนี้ รับ ").append(ok).append("/").append(offers);
+        return sb.toString();
     }
 
     private static TextView label(String text) {
@@ -363,7 +304,7 @@ public final class BotOverlay {
     private static void hidePanel() {
         if (panel != null) {
             try { wm.removeView(panel); } catch (Throwable ignored) { }
-            panel = null; logView = null;
+            panel = null;
         }
     }
 

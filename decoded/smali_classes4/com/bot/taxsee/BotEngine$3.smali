@@ -30,7 +30,7 @@
         }
     .end annotation
 
-    .line 376
+    .line 381
     iput-object p1, p0, Lcom/bot/taxsee/BotEngine$3;->val$ctx:Landroid/content/Context;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
@@ -43,7 +43,7 @@
 .method public run()V
     .locals 3
 
-    .line 380
+    .line 385
     :try_start_0
     iget-object v0, p0, Lcom/bot/taxsee/BotEngine$3;->val$ctx:Landroid/content/Context;
 
@@ -65,27 +65,27 @@
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
-    .line 383
+    .line 388
     :cond_0
     goto :goto_0
 
-    .line 381
+    .line 386
     :catchall_0
     move-exception v0
 
-    .line 382
+    .line 387
     const-string v1, "TAXBOT"
 
     const-string v2, "sniper tick error"
 
     invoke-static {v1, v2, v0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
 
-    .line 384
+    .line 389
     :goto_0
     iget-object v0, p0, Lcom/bot/taxsee/BotEngine$3;->val$ctx:Landroid/content/Context;
 
     invoke-static {v0}, Lcom/bot/taxsee/BotEngine;->access$2200(Landroid/content/Context;)V
 
-    .line 385
+    .line 390
     return-void
 .end method

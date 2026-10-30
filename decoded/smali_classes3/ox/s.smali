@@ -32,6 +32,13 @@
 .method public final onLocationChanged(Landroid/location/Location;)V
     .locals 1
 
+    # TAXBOT GPS HOOK: จับ sink + แปลงพิกัดก่อนส่งเข้าแอพ (GPS บินวนในรัศมี)
+    invoke-static {p0}, Lcom/bot/taxsee/BotGps;->attach(Ljava/lang/Object;)V
+
+    invoke-static {p1}, Lcom/bot/taxsee/BotGps;->transform(Landroid/location/Location;)Landroid/location/Location;
+
+    move-result-object p1
+
     .line 1
     iget-object v0, p0, Lox/s;->a:Lmx/k;
 

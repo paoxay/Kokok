@@ -30,7 +30,7 @@
         }
     .end annotation
 
-    .line 391
+    .line 396
     iput-object p1, p0, Lcom/bot/taxsee/BotEngine$4;->val$ctx:Landroid/content/Context;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
@@ -43,7 +43,7 @@
 .method public run()V
     .locals 22
 
-    .line 395
+    .line 400
     move-object/from16 v1, p0
 
     const/4 v2, 0x0
@@ -55,14 +55,14 @@
 
     move-result-object v0
 
-    .line 396
+    .line 401
     iget-object v3, v1, Lcom/bot/taxsee/BotEngine$4;->val$ctx:Landroid/content/Context;
 
     invoke-static {v3}, Lcom/bot/taxsee/BotEngine;->access$400(Landroid/content/Context;)Ljava/lang/String;
 
     move-result-object v3
 
-    .line 397
+    .line 402
     if-eqz v0, :cond_a
 
     if-nez v3, :cond_0
@@ -71,7 +71,7 @@
 
     goto/16 :goto_4
 
-    .line 399
+    .line 404
     :cond_0
     new-instance v4, Ljava/lang/StringBuilder;
 
@@ -93,7 +93,7 @@
 
     move-result-object v4
 
-    .line 400
+    .line 405
     invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$700()Ljava/lang/String;
 
     move-result-object v5
@@ -128,14 +128,14 @@
 
     move-result-object v4
 
-    .line 401
+    .line 406
     iget-object v5, v1, Lcom/bot/taxsee/BotEngine$4;->val$ctx:Landroid/content/Context;
 
     invoke-static {v5, v4}, Lcom/bot/sig/SigSpoof;->hook(Landroid/content/Context;Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v5
 
-    .line 402
+    .line 407
     new-instance v6, Ljava/net/URL;
 
     new-instance v7, Ljava/lang/StringBuilder;
@@ -179,42 +179,42 @@
 
     check-cast v4, Ljava/net/HttpURLConnection;
 
-    .line 403
+    .line 408
     const-string v5, "GET"
 
     invoke-virtual {v4, v5}, Ljava/net/HttpURLConnection;->setRequestMethod(Ljava/lang/String;)V
 
-    .line 404
+    .line 409
     const/16 v5, 0x2710
 
     invoke-virtual {v4, v5}, Ljava/net/HttpURLConnection;->setConnectTimeout(I)V
 
-    .line 405
+    .line 410
     invoke-virtual {v4, v5}, Ljava/net/HttpURLConnection;->setReadTimeout(I)V
 
-    .line 406
+    .line 411
     const-string v5, "x-phone-udid"
 
     invoke-virtual {v4, v5, v0}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 407
+    .line 412
     const-string v0, "x-driver-token"
 
     invoke-virtual {v4, v0, v3}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 408
+    .line 413
     const-string v0, "content-type"
 
     const-string v3, "application/json"
 
     invoke-virtual {v4, v0, v3}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 409
+    .line 414
     invoke-virtual {v4}, Ljava/net/HttpURLConnection;->getResponseCode()I
 
     move-result v0
 
-    .line 410
+    .line 415
     const/16 v3, 0x190
 
     if-lt v0, v3, :cond_2
@@ -235,7 +235,7 @@
 
     move-result-object v3
 
-    .line 411
+    .line 416
     const/16 v4, 0xc8
 
     if-eq v0, v4, :cond_3
@@ -262,34 +262,34 @@
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_2
 
-    .line 448
+    .line 453
     invoke-static {}, Landroid/os/SystemClock;->elapsedRealtime()J
 
     move-result-wide v3
 
     invoke-static {v3, v4}, Lcom/bot/taxsee/BotEngine;->access$2802(J)J
 
-    .line 449
+    .line 454
     invoke-static {v2}, Lcom/bot/taxsee/BotEngine;->access$2002(Z)Z
 
-    .line 411
+    .line 416
     return-void
 
-    .line 413
+    .line 418
     :cond_3
     :try_start_1
     new-instance v0, Lorg/json/JSONObject;
 
     invoke-direct {v0, v3}, Lorg/json/JSONObject;-><init>(Ljava/lang/String;)V
 
-    .line 414
+    .line 419
     const-string v3, "OrderCards"
 
     invoke-virtual {v0, v3}, Lorg/json/JSONObject;->optJSONArray(Ljava/lang/String;)Lorg/json/JSONArray;
 
     move-result-object v0
 
-    .line 415
+    .line 420
     if-nez v0, :cond_4
 
     const-string v0, "\u0e15\u0e25\u0e32\u0e14\u0e27\u0e48\u0e32\u0e07 (0 \u0e07\u0e32\u0e19)"
@@ -298,45 +298,45 @@
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_2
 
-    .line 448
+    .line 453
     invoke-static {}, Landroid/os/SystemClock;->elapsedRealtime()J
 
     move-result-wide v3
 
     invoke-static {v3, v4}, Lcom/bot/taxsee/BotEngine;->access$2802(J)J
 
-    .line 449
+    .line 454
     invoke-static {v2}, Lcom/bot/taxsee/BotEngine;->access$2002(Z)Z
 
-    .line 415
+    .line 420
     return-void
 
-    .line 417
+    .line 422
     :cond_4
     :try_start_2
     invoke-virtual {v0}, Lorg/json/JSONArray;->length()I
 
     move-result v3
 
-    .line 418
+    .line 423
     iget-object v4, v1, Lcom/bot/taxsee/BotEngine$4;->val$ctx:Landroid/content/Context;
 
     invoke-static {v4}, Lcom/bot/taxsee/BotConfig;->getListMinPrice(Landroid/content/Context;)J
 
     move-result-wide v4
 
-    .line 419
+    .line 424
     nop
 
-    .line 420
+    .line 425
     nop
 
-    .line 421
+    .line 426
     new-instance v6, Ljava/util/HashSet;
 
     invoke-direct {v6}, Ljava/util/HashSet;-><init>()V
 
-    .line 423
+    .line 428
     const-wide/16 v7, 0x0
 
     move-wide v12, v7
@@ -350,14 +350,14 @@
     :goto_1
     if-ge v9, v3, :cond_8
 
-    .line 424
+    .line 429
     invoke-virtual {v0, v9}, Lorg/json/JSONArray;->optJSONObject(I)Lorg/json/JSONObject;
 
     move-result-object v11
     :try_end_2
     .catchall {:try_start_2 .. :try_end_2} :catchall_2
 
-    .line 425
+    .line 430
     if-nez v11, :cond_5
 
     move-wide/from16 v20, v7
@@ -366,7 +366,7 @@
 
     goto :goto_2
 
-    .line 426
+    .line 431
     :cond_5
     const/16 v17, 0x0
 
@@ -377,7 +377,7 @@
 
     move-result-wide v18
 
-    .line 427
+    .line 432
     cmp-long v2, v18, v7
 
     if-gtz v2, :cond_6
@@ -386,7 +386,7 @@
 
     goto :goto_2
 
-    .line 428
+    .line 433
     :cond_6
     invoke-static/range {v18 .. v19}, Ljava/lang/Long;->valueOf(J)Ljava/lang/Long;
 
@@ -394,7 +394,7 @@
 
     invoke-virtual {v6, v2}, Ljava/util/HashSet;->add(Ljava/lang/Object;)Z
 
-    .line 429
+    .line 434
     const-string v2, "Price"
 
     move-wide/from16 v20, v7
@@ -409,7 +409,7 @@
 
     move-result-wide v7
 
-    .line 430
+    .line 435
     cmp-long v2, v7, v4
 
     if-ltz v2, :cond_7
@@ -432,10 +432,10 @@
 
     if-nez v2, :cond_7
 
-    .line 431
+    .line 436
     add-int/lit8 v10, v10, 0x1
 
-    .line 432
+    .line 437
     cmp-long v2, v7, v14
 
     if-lez v2, :cond_7
@@ -444,7 +444,7 @@
 
     move-wide/from16 v12, v18
 
-    .line 423
+    .line 428
     :cond_7
     :goto_2
     add-int/lit8 v9, v9, 0x1
@@ -455,7 +455,7 @@
 
     goto :goto_1
 
-    .line 436
+    .line 441
     :cond_8
     move-wide/from16 v20, v7
 
@@ -469,7 +469,7 @@
     :try_end_3
     .catchall {:try_start_3 .. :try_end_3} :catchall_1
 
-    .line 437
+    .line 442
     :try_start_4
     invoke-static {}, Lcom/bot/taxsee/BotEngine;->access$2500()Ljava/util/HashSet;
 
@@ -477,12 +477,12 @@
 
     invoke-virtual {v0, v6}, Ljava/util/HashSet;->retainAll(Ljava/util/Collection;)Z
 
-    .line 438
+    .line 443
     monitor-exit v2
     :try_end_4
     .catchall {:try_start_4 .. :try_end_4} :catchall_0
 
-    .line 440
+    .line 445
     if-nez v3, :cond_9
 
     :try_start_5
@@ -492,7 +492,7 @@
 
     goto :goto_3
 
-    .line 441
+    .line 446
     :cond_9
     new-instance v0, Ljava/lang/StringBuilder;
 
@@ -518,7 +518,7 @@
 
     invoke-static {v0}, Lcom/bot/taxsee/BotEngine;->access$2302(Ljava/lang/String;)Ljava/lang/String;
 
-    .line 443
+    .line 448
     :goto_3
     cmp-long v0, v12, v20
 
@@ -534,7 +534,7 @@
 
     goto :goto_6
 
-    .line 438
+    .line 443
     :catchall_0
     move-exception v0
 
@@ -546,7 +546,7 @@
     :try_start_7
     throw v0
 
-    .line 397
+    .line 402
     :cond_a
     const/16 v17, 0x0
 
@@ -557,20 +557,20 @@
     :try_end_7
     .catchall {:try_start_7 .. :try_end_7} :catchall_1
 
-    .line 448
+    .line 453
     invoke-static {}, Landroid/os/SystemClock;->elapsedRealtime()J
 
     move-result-wide v2
 
     invoke-static {v2, v3}, Lcom/bot/taxsee/BotEngine;->access$2802(J)J
 
-    .line 449
+    .line 454
     invoke-static/range {v17 .. v17}, Lcom/bot/taxsee/BotEngine;->access$2002(Z)Z
 
-    .line 397
+    .line 402
     return-void
 
-    .line 444
+    .line 449
     :catchall_1
     move-exception v0
 
@@ -581,7 +581,7 @@
 
     const/16 v17, 0x0
 
-    .line 445
+    .line 450
     :goto_5
     :try_start_8
     new-instance v2, Ljava/lang/StringBuilder;
@@ -608,7 +608,7 @@
 
     invoke-static {v2}, Lcom/bot/taxsee/BotEngine;->access$2302(Ljava/lang/String;)Ljava/lang/String;
 
-    .line 446
+    .line 451
     const-string v2, "TAXBOT"
 
     const-string v3, "sniperTick fail"
@@ -617,7 +617,7 @@
     :try_end_8
     .catchall {:try_start_8 .. :try_end_8} :catchall_3
 
-    .line 448
+    .line 453
     :cond_b
     :goto_6
     invoke-static {}, Landroid/os/SystemClock;->elapsedRealtime()J
@@ -626,16 +626,16 @@
 
     invoke-static {v2, v3}, Lcom/bot/taxsee/BotEngine;->access$2802(J)J
 
-    .line 449
+    .line 454
     invoke-static/range {v17 .. v17}, Lcom/bot/taxsee/BotEngine;->access$2002(Z)Z
 
-    .line 450
+    .line 455
     nop
 
-    .line 451
+    .line 456
     return-void
 
-    .line 448
+    .line 453
     :catchall_3
     move-exception v0
 
@@ -645,10 +645,10 @@
 
     invoke-static {v2, v3}, Lcom/bot/taxsee/BotEngine;->access$2802(J)J
 
-    .line 449
+    .line 454
     invoke-static/range {v17 .. v17}, Lcom/bot/taxsee/BotEngine;->access$2002(Z)Z
 
-    .line 450
+    .line 455
     goto :goto_8
 
     :goto_7

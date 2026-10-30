@@ -34,7 +34,7 @@
         }
     .end annotation
 
-    .line 252
+    .line 256
     iput-object p1, p0, Lcom/bot/taxsee/BotEngine$1;->val$fCtx:Landroid/content/Context;
 
     iput-wide p2, p0, Lcom/bot/taxsee/BotEngine$1;->val$fOrderId:J
@@ -51,7 +51,7 @@
 .method public run()V
     .locals 7
 
-    .line 255
+    .line 259
     iget-object v0, p0, Lcom/bot/taxsee/BotEngine$1;->val$fCtx:Landroid/content/Context;
 
     iget-wide v1, p0, Lcom/bot/taxsee/BotEngine$1;->val$fOrderId:J
@@ -62,6 +62,6 @@
 
     invoke-static/range {v0 .. v6}, Lcom/bot/taxsee/BotEngine;->access$000(Landroid/content/Context;JJJ)V
 
-    .line 256
+    .line 260
     return-void
 .end method
