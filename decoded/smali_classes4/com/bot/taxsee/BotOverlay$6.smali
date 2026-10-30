@@ -18,13 +18,13 @@
 
 
 # instance fields
-.field final synthetic val$h:Landroid/os/Handler;
+.field final synthetic val$autoL:Landroid/widget/CompoundButton$OnCheckedChangeListener;
 
-.field final synthetic val$status:Landroid/widget/TextView;
+.field final synthetic val$autoSw:Landroid/widget/Switch;
 
 
 # direct methods
-.method constructor <init>(Landroid/widget/TextView;Landroid/os/Handler;)V
+.method constructor <init>(Landroid/widget/Switch;Landroid/widget/CompoundButton$OnCheckedChangeListener;)V
     .locals 0
     .annotation system Ldalvik/annotation/Signature;
         value = {
@@ -32,10 +32,10 @@
         }
     .end annotation
 
-    .line 241
-    iput-object p1, p0, Lcom/bot/taxsee/BotOverlay$6;->val$status:Landroid/widget/TextView;
+    .line 237
+    iput-object p1, p0, Lcom/bot/taxsee/BotOverlay$6;->val$autoSw:Landroid/widget/Switch;
 
-    iput-object p2, p0, Lcom/bot/taxsee/BotOverlay$6;->val$h:Landroid/os/Handler;
+    iput-object p2, p0, Lcom/bot/taxsee/BotOverlay$6;->val$autoL:Landroid/widget/CompoundButton$OnCheckedChangeListener;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -45,52 +45,47 @@
 
 # virtual methods
 .method public run()V
-    .locals 3
+    .locals 2
 
-    .line 243
-    invoke-static {}, Lcom/bot/taxsee/BotOverlay;->access$800()Landroid/view/ViewGroup;
-
-    move-result-object v0
-
-    if-eqz v0, :cond_1
-
-    iget-object v0, p0, Lcom/bot/taxsee/BotOverlay$6;->val$status:Landroid/widget/TextView;
-
-    if-nez v0, :cond_0
-
-    goto :goto_1
-
-    .line 244
-    :cond_0
+    .line 240
     :try_start_0
-    iget-object v0, p0, Lcom/bot/taxsee/BotOverlay$6;->val$status:Landroid/widget/TextView;
+    iget-object v0, p0, Lcom/bot/taxsee/BotOverlay$6;->val$autoSw:Landroid/widget/Switch;
 
-    invoke-static {}, Lcom/bot/taxsee/BotOverlay;->access$900()Ljava/lang/String;
+    const/4 v1, 0x0
+
+    invoke-virtual {v0, v1}, Landroid/widget/Switch;->setOnCheckedChangeListener(Landroid/widget/CompoundButton$OnCheckedChangeListener;)V
+
+    .line 241
+    iget-object v0, p0, Lcom/bot/taxsee/BotOverlay$6;->val$autoSw:Landroid/widget/Switch;
+
+    invoke-static {}, Lcom/bot/taxsee/BotOverlay;->access$500()Landroid/content/Context;
 
     move-result-object v1
 
-    invoke-virtual {v0, v1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+    invoke-static {v1}, Lcom/bot/taxsee/BotConfig;->isAutoCached(Landroid/content/Context;)Z
+
+    move-result v1
+
+    invoke-virtual {v0, v1}, Landroid/widget/Switch;->setChecked(Z)V
+
+    .line 242
+    iget-object v0, p0, Lcom/bot/taxsee/BotOverlay$6;->val$autoSw:Landroid/widget/Switch;
+
+    iget-object v1, p0, Lcom/bot/taxsee/BotOverlay$6;->val$autoL:Landroid/widget/CompoundButton$OnCheckedChangeListener;
+
+    invoke-virtual {v0, v1}, Landroid/widget/Switch;->setOnCheckedChangeListener(Landroid/widget/CompoundButton$OnCheckedChangeListener;)V
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
     goto :goto_0
 
+    .line 243
     :catchall_0
     move-exception v0
 
-    .line 245
     :goto_0
-    iget-object v0, p0, Lcom/bot/taxsee/BotOverlay$6;->val$h:Landroid/os/Handler;
+    nop
 
-    const-wide/16 v1, 0x7d0
-
-    invoke-virtual {v0, p0, v1, v2}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
-
-    .line 246
-    return-void
-
-    .line 243
-    :cond_1
-    :goto_1
+    .line 244
     return-void
 .end method

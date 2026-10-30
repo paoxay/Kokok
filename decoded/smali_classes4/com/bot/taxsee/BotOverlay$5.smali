@@ -3,7 +3,7 @@
 .source "BotOverlay.java"
 
 # interfaces
-.implements Landroid/view/View$OnClickListener;
+.implements Landroid/widget/CompoundButton$OnCheckedChangeListener;
 
 
 # annotations
@@ -17,26 +17,11 @@
 .end annotation
 
 
-# instance fields
-.field final synthetic val$etDist:Landroid/widget/EditText;
-
-.field final synthetic val$etPrice:Landroid/widget/EditText;
-
-
 # direct methods
-.method constructor <init>(Landroid/widget/EditText;Landroid/widget/EditText;)V
+.method constructor <init>()V
     .locals 0
-    .annotation system Ldalvik/annotation/Signature;
-        value = {
-            "()V"
-        }
-    .end annotation
 
-    .line 219
-    iput-object p1, p0, Lcom/bot/taxsee/BotOverlay$5;->val$etPrice:Landroid/widget/EditText;
-
-    iput-object p2, p0, Lcom/bot/taxsee/BotOverlay$5;->val$etDist:Landroid/widget/EditText;
-
+    .line 227
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     return-void
@@ -44,93 +29,29 @@
 
 
 # virtual methods
-.method public onClick(Landroid/view/View;)V
-    .locals 2
+.method public onCheckedChanged(Landroid/widget/CompoundButton;Z)V
+    .locals 0
 
-    .line 222
-    :try_start_0
-    iget-object p1, p0, Lcom/bot/taxsee/BotOverlay$5;->val$etPrice:Landroid/widget/EditText;
+    .line 230
+    if-eqz p2, :cond_0
 
-    invoke-virtual {p1}, Landroid/widget/EditText;->getText()Landroid/text/Editable;
-
-    move-result-object p1
-
-    invoke-virtual {p1}, Ljava/lang/Object;->toString()Ljava/lang/String;
-
-    move-result-object p1
-
-    invoke-virtual {p1}, Ljava/lang/String;->trim()Ljava/lang/String;
-
-    move-result-object p1
-
-    invoke-static {p1}, Ljava/lang/Long;->parseLong(Ljava/lang/String;)J
-
-    move-result-wide v0
-
-    .line 223
-    invoke-static {}, Lcom/bot/taxsee/BotOverlay;->access$500()Landroid/content/Context;
-
-    move-result-object p1
-
-    invoke-static {p1, v0, v1}, Lcom/bot/taxsee/BotConfig;->setMinPrice(Landroid/content/Context;J)V
-    :try_end_0
-    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_0} :catch_0
+    const-string p1, "\u0e01\u0e33\u0e25\u0e31\u0e07\u0e40\u0e1b\u0e34\u0e14 Auto \u0e23\u0e30\u0e1a\u0e1a..."
 
     goto :goto_0
 
-    .line 224
-    :catch_0
-    move-exception p1
+    :cond_0
+    const-string p1, "\u0e01\u0e33\u0e25\u0e31\u0e07\u0e1b\u0e34\u0e14 Auto \u0e23\u0e30\u0e1a\u0e1a..."
 
     :goto_0
-    nop
+    invoke-static {p1}, Lcom/bot/taxsee/BotOverlay;->access$700(Ljava/lang/String;)V
 
-    .line 226
-    :try_start_1
-    iget-object p1, p0, Lcom/bot/taxsee/BotOverlay$5;->val$etDist:Landroid/widget/EditText;
-
-    invoke-virtual {p1}, Landroid/widget/EditText;->getText()Landroid/text/Editable;
-
-    move-result-object p1
-
-    invoke-virtual {p1}, Ljava/lang/Object;->toString()Ljava/lang/String;
-
-    move-result-object p1
-
-    invoke-virtual {p1}, Ljava/lang/String;->trim()Ljava/lang/String;
-
-    move-result-object p1
-
-    invoke-static {p1}, Ljava/lang/Double;->parseDouble(Ljava/lang/String;)D
-
-    move-result-wide v0
-
-    .line 227
+    .line 231
     invoke-static {}, Lcom/bot/taxsee/BotOverlay;->access$500()Landroid/content/Context;
 
     move-result-object p1
 
-    invoke-static {p1, v0, v1}, Lcom/bot/taxsee/BotConfig;->setMaxDistanceKm(Landroid/content/Context;D)V
+    invoke-static {p1, p2}, Lcom/bot/taxsee/BotEngine;->setAutoEnabledAsync(Landroid/content/Context;Z)V
 
-    .line 228
-    invoke-static {v0, v1}, Lcom/bot/taxsee/BotGps;->setRadius(D)V
-    :try_end_1
-    .catch Ljava/lang/Exception; {:try_start_1 .. :try_end_1} :catch_1
-
-    goto :goto_1
-
-    .line 229
-    :catch_1
-    move-exception p1
-
-    :goto_1
-    nop
-
-    .line 230
-    const-string p1, "\u0e1a\u0e31\u0e19\u0e17\u0e36\u0e01\u0e41\u0e25\u0e49\u0e27 \u2713"
-
-    invoke-static {p1}, Lcom/bot/taxsee/BotOverlay;->access$700(Ljava/lang/String;)V
-
-    .line 231
+    .line 232
     return-void
 .end method

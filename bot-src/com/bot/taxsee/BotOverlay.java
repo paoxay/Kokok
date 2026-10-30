@@ -212,6 +212,38 @@ public final class BotOverlay {
             }
         });
 
+        // สวิตช์ Auto ของระบบ (เซิร์ฟเวอร์มอบงานเอง latency 0 — คนละตัวกับบอทเรา)
+        LinearLayout autoRow = new LinearLayout(ctx);
+        autoRow.setOrientation(LinearLayout.HORIZONTAL);
+        autoRow.setGravity(Gravity.CENTER_VERTICAL);
+        final Switch autoSw = new Switch(ctx);
+        autoSw.setChecked(BotConfig.isAutoCached(ctx));
+        TextView autoLabel = new TextView(ctx);
+        autoLabel.setText("  🤖 Auto ของระบบ (มอบงานทันที)");
+        autoLabel.setTextColor(Color.WHITE);
+        autoRow.addView(autoSw); autoRow.addView(autoLabel);
+        root.addView(autoRow);
+        final android.widget.CompoundButton.OnCheckedChangeListener autoL =
+                new android.widget.CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(android.widget.CompoundButton b, boolean isChecked) {
+                        toast(isChecked ? "กำลังเปิด Auto ระบบ..." : "กำลังปิด Auto ระบบ...");
+                        BotEngine.setAutoEnabledAsync(ctx, isChecked);
+                    }
+                };
+        autoSw.setOnCheckedChangeListener(autoL);
+        // ดึงสถานะจริงจากเซิร์ฟเวอร์แล้วซิงก์สวิตช์ (ถอด listener ก่อน setChecked กันสั่งซ้ำ)
+        BotEngine.fetchAutoStateAsync(ctx);
+        autoSw.postDelayed(new Runnable() {
+            @Override public void run() {
+                try {
+                    autoSw.setOnCheckedChangeListener(null);
+                    autoSw.setChecked(BotConfig.isAutoCached(ctx));
+                    autoSw.setOnCheckedChangeListener(autoL);
+                } catch (Throwable ignored) { }
+            }
+        }, 3000L);
+
         // ปุ่มบันทึก
         Button save = new Button(ctx);
         save.setText("💾 บันทึก");
