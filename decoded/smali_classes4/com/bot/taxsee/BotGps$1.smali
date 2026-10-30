@@ -21,7 +21,7 @@
 .method constructor <init>()V
     .locals 0
 
-    .line 261
+    .line 241
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     return-void
@@ -30,9 +30,9 @@
 
 # virtual methods
 .method public run()V
-    .locals 6
+    .locals 8
 
-    .line 266
+    .line 246
     nop
 
     :goto_0
@@ -41,75 +41,58 @@
 
     move-result v0
 
-    if-eqz v0, :cond_1
+    if-eqz v0, :cond_0
 
-    invoke-static {}, Lcom/bot/taxsee/BotGps;->access$100()Z
+    invoke-static {}, Lcom/bot/taxsee/BotGps;->access$100()Landroid/location/Location;
 
-    move-result v0
+    move-result-object v0
 
-    if-eqz v0, :cond_1
+    if-eqz v0, :cond_0
 
     invoke-static {}, Lcom/bot/taxsee/BotGps;->access$200()Ljava/lang/Object;
 
     move-result-object v0
 
-    if-eqz v0, :cond_1
+    if-eqz v0, :cond_0
 
     invoke-static {}, Lcom/bot/taxsee/BotGps;->access$300()Ljava/lang/reflect/Method;
 
     move-result-object v0
 
-    if-eqz v0, :cond_1
+    if-eqz v0, :cond_0
 
-    .line 267
-    invoke-static {}, Lcom/bot/taxsee/BotGps;->access$400()Landroid/location/Location;
+    .line 248
+    invoke-static {}, Lcom/bot/taxsee/BotGps;->access$400()Ljava/lang/Object;
 
     move-result-object v0
 
-    .line 269
-    invoke-static {}, Lcom/bot/taxsee/BotGps;->access$500()Ljava/lang/Object;
-
-    move-result-object v1
-
-    monitor-enter v1
+    monitor-enter v0
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_1
 
-    .line 270
+    .line 249
     :try_start_1
-    invoke-static {}, Lcom/bot/taxsee/BotGps;->access$600()V
+    invoke-static {}, Lcom/bot/taxsee/BotGps;->access$500()V
 
-    .line 271
-    if-nez v0, :cond_0
+    .line 250
+    invoke-static {}, Lcom/bot/taxsee/BotGps;->access$100()Landroid/location/Location;
 
-    .line 272
-    new-instance v0, Landroid/location/Location;
+    move-result-object v1
 
-    const-string v2, "fused"
+    invoke-static {v1}, Lcom/bot/taxsee/BotGps;->access$600(Landroid/location/Location;)Landroid/location/Location;
 
-    invoke-direct {v0, v2}, Landroid/location/Location;-><init>(Ljava/lang/String;)V
+    move-result-object v1
 
-    .line 273
-    const/high16 v2, 0x41100000    # 9.0f
-
-    invoke-virtual {v0, v2}, Landroid/location/Location;->setAccuracy(F)V
-
-    .line 275
-    :cond_0
-    invoke-static {v0}, Lcom/bot/taxsee/BotGps;->access$700(Landroid/location/Location;)Landroid/location/Location;
-
-    move-result-object v0
-
-    .line 276
-    monitor-exit v1
+    .line 251
+    monitor-exit v0
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_0
 
-    .line 277
+    .line 252
     :try_start_2
     invoke-static {}, Lcom/bot/taxsee/BotGps;->access$300()Ljava/lang/reflect/Method;
 
-    move-result-object v1
+    move-result-object v0
 
     invoke-static {}, Lcom/bot/taxsee/BotGps;->access$200()Ljava/lang/Object;
 
@@ -121,155 +104,154 @@
 
     const/4 v5, 0x0
 
-    aput-object v0, v4, v5
+    aput-object v1, v4, v5
 
-    invoke-virtual {v1, v2, v4}, Ljava/lang/reflect/Method;->invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+    invoke-virtual {v0, v2, v4}, Ljava/lang/reflect/Method;->invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
 
-    .line 278
-    invoke-static {}, Lcom/bot/taxsee/BotGps;->access$808()J
+    .line 253
+    invoke-static {}, Lcom/bot/taxsee/BotGps;->access$708()J
 
-    .line 279
-    invoke-static {}, Lcom/bot/taxsee/BotGps;->access$800()J
+    .line 254
+    invoke-static {}, Lcom/bot/taxsee/BotGps;->access$700()J
 
     move-result-wide v0
 
-    const-wide/16 v4, 0x19
+    const-wide/16 v6, 0x19
 
-    rem-long/2addr v0, v4
+    rem-long/2addr v0, v6
 
-    const-wide/16 v4, 0x1
+    const-wide/16 v6, 0x1
 
-    cmp-long v2, v0, v4
+    cmp-long v2, v0, v6
 
-    if-nez v2, :cond_1
+    if-nez v2, :cond_0
 
-    .line 280
-    const-string v0, "TAXBOT"
+    .line 255
+    invoke-static {}, Lcom/bot/taxsee/BotGps;->access$800()[D
 
-    new-instance v1, Ljava/lang/StringBuilder;
+    move-result-object v0
 
-    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
+    .line 256
+    const-string v1, "TAXBOT"
 
-    const-string v2, "GPS hop push #"
+    new-instance v2, Ljava/lang/StringBuilder;
 
-    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
 
-    move-result-object v1
+    const-string v4, "GPS follow push #"
 
-    invoke-static {}, Lcom/bot/taxsee/BotGps;->access$800()J
+    invoke-virtual {v2, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result-wide v4
+    move-result-object v2
 
-    invoke-virtual {v1, v4, v5}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
+    invoke-static {}, Lcom/bot/taxsee/BotGps;->access$700()J
 
-    move-result-object v1
+    move-result-wide v6
 
-    const-string v2, " wp"
+    invoke-virtual {v2, v6, v7}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
 
-    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v2
 
-    move-result-object v1
+    const-string v4, " wp"
+
+    invoke-virtual {v2, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v2
 
     invoke-static {}, Lcom/bot/taxsee/BotGps;->access$900()I
 
-    move-result v2
+    move-result v4
 
-    add-int/2addr v2, v3
+    add-int/2addr v4, v3
 
-    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    invoke-virtual {v2, v4}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
 
-    move-result-object v1
+    move-result-object v2
 
-    const-string v2, "/"
+    const-string v4, "/"
 
-    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v2, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result-object v1
+    move-result-object v2
 
     invoke-static {}, Lcom/bot/taxsee/BotGps;->access$1000()I
 
-    move-result v2
+    move-result v4
 
-    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    invoke-virtual {v2, v4}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
 
-    move-result-object v1
+    move-result-object v2
 
-    const-string v2, " "
+    const-string v4, " "
 
-    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v2, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result-object v1
+    move-result-object v2
 
-    .line 281
-    invoke-static {}, Lcom/bot/taxsee/BotGps;->access$1100()D
+    aget-wide v4, v0, v5
 
-    move-result-wide v2
+    invoke-virtual {v2, v4, v5}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
 
-    invoke-virtual {v1, v2, v3}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
+    move-result-object v2
 
-    move-result-object v1
+    const-string v4, ","
 
-    const-string v2, ","
+    invoke-virtual {v2, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v2
 
-    move-result-object v1
+    aget-wide v3, v0, v3
 
-    invoke-static {}, Lcom/bot/taxsee/BotGps;->access$1200()D
+    invoke-virtual {v2, v3, v4}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
 
-    move-result-wide v2
+    move-result-object v0
 
-    invoke-virtual {v1, v2, v3}, Ljava/lang/StringBuilder;->append(D)Ljava/lang/StringBuilder;
+    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 
-    move-result-object v1
+    move-result-object v0
 
-    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    move-result-object v1
-
-    .line 280
-    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    invoke-static {v1, v0}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
     :try_end_2
     .catchall {:try_start_2 .. :try_end_2} :catchall_1
 
     goto :goto_1
 
-    .line 276
+    .line 251
     :catchall_0
-    move-exception v0
+    move-exception v1
 
     :try_start_3
-    monitor-exit v1
+    monitor-exit v0
     :try_end_3
     .catchall {:try_start_3 .. :try_end_3} :catchall_0
 
     :try_start_4
-    throw v0
+    throw v1
     :try_end_4
     .catchall {:try_start_4 .. :try_end_4} :catchall_1
 
-    .line 287
-    :cond_1
+    .line 263
+    :cond_0
     :goto_1
     goto :goto_2
 
-    .line 284
+    .line 260
     :catchall_1
     move-exception v0
 
-    .line 285
+    .line 261
     const-string v1, "TAXBOT"
 
     const-string v2, "GPS push fail"
 
     invoke-static {v1, v2, v0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
 
-    .line 286
+    .line 262
     const/4 v0, 0x0
 
     invoke-static {v0}, Lcom/bot/taxsee/BotGps;->access$202(Ljava/lang/Object;)Ljava/lang/Object;
 
-    .line 289
+    .line 265
     :goto_2
     const-wide/16 v0, 0x4e2
 
@@ -278,13 +260,13 @@
     :try_end_5
     .catch Ljava/lang/InterruptedException; {:try_start_5 .. :try_end_5} :catch_0
 
-    .line 292
+    .line 268
     goto/16 :goto_0
 
-    .line 290
+    .line 266
     :catch_0
     move-exception v0
 
-    .line 291
+    .line 267
     return-void
 .end method
