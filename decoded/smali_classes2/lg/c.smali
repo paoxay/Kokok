@@ -363,7 +363,7 @@
     .line 9
     .line 10
     .line 11
-    const-string v1, "3.27.4"
+    const-string v1, "3.27.6"
 
     .line 12
     .line 13
