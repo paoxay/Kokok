@@ -54,3 +54,42 @@ screenshot*
 indrive/
 onnpay/
 
+
+# ── SENSITIVE (never publish — real credentials / customer data) ──
+*.db
+*.db-journal
+*.pem
+*.har
+cust_token.txt
+customer_tokens.txt
+customer_accept_capture.txt
+BYPASS.MD.txt
+AGENTS.md
+.zcode/
+bot-server/server.log
+
+# ── Large / regenerable trees ──
+apkpure-280-decode/
+apkpure-451-decode/
+customer-shipper-decode/
+buddy-analysis/
+buddy-bot-inject/
+buddy-bot/
+flash-analysis/
+flash driver/
+demo-rating-ui/
+lotto-analysis/
+__pycache__/
+koko-bot-android/dex-tmp/
+koko-bot-android/src/*.jar
+APKEditor-*.jar
+
+# ── Binaries ──
+*.apk
+*.idsig
+*.keystore
+*.jar
+!mocklocation/gradle/wrapper/gradle-wrapper.jar
+
+# ── Exception: real bot-server python code (old *.py rule was for one-off scripts) ──
+!bot-server/*.py

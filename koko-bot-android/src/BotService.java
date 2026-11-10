@@ -20,7 +20,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.Random;
+import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -48,19 +51,35 @@ public class BotService extends Service {
     public static final String ACTION_START = "com.coconutsilo.bot.START";
     public static final String ACTION_STOP = "com.coconutsilo.bot.STOP";
     public static final String ACTION_EVENT = "com.coconutsilo.bot.EVENT";
+    // WS liveness watchdog thresholds
+    private static final long WS_SILENT_REVIVE_MS = 90_000L;
+    private static final long AUTO_OPEN_COOLDOWN_MS = 5 * 60_000L;
 
     private BotConfig config;
+    private OrderGuard orderGuard;
     private AppTokenReader tokenReader;
     private Handler uiHandler = new Handler(Looper.getMainLooper());
     private ExecutorService executor = Executors.newFixedThreadPool(5);
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(3);
+    // Dedicated pool for bid HTTP calls so multiple orders can be sent in parallel.
+    // 30 slots: handles busy areas with 20-30 simultaneous orders without queueing.
+    private ExecutorService bidExecutor = Executors.newFixedThreadPool(30);
     // Dedicated pool for async non-critical tasks (road distance, display updates)
     // so they don't compete with the main order/bid executor
     private ExecutorService asyncExecutor = Executors.newFixedThreadPool(2);
+    // 🏎️ สนามเฉพาะของ PRE-BID PROBE (เช็คเบอร์ก่อนบิด) — ต้องไม่มีวันต่อคิวหลัง
+    // OSRM/warmer/post-bid verify อีกเลย (เดิมใช้ asyncExecutor 2 เธรดร่วมกัน
+    // งานรัวหรือเน็ตสั่นแล้ว probe โดนอุดตันหลักวินาที)
+    private ExecutorService probeExecutor = Executors.newFixedThreadPool(3);
     private volatile boolean running = false;
 
     private volatile String accessToken;
     private volatile long tokenExpiresAt;
+    // WS liveness watchdog: healthy socket.io pings every ~10s. If NO frame at
+    // all arrives for WS_SILENT_REVIVE_MS, treat the socket as dead and revive.
+    private volatile long lastWsActivityAt;
+    // Rate-limit for auto-reopening the app when the token has expired.
+    private volatile long lastAutoOpenAt;
     private volatile String driverId;
     private volatile String driverName;
     private double baseLat = 18.0782;
@@ -73,6 +92,30 @@ public class BotService extends Service {
 
     // Trip lock: when we win a bid, block new bids until trip finishes
     private final ConcurrentHashMap<String, Boolean> activeTrip = new ConcurrentHashMap<String, Boolean>();
+    private final Object tripClaimLock = new Object();
+    private volatile String claimedTripTid = "";
+    // Single-bid mode: our latest pending bid. KOKOK rejects customer accepts
+    // while the driver holds 2+ pending offers, so this tracks when a bid is
+    // "live" for the single-bid-mode gate.
+    private volatile String pendingBidTid = "";
+    private volatile long pendingBidUntil = 0;
+    // Auto spam-collector: phone per order + abandoned-expiry counters.
+    // A customer who repeatedly places orders that die UNACCEPTED (ปั่นแช่)
+    // gets auto-added to the personal blocklist after SPAM_ABANDON_LIMIT hits.
+    private final java.util.concurrent.ConcurrentHashMap<String, String> orderPhone =
+            new java.util.concurrent.ConcurrentHashMap<String, String>();
+    private final java.util.concurrent.ConcurrentHashMap<String, long[]> phoneAbandoned =
+            new java.util.concurrent.ConcurrentHashMap<String, long[]>();
+    // 🛡️ ลายนิ้วมืองานปั่นที่ยืนยันแล้ว (จุดรับ+จุดส่ง+ราคา → เวลาที่เจอ)
+    // งานถัดไปแบบเดิม = ข้ามทันที 0ms ไม่ต้องรอ probe ไม่เสียบิด (owner: ยิงดูเบอร์ช้าสุดเพราะรอ probe)
+    private final java.util.concurrent.ConcurrentHashMap<String, Long> spamFingerprints =
+            new java.util.concurrent.ConcurrentHashMap<String, Long>();
+    private static final long SPAM_FP_TTL = 60 * 60 * 1000L; // จำ 1 ชั่วโมง (กันติดลูกค้าจริงนานเกิน)
+    private static final int SPAM_FP_CAP = 100;
+    private final java.util.concurrent.ConcurrentHashMap<String, Integer> phoneOrders =
+            new java.util.concurrent.ConcurrentHashMap<String, Integer>();
+    private static final int SPAM_ABANDON_LIMIT = 3;
+    private static final long SPAM_ABANDON_WINDOW = 30 * 60 * 1000L;
     // Event names that signal trip completion (will be filled from real WS events)
     private static final String[] TRIP_END_EVENTS = {
         "transport:completed", "transport:finished", "transport:done",
@@ -88,6 +131,53 @@ public class BotService extends Service {
 
     // Track last bid details per order for rebid on bid:rejected (thread-safe)
     private final ConcurrentHashMap<String, String[]> bidDetails = new ConcurrentHashMap<String, String[]>();
+    // Track orders with a final outcome so scheduled/late re-bids do not fire
+    private final java.util.Set<String> bidResolved = java.util.Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+    // Track confirmation re-bids already scheduled, to avoid stacking duplicates
+    private final java.util.Set<String> bidConfirmScheduled = java.util.Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+    // Track initial bids already scheduled per order; duplicate websocket events must not queue extra bids.
+    private final java.util.Set<String> bidScheduled = java.util.Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+    // Tids that already used their single 400-race rescue retry (max 1 per tid).
+    private final java.util.Set<String> bid400Retried = java.util.Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+    // 400 rescue: staggered attempts (customer re-request races — the server
+    // opens the new order's bid window only after the previous transport fully
+    // clears, which can take ~10s when no cancel event was broadcast).
+    private final java.util.concurrent.ConcurrentHashMap<String, Integer> bid400Attempts =
+            new java.util.concurrent.ConcurrentHashMap<String, Integer>();
+    private static final int BID400_MAX_ATTEMPTS = 3;
+    private static final long[] BID400_DELAYS = {2000L, 6000L, 10000L};
+    // Blacklist pre-check: tid -> true when the pre-bid probe matched the blacklist
+    private final ConcurrentHashMap<String, Boolean> precheckHit = new ConcurrentHashMap<String, Boolean>();
+    // ── Offline Shield: when a PENDING bid belongs to a blacklisted customer,
+    // go offline for hold ms (KOKOK hides the accept button) then restore online. ──
+    private volatile boolean shieldOfflineActive = false;
+    private final java.util.Set<String> shieldTriggered = java.util.Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+    // tids we're watching until their order expires (shield active / race-lost)
+    private final java.util.Set<String> shieldWatchTids = java.util.Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+    private int shieldTriggerCount = 0;
+    private long shieldCountWindowStart = 0;
+    private static final int SHIELD_MAX_PER_HOUR = 6;
+    // Anti-spam: a blacklisted entry spamming orders to abuse the offline shield
+    // (every hit toggles our availability = attack vector) gets IGNORED PERMANENTLY
+    // (persisted in prefs; survives restarts). Admin forgives by removing the
+    // number from the Blacklist.
+    private final ConcurrentHashMap<String, long[]> shieldStrikes = new ConcurrentHashMap<String, long[]>(); // key -> {strikes, windowStart}
+    private static final long SHIELD_SPAM_WINDOW_MS = 600000L;  // 10 min strike window
+    private static final int SHIELD_SPAM_STRIKES = 3;           // 3 shield hits in window = spammer forever
+    private static final String PREF_SHIELD_IGNORED = "shield_permanent_ignore";
+
+    /** Entry ids (blacklist entry) marked as permanent spammers. */
+    private java.util.Set<String> getPermanentIgnored() {
+        return getSharedPreferences(BotConfig.PREFS, android.content.Context.MODE_PRIVATE)
+                .getStringSet(PREF_SHIELD_IGNORED, new java.util.HashSet<String>());
+    }
+
+    private void addPermanentIgnored(String entryId) {
+        java.util.Set<String> cur = new java.util.HashSet<String>(getPermanentIgnored());
+        cur.add(entryId);
+        getSharedPreferences(BotConfig.PREFS, android.content.Context.MODE_PRIVATE)
+                .edit().putStringSet(PREF_SHIELD_IGNORED, cur).apply();
+    }
 
     // Track rejected count per order to avoid infinite rebid loop (thread-safe)
     private final ConcurrentHashMap<String, Integer> rejectedCount = new ConcurrentHashMap<String, Integer>();
@@ -123,15 +213,33 @@ public class BotService extends Service {
     private String soundFileWin;     // Trip won (customer accepted)
     private String soundFileSuccess; // Trip completed successfully
 
+    // ⚡ Dedup ร่วมของสองทางเข้า (broadcast + prefs poll) — ข้อความ WS ทุกฉบับถูกส่ง
+    // มาถึงสองครั้งโดยดีไซน์ ต้องให้ "ฝั่งแรกถึง" ประมวลผลคนเดียว (เดิมแต่ละฝั่งมี
+    // ตัวแปร dedup ของตัวเอง → งานถูกประมวลผลซ้ำ 2 รอบ: เสียง ding ดังซ้อน/probe ยิงซ้ำ)
+    private volatile String lastWsHandled = "";
+
     private BroadcastReceiver wsReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (!running) return;
             String msg = intent.getStringExtra("message");
-            if (msg != null && msg.startsWith("42")) {
-                Log.i(TAG, "Got intercepted WS event: " + msg.substring(0, Math.min(msg.length(), 120)));
+            if (msg == null) return;
+            // Any frame (ping included) = socket alive
+            lastWsActivityAt = System.currentTimeMillis();
+            // Log EVERYTHING for debugging (all Socket.IO frame types: 0,2,3,40,42,...)
+            // so we can discover hidden/pre-events we currently miss.
+            // Short frames (pings "2"/"3") are skipped in the log to avoid spam.
+            String prefix = msg.length() >= 2 ? msg.substring(0, 2) : msg;
+            if (msg.length() >= 4) {
+                Log.i(TAG, "WS RAW [" + prefix + "]: " + msg.substring(0, Math.min(msg.length(), 500)));
+            }
+            // Only "42" = Socket.IO custom event carries order/bid data we parse.
+            if (msg.startsWith("42")) {
                 touchActivity();
-                processInterceptedEvent(msg);
+                if (!msg.equals(lastWsHandled)) {
+                    lastWsHandled = msg;
+                    processInterceptedEvent(msg);
+                }
             }
         }
     };
@@ -364,12 +472,6 @@ public class BotService extends Service {
                     mp.setAudioStreamType(android.media.AudioManager.STREAM_MUSIC);
                     mp.setVolume(1.0f, 1.0f);
                     mp.prepare();
-                    // Force volume to max on MUSIC stream
-                    android.media.AudioManager am = (android.media.AudioManager) getSystemService(Context.AUDIO_SERVICE);
-                    if (am != null) {
-                        int maxVol = am.getStreamMaxVolume(android.media.AudioManager.STREAM_MUSIC);
-                        am.setStreamVolume(android.media.AudioManager.STREAM_MUSIC, maxVol, 0);
-                    }
                     mp.start();
                     Log.i(TAG, "playSound: playing " + path);
                 } catch (Exception e) {
@@ -458,6 +560,7 @@ public class BotService extends Service {
     public void onCreate() {
         super.onCreate();
         config = new BotConfig(this);
+        orderGuard = new OrderGuard(this);
         tokenReader = new AppTokenReader(this);
         createNotificationChannel();
         initSounds();
@@ -504,6 +607,26 @@ public class BotService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "onStartCommand: action=" + (intent != null ? intent.getAction() : "null"));
         String action = intent != null ? intent.getAction() : ACTION_START;
+        if ("com.coconutsilo.bot.PROBE".equals(action)) {
+            final String probeTid = intent != null ? intent.getStringExtra("tid") : null;
+            asyncExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        String tk = accessToken;
+                        if (tk == null) { Log.w(TAG, "PROBE: no token"); return; }
+                        String t = (probeTid != null && probeTid.length() > 0) ? probeTid : lastBidTid;
+                        if (t == null || t.length() == 0) { Log.w(TAG, "PROBE: no tid (bid first)"); return; }
+                        Log.i(TAG, "PROBE: testing bid-cancel candidates for " + t);
+                        HttpClient.probeBidCancel(tk, t);
+                        Log.i(TAG, "PROBE: done");
+                    } catch (Throwable t2) {
+                        Log.w(TAG, "PROBE error: " + t2);
+                    }
+                }
+            });
+            return START_NOT_STICKY;
+        }
         if (ACTION_STOP.equals(action)) {
             stopBot();
             return START_NOT_STICKY;
@@ -552,12 +675,38 @@ public class BotService extends Service {
             Log.i(TAG, "startBot: already running");
             return;
         }
+        // Block start if the account is locally expired (independent of server).
+        if (config.isBotExpired()) {
+            Log.w(TAG, "startBot BLOCKED: account expired (" + config.getBotExpiry() + ")");
+            config.clearBotLogin(); // force logout so user must login again
+            config.setEnabled(false);
+            notifyUI("expired", "บัญชีหมดอายุแล้ว กรุณาต่ออายุเพื่อใช้งาน");
+            stopSelf();
+            return;
+        }
+        // Block start if not logged in to the bot server (no bot token).
+        String botToken = config.getBotToken();
+        if (botToken == null || botToken.length() < 10) {
+            Log.w(TAG, "startBot BLOCKED: not logged in to bot server");
+            config.setEnabled(false);
+            notifyUI("expired", "กรุณาเข้าสู่ระบบบอทก่อนใช้งาน");
+            stopSelf();
+            return;
+        }
         running = true;
         showNotification("บอทเริ่มทำงาน...");
         notifyUI("status", "รอเข้าสู่ระบบ...");
         notifyUI("connection", "connection_red");
         toast("บอทเริ่มทำงาน...");
         Log.i(TAG, "startBot: launching bot logic");
+
+        // Security: verify APK integrity (anti-tamper)
+        if (SecurityManager.shouldBlockStartup(getApplicationContext())) {
+            Log.e(TAG, "Initialization error 0x49");
+            notifyUI("error", "ผิดพลาด: ระบบไม่พร้อมใช้งาน (0x49)");
+            stopBot();
+            return;
+        }
 
         startTokenPoll();
 
@@ -593,11 +742,39 @@ public class BotService extends Service {
                     notifyUI("connection", "connection_green");
                     toast("บอทออนไลน์! กำลังฟังออเดอร์...");
 
+                    // Register online status IMMEDIATELY — without this, KOKOK has no
+                    // "online driver" record and the customer app cannot display our
+                    // name/profile on the FIRST order (was the root cause of "first
+                    // order shows no driver name"). Previously this was only called
+                    // inside startHeartbeat() gated by fake-GPS + 5s delay.
+                    try {
+                        HttpClient.goOnline(accessToken);
+                        Log.i(TAG, "goOnline sent at startBot (unconditional)");
+                    } catch (Exception e) {
+                        Log.w(TAG, "goOnline at startBot failed (non-fatal): " + e.getMessage());
+                    }
+
+                    // Fetch driver profile to discover true rating + available fields
+                    try {
+                        JSONObject profile = HttpClient.getDriverProfile(accessToken);
+                        String ps = profile.toString();
+                        Log.wtf(TAG, "DRIVER PROFILE resp=" + ps.substring(0, Math.min(ps.length(), 800)));
+                        java.util.Iterator<String> pk = profile.keys();
+                        StringBuilder pks = new StringBuilder("PROFILE KEYS: ");
+                        while (pk.hasNext()) pks.append(pk.next()).append(",");
+                        Log.wtf(TAG, pks.toString());
+                    } catch (Exception pe) {
+                        Log.w(TAG, "getDriverProfile failed: " + pe.getMessage());
+                    }
+
                     startTokenRefresh();
+                    startWsWatchdog();
+                    startPingMeter();
                     startSharedPreferencesPoll();
                     startHealthCheck();
                     startExpiryCheck();
                     startHeartbeat();
+                    startBlacklistSync();
                 } catch (final Exception e) {
                     Log.e(TAG, "startBot FAILED", e);
                     final String errMsg = e.getClass().getSimpleName() + ": " + e.getMessage();
@@ -609,30 +786,256 @@ public class BotService extends Service {
         });
     }
 
-    /** Check bot account expiry via /api/check every 60s — stop bot if expired */
+    /** Sync the admin-managed customer blacklist from the bot server every 30 min.
+     *  Server sends only LIVE entries (active + unexpired), cached in prefs.
+     *  Failure is non-fatal: the previously synced list keeps working. */
+    private void startBlacklistSync() {
+        syncBlacklistNow();
+        scheduler.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                if (!running) return;
+                syncBlacklistNow();
+            }
+        }, 30, 30, TimeUnit.MINUTES);
+    }
+
+    private void syncBlacklistNow() {
+        if (!config.hasBlacklistFeature()) return; // premium entitlement required
+        try {
+            String server = config.getBotServer();
+            String botToken = config.getBotToken();
+            if (server.length() < 5 || botToken.length() < 10) return;
+            String resp = BlacklistManager.sync(server, botToken);
+            if (resp != null && resp.length() > 2) {
+                config.setBlacklist(resp);
+                Log.i(TAG, "BLACKLIST synced (" + resp.length() + " chars): "
+                        + resp.substring(0, Math.min(resp.length(), 300)));
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Blacklist sync failed: " + e.getMessage());
+        }
+    }
+
+    /**
+     * ⚡ Offline Shield: a PENDING bid belongs to a blacklisted customer.
+     * Go offline for hold ms — KOKOK hides the accept button so the bad customer
+     * cannot take the job — then briefly go back online for new orders. If the
+     * bad customer can STILL accept after we return, go offline again until
+     * their order expires (self-correcting), then restore online.
+     * Guards: entitlements, global toggle, active trip, hourly cap, per-tid dedup.
+     */
+    private void triggerShieldForHit(final String tid, final BlacklistManager.Entry entry, final String phone) {
+        try {
+            if (!running || accessToken == null) return;
+            rememberSpamFingerprintByTid(tid); // จำแพทเทิร์นงานปั่น — งานถัดไปแบบเดิมข้ามทันที 0ms
+            if (!config.hasBlacklistFeature() || !config.hasShieldFeature() || !config.isBlacklistShield()) return;
+            if (!shieldTriggered.add(tid)) return; // already shielding this order
+
+            // ── Anti-spam: a blacklisted entry spamming orders is trying to keep us
+            // OFFLINE (every shield hit toggles our availability = attack vector).
+            // After 3 strikes in 10 min → IGNORE THIS SPAMMER PERMANENTLY: stay
+            // online, skip their orders forever, keep reporting hits as evidence.
+            // Admin forgives by removing the number from the Blacklist. ──
+            String skey = "bl" + entry.id;
+            long[] st = shieldStrikes.get(skey);
+            if (st == null) { st = new long[]{0, 0}; shieldStrikes.put(skey, st); }
+            long now = System.currentTimeMillis();
+            if (getPermanentIgnored().contains(String.valueOf(entry.id))) {
+                // Spammer already marked permanent — skip their order entirely
+                bidResolved.add(tid);
+                Log.w(TAG, "SHIELD permanent-ignore: entry#" + entry.id + " spammer — skip order, stay online");
+                notifyUI("blacklist", "🚫 คนปั่นตัวจริง (แบล็คลิสต์ #" + entry.id + ")\nข้ามงานถาวร — บอทออนไลน์รับงานจริงตามปกติ");
+                BlacklistManager.reportHitAsync(config.getBotServer(), config.getBotToken(),
+                        entry.id, tid, "phone", phone, "spam_blocked");
+                return;
+            }
+            if (now - st[1] > SHIELD_SPAM_WINDOW_MS) { st[0] = 0; st[1] = now; }
+            st[0]++;
+            if (st[0] >= SHIELD_SPAM_STRIKES) {
+                st[0] = 0;
+                addPermanentIgnored(String.valueOf(entry.id));
+                Log.w(TAG, "SHIELD spam detected: entry#" + entry.id + " x" + SHIELD_SPAM_STRIKES
+                        + " in " + (SHIELD_SPAM_WINDOW_MS / 60000) + "min — permanent ignore");
+                notifyUI("blacklist", "🚫 ตรวจพบคนปั่นตัวจริง! (ยิงงานซ้ำให้เราปิดรับ)\nข้ามงานเขาถาวร — บอทออนไลน์ปกติ\n(ให้อภัยได้: ลบเบอร์ออกจาก Blacklist)");
+            }
+            // Prune stale strike entries occasionally
+            if (shieldStrikes.size() > 20) {
+                for (java.util.Map.Entry<String, long[]> en : shieldStrikes.entrySet()) {
+                    long[] v = en.getValue();
+                    if (now - v[1] > SHIELD_SPAM_WINDOW_MS * 2) shieldStrikes.remove(en.getKey());
+                }
+            }
+
+            boolean capExceeded;
+            synchronized (this) {
+                long now2 = System.currentTimeMillis();
+                if (now2 - shieldCountWindowStart > 3600000L) {
+                    shieldCountWindowStart = now2;
+                    shieldTriggerCount = 0;
+                }
+                shieldTriggerCount++;
+                capExceeded = shieldTriggerCount > SHIELD_MAX_PER_HOUR;
+            }
+            Log.i(TAG, "OFFLINE SHIELD: tid=" + tid + " entry#" + entry.id + " hold=" + config.getBlacklistShieldHoldMs() + "ms");
+            BlacklistManager.reportHitAsync(config.getBotServer(), config.getBotToken(),
+                    entry.id, tid, "phone", phone, "offline_shield");
+            if (capExceeded) {
+                Log.w(TAG, "SHIELD cap exceeded (6/hour) — notify only");
+                return;
+            }
+            final String tok = accessToken;
+            final long deadline = System.currentTimeMillis() + 17000L; // bad order expires ~15-16s from creation
+            Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        HttpClient.goOffline(tok);
+                        shieldOfflineActive = true;
+                        Log.i(TAG, "SHIELD OFFLINE: tid=" + tid);
+                    } catch (Exception e) {
+                        Log.w(TAG, "SHIELD goOffline failed: " + e.getMessage());
+                        return;
+                    }
+                    boolean breathing = false;
+                    while (running && System.currentTimeMillis() < deadline) {
+                        long step = breathing ? 1200L : Math.max(300L, config.getBlacklistShieldHoldMs());
+                        try { Thread.sleep(step); } catch (InterruptedException ignored) { break; }
+                        if (System.currentTimeMillis() >= deadline) break;
+                        if (claimedTripTid.length() > 0 || !activeTrip.isEmpty()) {
+                            // Race lost — the bad customer accepted during a breathe window.
+                            // Restore online and let the driver cancel the trip manually.
+                            Log.w(TAG, "SHIELD race lost (accepted): tid=" + tid);
+                            notifyUI("blacklist", "⚠️ ลูกค้าดำกดยอมรับไปแล้ว\nโปรดยกเลิกทริปเอง");
+                            try { HttpClient.goOnline(tok); } catch (Exception ignored) {}
+                            shieldOfflineActive = false;
+                            break;
+                        }
+                        try {
+                            if (!breathing) {
+                                HttpClient.goOnline(tok);
+                                shieldOfflineActive = false;
+                                breathing = true;
+                                Log.i(TAG, "SHIELD breathe online: tid=" + tid);
+                            } else {
+                                HttpClient.goOffline(tok);
+                                shieldOfflineActive = true;
+                                breathing = false;
+                                Log.i(TAG, "SHIELD re-offline: tid=" + tid);
+                            }
+                        } catch (Exception e) {
+                            Log.w(TAG, "SHIELD toggle failed: " + e.getMessage());
+                            break;
+                        }
+                    }
+                    try {
+                        if (claimedTripTid.length() == 0 && activeTrip.isEmpty()) {
+                            HttpClient.goOnline(tok);
+                        }
+                        shieldOfflineActive = false;
+                        Log.i(TAG, "SHIELD done: tid=" + tid + " — back online");
+                    } catch (Exception ignored) {}
+                }
+            }, "shield-thread");
+            t.setDaemon(true);
+            t.start();
+        } catch (Exception e) {
+            Log.w(TAG, "SHIELD trigger failed: " + e.getMessage());
+        }
+    }
+
+    /** ⚡ Offline Shield: restore online early (shielded order gone / trip ended). */
+    private void restoreShieldOnlineSoon() {
+        asyncExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (running && accessToken != null && shieldOfflineActive
+                            && claimedTripTid.length() == 0 && activeTrip.isEmpty()) {
+                        HttpClient.goOnline(accessToken);
+                        shieldOfflineActive = false;
+                        Log.i(TAG, "SHIELD restored online (early)");
+                    }
+                } catch (Exception ignored) {}
+            }
+        });
+    }
+
+    /** Check bot account expiry via /api/check every 15s — stop bot if expired.
+     *  MUST reach server: if the bot cannot verify with the server for several
+     *  consecutive attempts, treat the account as expired and stop (force logout).
+     *  This prevents an expired account from running just because the server is
+     *  unreachable. A few transient failures are tolerated to avoid stopping on
+     *  momentary network blips. */
     private void startExpiryCheck() {
         scheduler.scheduleAtFixedRate(new Runnable() {
+            int consecutiveFailures = 0;
             @Override
             public void run() {
                 if (!running) return;
                 try {
                     String server = config.getBotServer();
                     String botToken = config.getBotToken();
-                    if (server.length() < 5 || botToken.length() < 10) return;
-                    org.json.JSONObject result = HttpClient.checkToken(server, botToken);
-                    if (!result.optBoolean("valid", false) && "expired".equals(result.optString("error", ""))) {
-                        Log.w(TAG, "ACCOUNT EXPIRED: stopping bot");
-                        notifyUI("expired", "หมดอายุค์");
+                    if (server.length() < 5 || botToken.length() < 10) {
+                        // Not logged in to bot server — stop immediately
+                        Log.w(TAG, "ACCOUNT NOT LOGGED IN: stopping bot");
+                        config.clearBotLogin();
+                        config.setEnabled(false);
+                        notifyUI("expired", "กรุณาเข้าสู่ระบบบอทก่อนใช้งาน");
                         stopBot();
                         return;
                     }
-                    // Update expiry display if server returns it
+                    org.json.JSONObject result = HttpClient.checkToken(server, botToken);
+                    boolean valid = result.optBoolean("valid", false);
+                    // Server-driven config + role + features arrive with every check (additive-safe)
+                    if (valid) {
+                        config.applyServerConfig(result.optJSONObject("config"), result.optString("role", ""));
+                        config.setFeatures(result.optString("features", ""));
+                    }
+                    String err = result.optString("error", "");
+                    if (!valid && "update_required".equals(err)) {
+                        Log.w(TAG, "UPDATE REQUIRED: stopping bot");
+                        config.setEnabled(false);
+                        notifyUI("expired", "กรุณาอัปเดตแอพบอทเป็นเวอร์ชั่นล่าสุด");
+                        stopBot();
+                        return;
+                    }
+                    if (!valid && ("expired".equals(err) || "User not found".equals(err))) {
+                        Log.w(TAG, "ACCOUNT EXPIRED: stopping bot (server: " + err + ")");
+                        config.clearBotLogin(); // force logout
+                        config.setEnabled(false);
+                        notifyUI("expired", "บัญชีหมดอายุแล้ว กรุณาต่ออายุเพื่อใช้งาน");
+                        stopBot();
+                        return;
+                    }
+                    if (!valid) {
+                        // Other server error (disabled, invalid) — also stop
+                        Log.w(TAG, "ACCOUNT NOT VALID: stopping bot (server: " + err + ")");
+                        config.clearBotLogin();
+                        config.setEnabled(false);
+                        notifyUI("expired", "บัญชีไม่ถูกต้อง กรุณาเข้าสู่ระบบใหม่");
+                        stopBot();
+                        return;
+                    }
+                    // Success — reset failure counter and store expiry locally
+                    consecutiveFailures = 0;
                     String expAt = result.optString("expires_at", "");
                     if (expAt.length() > 5 && !"forever".equals(expAt)) {
                         config.setBotExpiry(expAt);
                     }
                 } catch (Exception e) {
-                    // Network error — don't stop bot, just skip this check
+                    // Network/server unreachable. Tolerate a few transient failures,
+                    // but if the server stays unreachable, stop the bot so an expired
+                    // account can't keep running offline.
+                    consecutiveFailures++;
+                    Log.w(TAG, "Expiry check failed (" + consecutiveFailures + "/4): " + e.getMessage());
+                    if (consecutiveFailures >= 4) {
+                        Log.w(TAG, "ACCOUNT CANNOT REACH SERVER (4x): stopping bot");
+                        config.clearBotLogin();
+                        config.setEnabled(false);
+                        notifyUI("expired", "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาตรวจสอบอินเทอร์เน็ต");
+                        stopBot();
+                    }
                 }
             }
         }, 15, 15, java.util.concurrent.TimeUnit.SECONDS);
@@ -777,6 +1180,17 @@ public class BotService extends Service {
                         if (remaining < 60000) {
                             Log.w(TAG, "Token expiring soon (" + (remaining / 1000) + "s)");
                             notifyUI("status", "โทเคนหมดเวลา, รอแอป...");
+                            // Token EXPIRED: only the app itself can request a fresh
+                            // one. Bring KOKOK to the front (rate-limited) so it
+                            // re-auths; the Headers hook then captures the new token.
+                            if (remaining < 0) {
+                                long now2 = System.currentTimeMillis();
+                                if (now2 - lastAutoOpenAt > AUTO_OPEN_COOLDOWN_MS) {
+                                    lastAutoOpenAt = now2;
+                                    Log.w(TAG, "TOKEN WATCHDOG: expired — reopening app to refresh");
+                                    launchMainActivity();
+                                }
+                            }
                         }
                     }
                 } catch (Exception e) {
@@ -784,6 +1198,172 @@ public class BotService extends Service {
                 }
             }
         }, 15, 15, TimeUnit.SECONDS);
+    }
+
+    /** Reopen the KOKOK app so it refreshes its token / reconnects its socket. */
+    private void launchMainActivity() {
+        try {
+            Intent i = getPackageManager().getLaunchIntentForPackage(getPackageName());
+            if (i != null) {
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                startActivity(i);
+                Log.i(TAG, "WATCHDOG: MainActivity brought to front");
+            }
+        } catch (Throwable t) {
+            Log.w(TAG, "auto-open app failed: " + t);
+        }
+    }
+
+    /**
+     * WS liveness watchdog: when the phone idles, Android suspends background
+     * network and the app's socket.io connection dies SILENTLY (no ping, no
+     * error) — orders then never arrive until the user touches the phone.
+     * If no WS frame at all arrives within WS_SILENT_REVIVE_MS, wake the
+     * process (wakelock) and stimulate the network so the socket revives.
+     */
+    private void startWsWatchdog() {
+        lastWsActivityAt = System.currentTimeMillis();
+        scheduler.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                if (!running) return;
+                try {
+                    long silentMs = System.currentTimeMillis() - lastWsActivityAt;
+                    if (silentMs > WS_SILENT_REVIVE_MS) {
+                        Log.w(TAG, "WS WATCHDOG: socket silent " + (silentMs / 1000) + "s — reviving");
+                        lastWsActivityAt = System.currentTimeMillis();
+                        reviveConnection();
+                    }
+                } catch (Throwable t) {
+                    Log.w(TAG, "ws watchdog error: " + t);
+                }
+            }
+        }, WS_SILENT_REVIVE_MS, 30_000L, TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Auto spam-collector: counts orders a phone placed that died UNACCEPTED
+     * (ปั่นแช่). At SPAM_ABANDON_LIMIT within the window, the number is added
+     * to the PERSONAL blocklist (local only) so future orders from it are
+     * refused at the probe. A customer who ACCEPTS clears their counter.
+     */
+    /** ลายนิ้วมืองาน: ราคา + จุดรับ/จุดส่ง (ปัด 5 ตำแหน่ง ≈ 1.1 ม.) */
+    private String spamFp(int price, double puLat, double puLng, double doLat, double doLng) {
+        if (puLat == 0 || puLng == 0) return "";
+        return price + "|" + Math.round(puLat * 100000.0) + "," + Math.round(puLng * 100000.0)
+                + "|" + Math.round(doLat * 100000.0) + "," + Math.round(doLng * 100000.0);
+    }
+
+    /** จำงานปั่นจาก tid (ดึงราคา/พิกัดจากที่เก็บไว้ตอนงานเข้า) */
+    private void rememberSpamFingerprintByTid(String tid) {
+        try {
+            String[] det = orderDetails.get(tid);
+            double[] c = tripCoords.get(tid);
+            if (det == null || c == null || c.length < 4) return;
+            int price;
+            try { price = Integer.parseInt(det[0]); } catch (Exception e) { return; }
+            String fp = spamFp(price, c[0], c[1], c[2], c[3]);
+            if (fp.length() == 0) return;
+            long now = System.currentTimeMillis();
+            spamFingerprints.put(fp, now);
+            // prune: ตัดเก่าเกิน TTL / เกิน cap
+            java.util.Iterator<java.util.Map.Entry<String, Long>> it = spamFingerprints.entrySet().iterator();
+            int live = 0;
+            while (it.hasNext()) {
+                java.util.Map.Entry<String, Long> en = it.next();
+                if (now - en.getValue() > SPAM_FP_TTL) it.remove(); else live++;
+            }
+            if (live > SPAM_FP_CAP) spamFingerprints.clear(); // ล้นหนักมาก = เคลียร์ (เกิดยากมาก)
+        } catch (Exception ignored) {
+        }
+    }
+
+    private void countAbandonedPhone(String phone) {
+        try {
+            long now = System.currentTimeMillis();
+            long[] st = phoneAbandoned.get(phone);
+            if (st == null || now - st[1] > SPAM_ABANDON_WINDOW) {
+                st = new long[]{0, now};
+            }
+            st[0]++;
+            st[1] = now;
+            phoneAbandoned.put(phone, st);
+            Log.w(TAG, "SPAM COLLECTOR: " + phone + " abandoned=" + st[0] + "/" + SPAM_ABANDON_LIMIT);
+            if (st[0] >= SPAM_ABANDON_LIMIT) {
+                phoneAbandoned.remove(phone);
+                // OWNER (2026-10-20): ไม่เก็บลิสต์บล็อคในเครื่องอีกต่อไป —
+                // รายงานขึ้นหลังบ้านให้แอดมินเป็นผู้เก็บ (เพิ่มเข้าแบล็คลิสต์กลาง) ที่เดียว
+                Integer oc = phoneOrders.get(phone);
+                int ordersCalled = oc == null ? (int) st[0] : oc.intValue();
+                Log.w(TAG, "SPAM COLLECTOR: REPORTED to backend " + phone + " (" + ordersCalled + " orders)");
+                notifyUI("blacklist", "รายงานเบอร์ปั่นไปหลังบ้านแล้ว: " + phone
+                        + " (เรียกทิ้ง/แช่ " + SPAM_ABANDON_LIMIT + " ครั้งใน 30 นาที)");
+                BlacklistManager.reportSpamAsync(config, config.getBotServer(), config.getBotToken(),
+                        phone, ordersCalled, (int) st[0]);
+            }
+        } catch (Throwable t) {
+            Log.w(TAG, "spam collector error: " + t);
+        }
+    }
+
+    private void reviveConnection() {        try {
+            android.os.PowerManager pm =
+                    (android.os.PowerManager) getSystemService(Context.POWER_SERVICE);
+            android.os.PowerManager.WakeLock wl = pm.newWakeLock(
+                    android.os.PowerManager.PARTIAL_WAKE_LOCK, "kokok:wsrevive");
+            wl.acquire(10_000L);
+        } catch (Throwable ignored) {
+        }
+        asyncExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String tk = accessToken;
+                    if (tk != null) {
+                        HttpClient.goOnline(tk);
+                        Log.i(TAG, "WS WATCHDOG: network nudge sent (goOnline)");
+                    }
+                } catch (Throwable ignored) {
+                }
+            }
+        });
+    }
+
+    /**
+     * Faint ping meter: measures real HTTP latency to the KOKOK API every 30s
+     * and reports it to the panel along with socket liveness (WS frames flowing).
+     * Displayed as a subtle one-liner so the driver can see slow network.
+     */
+    private void startPingMeter() {
+        scheduler.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                if (!running) return;
+                asyncExecutor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            String tk = accessToken;
+                            if (tk == null) return;
+                            long t0 = System.currentTimeMillis();
+                            boolean ok;
+                            try {
+                                HttpClient.getDriverProfile(tk);
+                                ok = true;
+                            } catch (Throwable t) {
+                                ok = false;
+                            }
+                            long ms = System.currentTimeMillis() - t0;
+                            boolean wsLive =
+                                    (System.currentTimeMillis() - lastWsActivityAt) < 45_000L;
+                            notifyUI("ping", (ok ? String.valueOf(ms) : "--")
+                                    + "|" + (wsLive ? "1" : "0"));
+                        } catch (Throwable ignored) {
+                        }
+                    }
+                });
+            }
+        }, 5, 30, TimeUnit.SECONDS);
     }
 
     private void startTokenPoll() {
@@ -813,6 +1393,12 @@ public class BotService extends Service {
                     android.content.SharedPreferences prefs = getSharedPreferences(BotConfig.PREFS, Context.MODE_PRIVATE);
                     String msg = prefs.getString(BotConfig.KEY_WS_MSG, "");
                     if (!msg.isEmpty() && msg.startsWith("42")) {
+                        // Dedup ร่วมกับ wsReceiver (lastWsHandled) — ฝั่ง broadcast มักมาถึงก่อน
+                        if (msg.equals(lastWsHandled)) {
+                            prefs.edit().putString(BotConfig.KEY_WS_MSG, "").apply();
+                            return;
+                        }
+                        lastWsHandled = msg;
                         prefs.edit().putString(BotConfig.KEY_WS_MSG, "").apply();
                         touchActivity();
                         processInterceptedEvent(msg);
@@ -840,7 +1426,7 @@ public class BotService extends Service {
                 }
             }
 
-            Log.i(TAG, "Processing intercepted event: " + data.substring(0, Math.min(data.length(), 300)));
+            Log.i(TAG, "Processing intercepted event: " + data.substring(0, Math.min(data.length(), 1000)));
 
             JSONArray arr = new JSONArray(data);
             if (arr.length() == 0) return;
@@ -877,14 +1463,43 @@ public class BotService extends Service {
                 handleBidAccepted(bidObj);
             } else if ("transport:expired".equals(eventName) || "transport:cancelled".equals(eventName)
                     || "transport:canceled".equals(eventName)) {
-                Log.i(TAG, "Order " + eventName + ": tid=" + bidObj.optString("tid", "?"));
-                // Clear rejected count and order details when order expires/cancels
-                String expTid = bidObj.optString("tid", "");
+                JSONObject expPayload = bidObj.has("payload") ? bidObj.optJSONObject("payload") : bidObj;
+                if (expPayload == null) expPayload = bidObj;
+                Log.i(TAG, "Order " + eventName + ": tid=" + expPayload.optString("tid", "?"));
+                // Clear all state when order expires/cancels
+                String expTid = expPayload.optString("tid", "");
+                if (orderGuard != null) orderGuard.recordBadOutcome(expTid, eventName);
                 if (expTid.length() > 0) {
                     rejectedCount.remove(expTid);
+                    if (expTid.equals(pendingBidTid)) {
+                        pendingBidTid = "";
+                        pendingBidUntil = 0;
+                    }
+                    // Auto spam-collector: ANY order that died UNACCEPTED counts
+                    // against its customer — expired AND customer-canceled alike
+                    // (owner decision: เรียกแล้วยกเลิก 3 ครั้ง = ปั่น มีผลกระทบจริง).
+                    // Accepted orders never reach here (removed at trip claim).
+                    {
+                        String expPhone = orderPhone.remove(expTid);
+                        if (expPhone != null && expPhone.length() > 0) {
+                            countAbandonedPhone(expPhone);
+                        }
+                    }
                     orderDetails.remove(expTid);
+                    if (orderGuard != null) orderGuard.clearOrder(expTid);
+                    bidDetails.remove(expTid);          // fix memory leak
+                    bidResolved.add(expTid);             // stop watchdog/confirm rebids
+                    bidConfirmScheduled.remove(expTid);
+                    bidScheduled.remove(expTid);
                 }
-            } else if ("bid:rejected".equals(eventName)) {
+                // ⚡ Offline Shield: the shielded order is gone (expired/canceled)
+                // → restore online as soon as no other shielded order remains.
+                if (expTid.length() > 0 && shieldWatchTids.remove(expTid)
+                        && shieldWatchTids.isEmpty() && shieldOfflineActive) {
+                    restoreShieldOnlineSoon();
+                }
+            } else if ("bid:rejected".equals(eventName) || "transport:rejected".equals(eventName)
+                    || "bid_rejected".equals(eventName) || "transport:bid_rejected".equals(eventName)) {
                 handleBidRejected(bidObj);
             } else if (bidObj.has("category")) {
                 int category = bidObj.getInt("category");
@@ -908,16 +1523,17 @@ public class BotService extends Service {
     }
 
     private void handleNewOrder(final JSONObject orderData) {
+        final long receivedAt = System.currentTimeMillis();
         playSound(soundFileOrder, "order"); // ding sound
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                tryHandleNewOrder(orderData);
+                tryHandleNewOrder(orderData, receivedAt);
             }
         });
     }
 
-    private void tryHandleNewOrder(JSONObject orderData) {
+    private void tryHandleNewOrder(JSONObject orderData, long receivedAt) {
         try {
             if (!running || accessToken == null) {
                 Log.w(TAG, "tryHandleNewOrder: not ready");
@@ -929,7 +1545,7 @@ public class BotService extends Service {
                 JSONObject payload2 = orderData.has("payload") ? orderData.optJSONObject("payload") : orderData;
                 String skipTid = payload2 != null ? payload2.optString("tid", "?") : "?";
                 Log.i(TAG, "SKIP (active trip): tid=" + skipTid + ", already on trip " + activeTrip.keySet().iterator().next());
-                notifyUI("skip", "ข้าม: มีทาบทีี่กำลัง");
+                notifyUI("skip", "ข้าม: มีทริปกำลังวิ่ง");
                 return;
             }
 
@@ -939,9 +1555,24 @@ public class BotService extends Service {
                 return;
             }
 
+            // SINGLE BID MODE: KOKOK rejects customer accepts while the driver
+            // holds 2+ pending offers ("comparison failed"). With the mode ON,
+            // skip overlapping new orders until the previous bid resolves.
+            if (config.isSingleBidMode()) {
+                String newTid = payload.optString("tid", "");
+                if (pendingBidTid.length() > 0 && System.currentTimeMillis() < pendingBidUntil
+                        && !newTid.equals(pendingBidTid)) {
+                    Log.i(TAG, "SKIP (single bid mode): pending bid on " + pendingBidTid
+                            + " — skipping " + newTid);
+                    notifyUI("skip", "โหมดบิดเดียว: มีบิดค้าง ข้ามงานซ้อน");
+                    return;
+                }
+            }
+
             String tid = payload.getString("tid");
 
             long now = System.currentTimeMillis();
+            final long createdAt = parseIsoUtcMillis(payload.optString("created", ""));
             if (tid.equals(lastBidTid) && (now - lastBidTime) < 2000) {
                 Log.i(TAG, "Skipping duplicate order: " + tid);
                 return;
@@ -985,6 +1616,29 @@ public class BotService extends Service {
 
             double pickupDist = payload.optDouble("pickup", 0);
             JSONObject puCoord = payload.optJSONObject("puCoord");
+
+            // ── Blacklist check (Point A — pre-bid) ──
+            // If the incoming payload carries a customer identifier that matches
+            // the admin-managed blacklist, skip BEFORE scheduling any bid.
+            // Local skip only — the order stays visible to all other drivers.
+            if (config.hasBlacklistFeature()) {
+                try {
+                    String blPhone = payload.optString("clientPhone", "");
+                    if (blPhone.length() == 0) blPhone = payload.optString("phone", "");
+                    BlacklistManager.Entry blHit = BlacklistManager.match(config.getBlacklist(), blPhone, customerId);
+                    if (blHit != null) {
+                        String blField = blPhone.length() > 0 ? "phone" : "cid";
+                        Log.i(TAG, "BLACKLIST HIT (pre-bid): tid=" + tid + " entry#" + blHit.id + " matched=" + blField);
+                        notifyUI("blacklist", "⚠️ ตรวจพบ Blacklist\nออเดอร์นี้มาจากลูกค้าที่อยู่ใน Blacklist\nระบบได้ปฏิเสธออเดอร์ให้อัตโนมัติ");
+                        toast("⚠️ ข้ามออเดอร์: ลูกค้าอยู่ใน Blacklist");
+                        BlacklistManager.reportHitAsync(config.getBotServer(), config.getBotToken(),
+                                blHit.id, tid, blField, blPhone.length() > 0 ? blPhone : customerId, "blocked");
+                        return;
+                    }
+                } catch (Exception ble) {
+                    Log.w(TAG, "Blacklist check failed: " + ble.getMessage());
+                }
+            }
             double puLat = 0, puLng = 0;
             if (puCoord != null) {
                 puLat = puCoord.optDouble("y", 0);
@@ -1004,6 +1658,9 @@ public class BotService extends Service {
             if (pickupDist <= 0) {
                 pickupDist = haversine(baseLat, baseLng, puLat, puLng);
             }
+            Log.i(TAG, "ORDER TIMING: tid=" + tid
+                    + " receivedToProcess=" + (System.currentTimeMillis() - receivedAt) + "ms"
+                    + " createdAge=" + ageText(createdAt, System.currentTimeMillis()));
             // Async: fetch road distance in background (updates display only, does NOT block bidding)
             if (puLat != 0 && puLng != 0 && baseLat != 0 && baseLng != 0) {
                 final String asyncTid = tid;
@@ -1027,41 +1684,33 @@ public class BotService extends Service {
                 });
             }
 
-            // Skip duplicate: if same customer (cid) ordered >= 2 times → skip
-            // Use compute() to atomically check-and-update, preventing race with concurrent orders
-            if (config.isSkipDuplicate() && customerId.length() > 0) {
-                final String cidKey = customerId;
-                final long orderNow = now;
-                final int[] skipDecision = new int[]{0}; // 0=allow, >=2=skip
-                customerOrderCount.compute(cidKey, new java.util.function.BiFunction<String, String, String>() {
-                    @Override
-                    public String apply(String key, String prev) {
-                        int count = 1;
-                        if (prev != null) {
-                            try { count = Integer.parseInt(prev.split(",")[0]) + 1; } catch (Exception ignored) {}
-                        }
-                        skipDecision[0] = count;
-                        if (count >= 2) {
-                            return prev; // don't update, keep old value — will skip below
-                        }
-                        return count + "," + orderNow;
-                    }
-                });
-                if (skipDecision[0] >= 2) {
-                    Log.i(TAG, "SKIP DUPLICATE: cid=" + cidKey.substring(0, Math.min(cidKey.length(), 8)) + " ordered " + skipDecision[0] + " times");
-                    notifyUI("skip", "ข้าม: รับ\u0e0aํ้า (" + skipDecision[0] + "ครั้ง)");
+            // Order Guard: skip repeat/spam orders before any bid is scheduled.
+            if (config.isSkipDuplicate() && orderGuard != null) {
+                OrderGuard.GuardDecision guardDecision = orderGuard.checkOrder(
+                        tid, customerId, serverPrice, pickupDist, puLat, puLng, doLat, doLng, config.getSkipWindow());
+                if (!guardDecision.allow) {
+                    Log.i(TAG, "ORDER GUARD SKIP: tid=" + tid
+                            + " cid=" + OrderGuard.mask(customerId)
+                            + " reason=" + guardDecision.reason
+                            + " msg=" + guardDecision.message);
+                    notifyUI("skip", "กันปั่น: " + guardDecision.message);
                     return;
                 }
-                // Evict oldest entry if map too large (done outside compute to avoid deadlock)
-                if (customerOrderCount.size() > MAX_CUSTOMERS_TRACKED) {
-                    java.util.Iterator<String> evictIt = customerOrderCount.keySet().iterator();
-                    if (evictIt.hasNext()) {
-                        String oldest = evictIt.next();
-                        customerOrderCount.remove(oldest);
-                    }
+            }
+            // 🛡️ งานแพทเทิร์นเดิมของเบอร์ปั่นที่ยืนยันแล้ว → ข้ามทันที 0ms (ทั้งโหมดเร็วและโหมดเช็ค)
+            // OWNER (2026-10-21): ปิดการใช้งาน — กังวลว่า "ลูกค้าจริง" จุดเดียวกัน/ราคาเดิม
+            // จะโดนข้ามไปด้วย (เส้นดังอย่างสะพานพบบ่อย) — ระบบป้องกันหลัก (แบล็คลิสต์กลาง+
+            // โล่ ⚡+เก็บเบอร์) ครบอยู่แล้ว | เปิดคืน = เปลี่ยน false เป็น true
+            if (false && !spamFingerprints.isEmpty()) {
+                String fp = spamFp(serverPrice, puLat, puLng, doLat, doLng);
+                Long seenAt = fp.length() > 0 ? spamFingerprints.get(fp) : null;
+                if (seenAt != null && System.currentTimeMillis() - seenAt <= SPAM_FP_TTL) {
+                    Log.i(TAG, "SPAM PATTERN SKIP: tid=" + tid + " (known spam pattern) — 0ms refuse");
+                    bidResolved.add(tid);
+                    notifyUI("blacklist", "🛡️ ข้ามงานปั่น (แพทเทิร์นเดิมที่จำไว้)\nไม่เสียบิด — รองานจริงต่อเลย");
+                    return;
                 }
             }
-
             Log.i(TAG, "NEW ORDER: tid=" + tid + " pickup=" + (int) pickupDist + "m price=" + serverPrice + " " + puPlace + " -> " + doPlace);
             notifyUI("order", String.format("ใหม่: %s -> %s (%dm, %dกีบ)", puPlace, doPlace, (int) pickupDist, serverPrice));
             toast("ออเดอร์: " + puPlace + " -> " + doPlace);
@@ -1081,10 +1730,20 @@ public class BotService extends Service {
                 return;
             }
 
+            // 🏎️ T0-warmer (ADD-ONLY): อุ่นเส้น TCP/TLS ขนานกับการหน่วง — งานเข้าปุ๊บเริ่มเปิดเส้นปุ๊บ
+            // เพื่อให้ตอนบิดยิงจริง ไม่ต้องจ่ายค่า handshake (เจอประโยชน์ชัดตอนเส้นเย็น: บิดแรก/
+            // idle นาน/สลับเน็ต) — โหมดเช็คไม่เสียอะไรเพราะ probe อุ่นเส้นให้อยู่แล้วตามธรรมชาติ
+            asyncExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try { HttpClient.warmConnection(accessToken); } catch (Exception ignored) {}
+                }
+            });
+
             int maxDistM = config.getMaxDistanceKm() * 1000;
             if (maxDistM > 0 && pickupDist > maxDistM) {
                 Log.i(TAG, "Pickup filter: " + (int) pickupDist + "m > " + maxDistM + "m");
-                notifyUI("order", String.format("ขาม: ไกลเกิน (%dm > %dm)", (int) pickupDist, maxDistM));
+                notifyUI("order", String.format("ข้าม: ไกลเกิน (%dm > %dm)", (int) pickupDist, maxDistM));
                 return;
             }
 
@@ -1140,18 +1799,50 @@ public class BotService extends Service {
                 bidPrice = Math.max(minFare, serverPrice);
             }
 
-            // Schedule bid with delay — non-blocking so executor thread is freed for next order
-            final int bidDelay = config.getBidDelay();
+            if (!bidScheduled.add(tid)) {
+                Log.i(TAG, "SKIP duplicate scheduled bid: tid=" + tid);
+                return;
+            }
+
+            // Pre-check mode: probe ยิงบิดให้เร็วที่สุดเมื่อรู้เบอร์ (ด้านบน) —
+            // ตัวเลขนี้เหลือเป็น "cap กัน probe ค้าง" เท่านั้น (ปกติบิดออกก่อนถึง cap)
+            final int bidDelay = config.isBlacklistPrecheck()
+                    ? Math.max(1000, config.getBlacklistPrecheckWait())
+                    : config.getEffectiveBidDelay();
+            final String delaySrc = config.isBlacklistPrecheck() ? "precheck"
+                    : (config.isAdmin() ? "admin_local"
+                    : (config.isBidDelayLocked() ? "server_locked" : "local"));
             final String fTid = tid;
             final int fPrice = bidPrice;
             final double fDist = pickupDist;
             final int maxRetries = config.getBidRetries();
+            final long fReceivedAt = receivedAt;
+            final long fScheduledAt = System.currentTimeMillis();
+            final long fCreatedAt = createdAt;
 
-            Log.i(TAG, "BIDDING: tid=" + tid + " price=" + bidPrice + " pickup=" + (int) pickupDist + "m (scheduled in " + bidDelay + "ms)");
+            Log.i(TAG, "BIDDING: tid=" + tid + " price=" + bidPrice
+                    + " pickup=" + (int) pickupDist + "m"
+                    + " bidDelay=" + bidDelay + "ms delaySrc=" + delaySrc
+                    + " sinceWs=" + (fScheduledAt - fReceivedAt) + "ms"
+                    + " createdAge=" + ageText(fCreatedAt, fScheduledAt));
 
+            // holder + gate ต้องประกาศก่อน probe (probe callback ยิงบิดเร็วผ่านตัวนี้)
+            final Runnable[] bidTaskHolder = new Runnable[1];
+            final java.util.concurrent.atomic.AtomicBoolean bidFiredGate =
+                    new java.util.concurrent.atomic.AtomicBoolean(false);
+
+            // Holder lets the 400-rescue retry re-run this task later without
+            // referencing the local variable inside its own initializer.
             final Runnable bidTask = new Runnable() {
                 @Override
                 public void run() {
+                    // ยิงได้ครั้งเดียว (probe-early กับ fallback cap อาจชนกัน — ตัวแรกถึงชนะ)
+                    if (!bidFiredGate.compareAndSet(false, true)) {
+                        Log.i(TAG, "SKIP bid (already fired): tid=" + fTid);
+                        return;
+                    }
+                    // 🏎️ งานบิดตัดหน้าเธรดอื่น (ADD-ONLY — ไม่กระทบตรรกะเดิม)
+                    try { Thread.currentThread().setPriority(Thread.MAX_PRIORITY); } catch (Exception ignored) {}
                     for (int attempt = 0; attempt <= maxRetries; attempt++) {
                         try {
                             if (attempt > 0) {
@@ -1159,23 +1850,63 @@ public class BotService extends Service {
                                 try { Thread.sleep(2000); } catch (InterruptedException ignored) { return; }
                             }
                             if (!running || accessToken == null) return;
+                            // Don't bid if the order already reached a final state in another thread
+                            if (bidResolved.contains(fTid)) {
+                                Log.i(TAG, "SKIP bid (resolved): tid=" + fTid);
+                                return;
+                            }
+                            if (precheckHit.remove(fTid) != null) {
+                                Log.i(TAG, "SKIP bid (blacklist pre-check hit): tid=" + fTid);
+                                return;
+                            }
 
-                            Log.i(TAG, "BIDDING NOW: tid=" + fTid + " price=" + fPrice + (attempt > 0 ? " (attempt " + attempt + ")" : ""));
+                            long bidStart = System.currentTimeMillis();
+                            Log.i(TAG, "BIDDING NOW: tid=" + fTid + " price=" + fPrice
+                                    + (attempt > 0 ? " (attempt " + attempt + ")" : "")
+                                    + " sinceWs=" + (bidStart - fReceivedAt) + "ms"
+                                    + " scheduleWait=" + (bidStart - fScheduledAt) + "ms"
+                                    + " createdAge=" + ageText(fCreatedAt, bidStart));
+                            long httpStart = System.currentTimeMillis();
                             JSONObject bidResp = HttpClient.bid(accessToken, fTid, fPrice, fDist);
+                            long bidDone = System.currentTimeMillis();
+                            Log.i(TAG, "BID HTTP OK: tid=" + fTid
+                                    + " httpMs=" + (bidDone - httpStart)
+                                    + " totalSinceWs=" + (bidDone - fReceivedAt) + "ms"
+                                    + " createdAge=" + ageText(fCreatedAt, bidDone));
                             totalBids.incrementAndGet();
                             config.addBid();
                             lastBidTid = fTid;
                             lastBidTime = System.currentTimeMillis();
+                            // Mark our latest pending bid (single-bid-mode gate)
+                            pendingBidTid = fTid;
+                            pendingBidUntil = System.currentTimeMillis() + 22000L;
                             bidDetails.put(fTid, new String[]{String.valueOf(fPrice), String.valueOf(fDist)});
                             String msg = String.format("ส่ง %dกีบ สำเร็จ -> %s", fPrice, fTid);
-                            Log.i(TAG, msg + " resp=" + bidResp.toString().substring(0, Math.min(bidResp.toString().length(), 200)));
+                            String fullResp = bidResp.toString();
+                            Log.i(TAG, msg + " resp=" + fullResp.substring(0, Math.min(fullResp.length(), 500)));
                             notifyUI("bid", msg);
                             toast("ส่งสำเร็จ: " + fPrice + " กีบ");
                             updateStats();
+                            schedulePostBidVerify(fTid);
+                            // OWNER DECISION (2026-10-19): ยิงบิดครั้งเดียวต่องาน —
+                            // confirm rebids / watchdog rebid / 400-rescue ถูกถอดทั้งหมด
+                            // เพราะบิดซ้ำบนงานค้างทำให้บิดงานจริงถูก supersede (พลาดงานจริง)
+                            // และ KOKOK ตอบ BID_EXPIRED ให้งานที่คนขับถือหลายบิดอยู่แล้ว
                             return;
                         } catch (Exception e) {
                             Log.e(TAG, "Bid FAILED (attempt " + attempt + "/" + maxRetries + ")", e);
+                            if (HttpClient.isHttpStatus(e, 400)) {
+                                // OWNER DECISION (2026-10-19): ยิงครั้งเดียว —
+                                // ไม่มี rescue/retry แล้ว (บิดซ้ำบนงานค้างเผาบิดงานจริง)
+                                Log.i(TAG, "Bid stopped (server BAD_REQUEST): tid=" + fTid + " price=" + fPrice + " pickup=" + (int) fDist + "m");
+                                bidResolved.add(fTid);
+                                bidConfirmScheduled.remove(fTid);
+                                bidScheduled.remove(fTid);
+                                notifyUI("skip", "server rejected: " + fTid);
+                                return;
+                            }
                             if (attempt == maxRetries) {
+                                bidScheduled.remove(fTid);
                                 notifyUI("error", "ผิดพลาด: " + e.getMessage());
                             }
                         }
@@ -1183,18 +1914,221 @@ public class BotService extends Service {
                 }
             };
 
-            // Non-blocking: schedule the bid, return immediately (frees executor thread)
+            bidTaskHolder[0] = bidTask;
+
+            // ── PRE-BID PROBE (ย้ายมาไว้ "หลังตัวกรอง" 2026-10-31): เดิมยิง probe ก่อนตัวกรอง
+            // ระยะ/Tier/ราคา ทำให้งานที่จะไม่บิดอยู่ดีก็เปลือง GET รอบหนึ่ง — ตอนนี้เช็คเบอร์
+            // เฉพาะงานที่จะบิดจริงเท่านั้น + ใช้สนาม probeExecutor ของตัวเอง (ไม่ต่อคิวหลัง
+            // OSRM/warmer/post-bid verify อีก) — early-fire บิดทันทีที่ probe ตอบ คงเดิมทุกอย่าง ──
+            if (!config.hasBlacklistFeature()) {
+                // skip probe — premium entitlement required
+            } else
+            probeExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try { Thread.currentThread().setPriority(Thread.MAX_PRIORITY); } catch (Exception ignored) {}
+                    // OWNER (2026-11-01): หน่วง 120ms ก่อนยิง probe — ยิงทันทีเร็วเกินบางครั้ง
+                    // KOKOK ยังไม่ทันใส่เบอร์ให้งาน (เห็นแค่ clientName) เลยเช็คไม่ได้
+                    try { Thread.sleep(120); } catch (InterruptedException e) { return; }
+                    try {
+                        JSONObject d = HttpClient.getTransportFast(accessToken, tid); // 🏎️ hedged + timeout 3s
+                        String ph = d.optString("clientPhone", "");
+                        if (ph.length() == 0) {
+                            // เบอร์ยังไม่มา (เห็นแค่ชื่อ) — รอ 150ms ลองอีกครั้งเดียว
+                            // ยังไม่มีอีก = ปล่อยผ่าน (ยิงบิด fail-open เหมือนเดิม)
+                            try { Thread.sleep(150); } catch (InterruptedException e) { return; }
+                            d = HttpClient.getTransportFast(accessToken, tid);
+                            ph = d.optString("clientPhone", "");
+                        }
+                        StringBuilder ks = new StringBuilder();
+                        java.util.Iterator<String> it2 = d.keys();
+                        while (it2.hasNext()) {
+                            if (ks.length() > 0) ks.append(',');
+                            ks.append(it2.next());
+                        }
+                        Log.i(TAG, "PRE-BID PROBE: tid=" + tid
+                                + " clientPhone=" + (ph.length() > 0 ? "PRESENT(" + ph.length() + " chars)" : "absent")
+                                + " keys=" + ks.toString());
+                        if (ph.length() > 0) {
+                            String cph = BlacklistManager.canonicalPhone(ph);
+                            orderPhone.put(tid, cph);
+                            Integer oc = phoneOrders.get(cph);
+                            phoneOrders.put(cph, Integer.valueOf((oc == null ? 0 : oc.intValue()) + 1));
+                            BlacklistManager.Entry hit = BlacklistManager.match(config.getBlacklist(), ph, "");
+                            boolean personalHit = (hit == null && config.hasBlacklistFeature()
+                                    && config.isPersonallyBlocked(ph));
+                            Log.i(TAG, "PRE-BID PROBE match: " + (hit != null ? "HIT entry#" + hit.id
+                                    : personalHit ? "PERSONAL blocklist" : "none"));
+                            if (hit != null && config.isBlacklistPrecheck()) {
+                                // Refuse BEFORE bidding — the clean path (no cancel needed)
+                                precheckHit.put(tid, true);
+                                bidResolved.add(tid);
+                                Log.i(TAG, "PRE-CHECK BLOCK: tid=" + tid + " entry#" + hit.id + " — order refused pre-bid");
+                                rememberSpamFingerprintByTid(tid);
+                                notifyUI("blacklist", "⚠️ ตรวจพบ Blacklist\nออเดอร์นี้มาจากลูกค้าที่อยู่ใน Blacklist\nระบบได้ปฏิเสธออเดอร์ให้อัตโนมัติ");
+                                toast("⚠️ ปฏิเสธออเดอร์: ลูกค้าอยู่ใน Blacklist");
+                                BlacklistManager.reportHitAsync(config.getBotServer(), config.getBotToken(),
+                                        hit.id, tid, "phone", ph, "blocked_precheck");
+                            } else if (personalHit && config.isBlacklistPrecheck()) {
+                                // 🚫 Personal blocklist: refuse BEFORE bidding (device-local list)
+                                precheckHit.put(tid, true);
+                                bidResolved.add(tid);
+                                Log.i(TAG, "PERSONAL BLOCK (pre-bid): tid=" + tid);
+                                notifyUI("blacklist", "🚫 เบอร์นี้อยู่ในลิสต์บล็อคของคุณ\nระบบไม่ส่ง bid ให้อัตโนมัติ");
+                                toast("🚫 ข้ามงาน: เบอร์อยู่ในลิสต์บล็อคของคุณ");
+                            } else if (hit != null && !config.isBlacklistPrecheck()) {
+                                // ⚡ Offline Shield (fast mode): bid already out — go offline
+                                // so the blacklisted customer cannot accept it.
+                                if (claimedTripTid.length() > 0 || !activeTrip.isEmpty()) {
+                                    if (shieldTriggered.add(tid)) {
+                                        Log.w(TAG, "SHIELD race lost (accepted): tid=" + tid);
+                                        notifyUI("blacklist", "⚠️ ลูกค้าดำกดยอมรับไปแล้ว\nโปรดยกเลิกทริปเอง — ระบบจำหน้าไว้แล้ว");
+                                    }
+                                } else {
+                                    triggerShieldForHit(tid, hit, ph);
+                                }
+                            } else if (personalHit && !config.isBlacklistPrecheck()) {
+                                // 🚫 Personal blocklist (fast mode): bid already out
+                                if (claimedTripTid.length() > 0 || !activeTrip.isEmpty()) {
+                                    if (shieldTriggered.add(tid)) {
+                                        Log.w(TAG, "SHIELD race lost (personal, accepted): tid=" + tid);
+                                        notifyUI("blacklist", "⚠️ เบอร์นี้อยู่ในลิสต์บล็อคของคุณ\nลูกค้ากดยอมรับไปแล้ว โปรดยกเลิกเอง");
+                                    }
+                                } else if (config.hasShieldFeature() && config.isBlacklistShield()) {
+                                    BlacklistManager.Entry pe = new BlacklistManager.Entry();
+                                    pe.id = -1;
+                                    pe.phone = ph;
+                                    triggerShieldForHit(tid, pe, ph);
+                                } else {
+                                    notifyUI("blacklist", "⚠️ เบอร์นี้อยู่ในลิสต์บล็อคของคุณ\nงานนี้โปรดยกเลิกเองหากไม่ต้องการ");
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        Log.w(TAG, "PRE-BID PROBE failed: " + e.getMessage());
+                    }
+                    // OWNER (2026-10-20): ยิงบิดทันทีที่ probe ตอบ (จาก log จริง ~100-300ms)
+                    // แทนหน่วงคา 2 วิ — โดย bidTask เองเช็ค precheckHit/bidResolved อยู่แล้ว
+                    // (HIT = ข้าม / none = ยิง / probe ล้ม = ยิง fail-open) + มี gate กันยิงซ้ำ
+                    if (config.isBlacklistPrecheck()) {
+                        Runnable earlyBid = bidTaskHolder[0];
+                        if (earlyBid != null) bidExecutor.execute(earlyBid);
+                    }
+                }
+            });
+
+            // Non-blocking: scheduler only triggers; bid HTTP runs on a dedicated parallel pool.
             if (bidDelay > 0) {
-                scheduler.schedule(bidTask, bidDelay, java.util.concurrent.TimeUnit.MILLISECONDS);
+                scheduler.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        bidExecutor.execute(bidTask);
+                    }
+                }, bidDelay, java.util.concurrent.TimeUnit.MILLISECONDS);
             } else {
-                // Bid immediately on async pool (don't block)
-                asyncExecutor.execute(bidTask);
+                bidExecutor.execute(bidTask);
             }
         } catch (Exception e) {
             Log.e(TAG, "tryHandleNewOrder error", e);
         }
     }
 
+    private long parseIsoUtcMillis(String value) {
+        if (value == null || value.length() == 0) return -1;
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
+            format.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return format.parse(value).getTime();
+        } catch (Exception e) {
+            return -1;
+        }
+    }
+
+    private String ageText(long startedAt, long now) {
+        return startedAt > 0 ? (now - startedAt) + "ms" : "n/a";
+    }
+
+    private void schedulePostBidVerify(final String tid) {
+        final int[] delays = new int[]{300, 1000, 2500};
+        for (int i = 0; i < delays.length; i++) {
+            final int delayMs = delays[i];
+            scheduler.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    // NOTE: no bidResolved guard here — Point B (blacklist warn) must
+                    // also run for WON trips (customer may accept faster than verify).
+                    if (!running || accessToken == null) return;
+                    asyncExecutor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                JSONObject detail = HttpClient.getTransport(accessToken, tid);
+                                String raw = detail.toString();
+                                StringBuilder keys = new StringBuilder();
+                                java.util.Iterator<String> it = detail.keys();
+                                while (it.hasNext()) {
+                                    if (keys.length() > 0) keys.append(',');
+                                    keys.append(it.next());
+                                }
+                                Log.i(TAG, "POST-BID VERIFY " + delayMs + "ms tid=" + tid
+                                        + " keys=" + keys.toString()
+                                        + " body=" + raw.substring(0, Math.min(raw.length(), 1200)));
+                                // ── Blacklist check (Point B — post-bid) ──
+                                // Customer identity is only visible AFTER a bid, so the
+                                // best we can do here is warn the driver + log the hit.
+                                // No auto-cancel (kept safe by design).
+                                if (delayMs == 300 && config.hasBlacklistFeature()) {
+                                    try {
+                                        String cPhone = detail.optString("clientPhone", "");
+                                        String cCid = detail.optString("cid", "");
+                                        if (cCid.length() == 0) {
+                                            // clientProfile URL holds a STABLE customer UUID:
+                                            // .../profile/<uuid>.jpg — survives phone changes
+                                            String cProfile = detail.optString("clientProfile", "");
+                                            int idx = cProfile.indexOf("/profile/");
+                                            if (idx >= 0) {
+                                                String tail = cProfile.substring(idx + 9);
+                                                int dot = tail.indexOf('.');
+                                                if (dot > 0) cCid = tail.substring(0, dot);
+                                            }
+                                        }
+                                        BlacklistManager.Entry blHit = BlacklistManager.match(config.getBlacklist(), cPhone, cCid);
+                                        if (blHit != null) {
+                                            String blField = cPhone.length() > 0 ? "phone" : "cid";
+                                            Log.i(TAG, "BLACKLIST HIT (post-bid): tid=" + tid + " entry#" + blHit.id + " matched=" + blField);
+                                            if (claimedTripTid.length() > 0 || !activeTrip.isEmpty()) {
+                                                // Race lost — customer accepted before the shield
+                                                if (shieldTriggered.add(tid)) {
+                                                    notifyUI("blacklist", "⚠️ ตรวจพบ Blacklist\nลูกค้าดำกดยอมรับไปแล้ว โปรดยกเลิกเอง");
+                                                    BlacklistManager.reportHitAsync(config.getBotServer(), config.getBotToken(),
+                                                            blHit.id, tid, blField, cPhone.length() > 0 ? cPhone : cCid, "accepted_after_bid");
+                                                }
+                                            } else if (config.hasShieldFeature() && config.isBlacklistShield()) {
+                                                // Bid still pending → shield it now
+                                                triggerShieldForHit(tid, blHit, cPhone.length() > 0 ? cPhone : cCid);
+                                            } else {
+                                                notifyUI("blacklist", "⚠️ ตรวจพบ Blacklist\nลูกค้าในออเดอร์นี้อยู่ใน Blacklist โปรดระวัง");
+                                                BlacklistManager.reportHitAsync(config.getBotServer(), config.getBotToken(),
+                                                        blHit.id, tid, blField, cPhone.length() > 0 ? cPhone : cCid, "warn_after_bid");
+                                            }
+                                        } else if (cPhone.length() > 0 && config.hasBlacklistFeature()
+                                                && config.isPersonallyBlocked(cPhone)) {
+                                            // 🚫 Personal blocklist hit (post-bid, device-local)
+                                            if (shieldTriggered.add(tid)) {
+                                                notifyUI("blacklist", "🚫 เบอร์นี้อยู่ในลิสต์บล็อคของคุณ\nลูกค้ากดยอมรับไปแล้ว โปรดยกเลิกเอง");
+                                            }
+                                        }
+                                    } catch (Exception ignored) {}
+                                }
+                            } catch (Exception e) {
+                                Log.w(TAG, "POST-BID VERIFY failed " + delayMs + "ms tid=" + tid + ": " + e.getMessage());
+                            }
+                        }
+                    });
+                }
+            }, delayMs, java.util.concurrent.TimeUnit.MILLISECONDS);
+        }
+    }
     private void handleBidAccepted(final JSONObject bidObj) {
         executor.execute(new Runnable() {
             @Override
@@ -1214,73 +2148,20 @@ public class BotService extends Service {
     }
 
     private void tryHandleBidRejected(JSONObject bidObj) {
+        // OWNER (2026-10-20): ยิงบิดครั้งเดียวต่องาน — โดนปฏิเสธ = ยกเลิกทันที ไม่ขอใหม่
+        // (เดิม: นอนล็อคเธรด 300ms แล้วยิงซ้ำตาม getRebidCount() — เคยทำให้ติดงานปั่น/พลาดงานจริง)
+        String tid = "";
         try {
-            if (!running || accessToken == null) return;
-
-            String tid = bidObj.optString("tid", "");
+            tid = bidObj.optString("tid", "");
             if (tid.isEmpty()) return;
-
-            // Prevent concurrent rebid for same order (event comes in duplicate)
-            if (rebidLock.putIfAbsent(tid, true) != null) return; // already processing
-
-            int count = rejectedCount.containsKey(tid) ? rejectedCount.get(tid) : 0;
-            int maxRebid = config.getRebidCount();
-            if (maxRebid <= 0) maxRebid = 3;
-            if (count >= maxRebid) {
-                Log.i(TAG, "REBID LIMIT: tid=" + tid + " rejected " + count + "/" + maxRebid + " times, giving up");
-                notifyUI("order", String.format("ถูกปฏิเสธ %d/%d ครั้ง, สละ %s", count, maxRebid, tid));
-                rejectedCount.remove(tid);
-                rebidLock.remove(tid);
-                return;
-            }
-
-            count++;
-            rejectedCount.put(tid, count);
-
-            // Use saved bid details from concurrent map
-            String[] saved = bidDetails.get(tid);
-            if (saved == null) {
-                Log.w(TAG, "REBID: no saved bid details for " + tid);
-                rebidLock.remove(tid);
-                return;
-            }
-            String priceStr = saved[0];
-            String pickupStr = saved[1];
-
-            int bidPrice = Integer.parseInt(priceStr);
-            double pickupDist = Double.parseDouble(pickupStr);
-
-            // Wait before rebidding (server needs time to process previous bid)
-            Log.i(TAG, "REBID #" + count + "/" + maxRebid + ": tid=" + tid + " price=" + bidPrice + " (waiting 300ms)");
-            try { Thread.sleep(300); } catch (InterruptedException ignored) {
-                rebidLock.remove(tid);
-                return;
-            }
-
-            // Check again in case another rejection came while sleeping
-            int currentCount = rejectedCount.containsKey(tid) ? rejectedCount.get(tid) : count;
-            if (currentCount > maxRebid) {
-                Log.i(TAG, "REBID: aborted, count exceeded during wait");
-                rebidLock.remove(tid);
-                return;
-            }
-
-            JSONObject bidResp = HttpClient.bid(accessToken, tid, bidPrice, pickupDist);
-            totalBids.incrementAndGet();
-            config.addBid();
-            lastBidTid = tid;
-            lastBidTime = System.currentTimeMillis();
-
-            String msg = String.format("รีบิด %d/%d: %d์ -> %s", count, maxRebid, bidPrice, tid);
-            Log.i(TAG, msg + " resp=" + bidResp.toString().substring(0, Math.min(bidResp.toString().length(), 200)));
-            notifyUI("bid", msg);
-            toast("รีบิดส่ง: " + bidPrice + " กีบ");
-            updateStats();
-
-            // Unlock after completing
+            Log.i(TAG, "Bid rejected (single-bid mode, no rebid): tid=" + tid);
+            bidResolved.add(tid);
+            bidConfirmScheduled.remove(tid);
+            bidScheduled.remove(tid);
+            rejectedCount.remove(tid);
             rebidLock.remove(tid);
-        } catch (Exception e) {
-            Log.e(TAG, "tryHandleBidRejected error", e);
+            notifyUI("skip", "โดนปฏิเสธ (ไม่ขอใหม่): " + tid);
+        } catch (Exception ignored) {
         }
     }
 
@@ -1298,22 +2179,47 @@ public class BotService extends Service {
 
             Log.i(TAG, "BID RESULT: tid=" + tid + " did=" + did + " myId=" + driverId);
 
+            if (orderGuard != null) orderGuard.recordGoodOutcome(tid);
+
+            // Mark this order as resolved so confirmation/watchdog re-bids stop
+            bidResolved.add(tid);
+            bidConfirmScheduled.remove(tid);
+            bidScheduled.remove(tid);
+
             // Accept if did matches our id, OR if did is empty but we bid on this order
             boolean isOurBid = did.equals(driverId) || (did.isEmpty() && bidDetails.containsKey(tid));
 
             if (isOurBid) {
-                playSound(soundFileWin, "win"); // ta-da sound
-                totalWon.incrementAndGet();
-                config.addWin();
-
-                // Lock: atomically claim trip slot — only ONE trip allowed at a time
-                if (activeTrip.putIfAbsent(tid, true) == null) {
-                    Log.i(TAG, "TRIP LOCKED: tid=" + tid + " — blocking new bids until trip ends");
+                synchronized (tripClaimLock) {
+                    if (claimedTripTid.length() > 0) {
+                        Log.w(TAG, "DUPLICATE ACCEPTED IGNORED: tid=" + tid + " already claimed=" + claimedTripTid);
+                        bidResolved.add(tid);
+                        bidConfirmScheduled.remove(tid);
+                        bidScheduled.remove(tid);
+                        notifyUI("skip", "รับซ้อน: " + tid);
+                        updateStats();
+                        return;
+                    }
+                    claimedTripTid = tid;
+                    if (tid.equals(pendingBidTid)) {
+                        pendingBidTid = "";
+                        pendingBidUntil = 0;
+                    }
+                    // Customer ACCEPTED = legitimate — clear their spam counter
+                    String accPhone = orderPhone.remove(tid);
+                    if (accPhone != null) phoneAbandoned.remove(accPhone);
+                    activeTrip.put(tid, true);
+                    Log.i(TAG, "TRIP CLAIMED: tid=" + tid + " — blocking all other accepted orders until trip ends");
                     notifyUI("trip_lock", tid);
                     // Safety: auto-unlock after 30 min in case we miss the trip-end event
                     scheduler.schedule(new Runnable() {
                         @Override
                         public void run() {
+                            synchronized (tripClaimLock) {
+                                if (tid.equals(claimedTripTid)) {
+                                    claimedTripTid = "";
+                                }
+                            }
                             if (activeTrip.remove(tid) != null) {
                                 Log.w(TAG, "TRIP AUTO-UNLOCK (timeout): tid=" + tid);
                                 notifyUI("trip_unlock", tid);
@@ -1321,6 +2227,10 @@ public class BotService extends Service {
                         }
                     }, 30, TimeUnit.MINUTES);
                 }
+
+                playSound(soundFileWin, "win"); // ta-da sound
+                totalWon.incrementAndGet();
+                config.addWin();
 
                 // Start trip GPS simulation (move toward pickup, then dropoff)
                 startTripSimulation(tid);
@@ -1489,6 +2399,11 @@ public class BotService extends Service {
         Log.i(TAG, "TRIP END EVENT: " + eventName + " tid=" + tid);
         if (activeTrip.containsKey(tid)) {
             activeTrip.remove(tid);
+            synchronized (tripClaimLock) {
+                if (tid.equals(claimedTripTid)) {
+                    claimedTripTid = "";
+                }
+            }
             playSound(soundFileSuccess, "success"); // success chime — trip completed!
             Log.i(TAG, "TRIP UNLOCKED: tid=" + tid + " — accepting new orders again");
             notifyUI("trip_unlock", tid);
@@ -1498,8 +2413,14 @@ public class BotService extends Service {
         if (tid.length() > 0) {
             rejectedCount.remove(tid);
             orderDetails.remove(tid);
+            if (orderGuard != null) orderGuard.clearOrder(tid);
             bidDetails.remove(tid);
+            bidScheduled.remove(tid);
             tripCoords.remove(tid);
+            // ⚡ Offline Shield: trip ended → restore online if the shield held it
+            if (shieldWatchTids.remove(tid) && shieldOfflineActive) {
+                restoreShieldOnlineSoon();
+            }
             tripRoutePoints.remove(tid);
             tripSimState.remove(tid);
             tripPhase.remove(tid);
@@ -1545,16 +2466,41 @@ public class BotService extends Service {
     private void stopBot() {
         Log.i(TAG, "stopBot: stopping");
         running = false;
+        // Stop trip simulation so the GPS loop doesn't keep running after stop
+        tripSimActive = false;
         // Go offline if fake GPS was active
         if (config.isFakeGps() && accessToken != null) {
             try { HttpClient.goOffline(accessToken); } catch (Exception ignored) {}
         }
+        // ⚡ Offline Shield: never leave the driver stuck offline after stopping
+        if (shieldOfflineActive && accessToken != null) {
+            final String shieldTok = accessToken;
+            Thread restoreOnline = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        HttpClient.goOnline(shieldTok);
+                        Log.i(TAG, "SHIELD stop: online restored");
+                    } catch (Exception ignored) {}
+                }
+            });
+            restoreOnline.setDaemon(true);
+            restoreOnline.start();
+        }
+        shieldOfflineActive = false;
         scheduler.shutdownNow();
+        bidExecutor.shutdownNow();
+        executor.shutdownNow();
+        asyncExecutor.shutdownNow();
+        probeExecutor.shutdownNow();
+        synchronized (tripClaimLock) { claimedTripTid = ""; }
+        activeTrip.clear();
+        bidScheduled.clear();
         uiHandler.removeCallbacksAndMessages(null);
         try { unregisterReceiver(wsReceiver); } catch (Exception ignored) {}
         config.setEnabled(false);
         notifyUI("connection", "connection_red");
-        notifyUI("status", "Bot stopped");
+        notifyUI("status", "\u26D4 \u0E2B\u0E22\u0E38\u0E14\u0E17\u0E33\u0E07\u0E32\u0E19\u0E41\u0E25\u0E49\u0E27");
         stopForeground(true);
         stopSelf();
     }
@@ -1566,3 +2512,4 @@ public class BotService extends Service {
         super.onDestroy();
     }
 }
+

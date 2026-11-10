@@ -18,16 +18,45 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.osmdroid.config.Configuration
+import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.util.MapTileIndex
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 class RouteFragment : Fragment() {
+
+    /**
+     * CARTO Voyager — tile source ที่สวยและเร็วกว่า OSM MAPNIK
+     * - มีถนน/สี/label ที่สวยชัด
+     * - CDN เร็ว (ให้บริการฟรี)
+     */
+    private val CARTO_TILE_SOURCE = object : OnlineTileSourceBase(
+        "CARTO Voyager",
+        0, 19, 256, ".png",
+        arrayOf(
+            "https://a.basemaps.cartocdn.com/rastertiles/voyager/",
+            "https://b.basemaps.cartocdn.com/rastertiles/voyager/",
+            "https://c.basemaps.cartocdn.com/rastertiles/voyager/"
+        ),
+        "© OpenStreetMap contributors © CARTO"
+    ) {
+        override fun getTileURLString(pTile: Long): String {
+            return baseUrl +
+                MapTileIndex.getZoom(pTile) + "/" +
+                MapTileIndex.getX(pTile) + "/" +
+                MapTileIndex.getY(pTile) +
+                mImageFilenameEnding
+        }
+    }
 
     private var _binding: FragmentRouteBinding? = null
     private val binding get() = _binding!!
     private lateinit var map: MapView
+    private lateinit var locationOverlay: MyLocationNewOverlay
     private val settings by lazy { AppSettings.get(requireContext()) }
 
     private var start: GeoPoint? = null
@@ -42,10 +71,12 @@ class RouteFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        // osmdroid config (ต้องตั้งก่อน map inflate)
+        // ตั้ง cache dir ของ osmdroid ให้เขียน tile ลง internal storage (เร็ว)
         Configuration.getInstance().userAgentValue = requireContext().packageName
-        Configuration.getInstance().load(requireContext(),
-            requireContext().getSharedPreferences("osmdroid", 0))
+        Configuration.getInstance().osmdroidBasePath =
+            requireContext().filesDir // internal storage เร็วกว่า external
+        Configuration.getInstance().osmdroidTileCache =
+            java.io.File(requireContext().filesDir, "osmdroid_tiles")
         _binding = FragmentRouteBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -53,6 +84,7 @@ class RouteFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupMap()
+        setupMyLocationButton()
         setupPickButtons()
         setupModeToggle()
         setupSpeedSpinner()
@@ -61,19 +93,50 @@ class RouteFragment : Fragment() {
     }
 
     private fun setupMap() {
+        // ตั้ง cache ใหญ่ขึ้นก่อนสร้าง map — เร่งความเร็ว
+        val cfg = Configuration.getInstance()
+        cfg.userAgentValue = requireContext().packageName
+        cfg.cacheMapTileCount = 200        // cache ในหน่วยความจำ
+        cfg.tileDownloadThreads = 4        // ดาวน์โหลด 4 threads พร้อมกัน
+        cfg.tileDownloadMaxQueueSize = 16
+
         map = binding.map.apply {
-            setTileSource(TileSourceFactory.MAPNIK)
+            // ใช้ CARTO Voyager — สวยกว่า MAPNIK เยอะ + มี road label ชัด + เร็ว
+            setTileSource(CARTO_TILE_SOURCE)
             setMultiTouchControls(true)
-            controller.setZoom(15.0)
+            setUseDataConnection(true)
+            // ตั้งค่าให้แสดงเร็ว
+            tilesScaleFactor = 1f
+            minZoomLevel = 3.0
+            maxZoomLevel = 19.0
+            controller.setZoom(16.0)
             controller.setCenter(GeoPoint(13.7563, 100.5018))
         }
+        // overlay ตำแหน่งปัจจุบัน (จุดสีน้ำเงิน)
+        locationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(requireContext()), map).apply {
+            enableMyLocation()
+            enableAutoStop = false
+            // อัปเดตเร็วขึ้น (1 วิ)
+            runOnFirstFix {
+                requireActivity().runOnUiThread {
+                    val loc = locationOverlay.myLocation
+                    if (loc != null) map.controller.animateTo(loc)
+                }
+            }
+        }
+        map.overlays.add(locationOverlay)
+        // tap overlay — หุ้มด้วย try เพื่อป้องกันเด้ง
         map.overlays.add(object : org.osmdroid.views.overlay.Overlay(requireContext()) {
             override fun onSingleTapConfirmed(
                 e: android.view.MotionEvent?, view: MapView?
             ): Boolean {
-                e ?: return false; view ?: return false
-                val pt = view.projection.fromPixels(e.x.toInt(), e.y.toInt()) as GeoPoint
-                placePoint(pt)
+                try {
+                    e ?: return false; view ?: return false
+                    val pt = view.projection.fromPixels(e.x.toInt(), e.y.toInt()) as GeoPoint
+                    placePoint(pt)
+                } catch (t: Throwable) {
+                    toast("ไม่สามารถปักหมุดได้: ${t.message}")
+                }
                 return true
             }
         })
@@ -120,6 +183,76 @@ class RouteFragment : Fragment() {
             pickMode = PickMode.END
             toast("แตะเลือกจุด B")
         }
+    }
+
+    /**
+     * ปุ่ม FAB ลูกศร — กดแล้ว:
+     * 1) ขอสิทธิ์ location ถ้ายังไม่ได้ให้
+     * 2) เลื่อนแผนที่ไปที่ตำแหน่งปัจจุบัน (จาก GPS หรือ network)
+     * 3) ตั้งตำแหน่งนั้นเป็นจุด A อัตโนมัติ (พร้อม marker)
+     */
+    private fun setupMyLocationButton() {
+        binding.fabMyLocation.setOnClickListener {
+            val ctx = requireContext()
+            // ตรวจสิทธิ์
+            val perm = android.Manifest.permission.ACCESS_FINE_LOCATION
+            if (androidx.core.content.ContextCompat.checkSelfPermission(ctx, perm) !=
+                android.content.pm.PackageManager.PERMISSION_GRANTED
+            ) {
+                androidx.core.app.ActivityCompat.requestPermissions(
+                    requireActivity(), arrayOf(perm), 100
+                )
+                toast("กรุณาอนุญาตสิทธิ์ตำแหน่งก่อน")
+                return@setOnClickListener
+            }
+            // ดึงตำแหน่งล่าสุดจาก locationOverlay
+            val myLoc = locationOverlay.myLocation
+            if (myLoc != null && myLoc.latitude != 0.0 && myLoc.longitude != 0.0) {
+                goToLocation(myLoc)
+            } else {
+                // ยังไม่มี fix → ลอง LocationManager โดยตรง
+                fetchLastKnownAndGo()
+            }
+        }
+    }
+
+    private fun fetchLastKnownAndGo() {
+        val ctx = requireContext()
+        try {
+            val lm = ctx.getSystemService(android.content.Context.LOCATION_SERVICE)
+                as android.location.LocationManager
+            val providers = lm.getProviders(true)
+            var best: android.location.Location? = null
+            for (p in providers) {
+                val loc = lm.getLastKnownLocation(p) ?: continue
+                if (best == null || loc.accuracy < best!!.accuracy) best = loc
+            }
+            if (best != null) {
+                goToLocation(GeoPoint(best.latitude, best.longitude))
+            } else {
+                toast("ยังไม่พบตำแหน่ง — ลองเปิด Google Maps หรือ Maps ก่อนเพื่อรับ GPS")
+            }
+        } catch (e: SecurityException) {
+            toast("ไม่มีสิทธิ์อ่านตำแหน่ง")
+        }
+    }
+
+    /** เลื่อนแผนที่ไปที่ [pt] + ตั้งเป็นจุด A */
+    private fun goToLocation(pt: GeoPoint) {
+        map.controller.animateTo(pt, 16.0, 500)
+        // ตั้งเป็นจุด A อัตโนมัติ
+        start = pt
+        pickMode = PickMode.END
+        markerStart?.let { map.overlays.remove(it) }
+        markerStart = Marker(map).apply {
+            position = pt
+            title = "จุด A (ตำแหน่งของฉัน)"
+            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+        }
+        map.overlays.add(markerStart)
+        binding.txtStart.text = "A: %.5f, %.5f".format(pt.latitude, pt.longitude)
+        map.invalidate()
+        toast("ตั้งตำแหน่งของคุณเป็นจุด A แล้ว — แตะเลือกจุด B")
     }
 
     private fun setupModeToggle() {
@@ -239,16 +372,23 @@ class RouteFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        if (::map.isInitialized) map.onResume()
+        if (::map.isInitialized) {
+            map.onResume()
+            if (::locationOverlay.isInitialized) locationOverlay.enableMyLocation()
+        }
     }
 
     override fun onPause() {
         super.onPause()
-        if (::map.isInitialized) map.onPause()
+        if (::map.isInitialized) {
+            if (::locationOverlay.isInitialized) locationOverlay.disableMyLocation()
+            map.onPause()
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        if (::locationOverlay.isInitialized) locationOverlay.disableMyLocation()
         if (::map.isInitialized) map.onDetach()
         _binding = null
     }

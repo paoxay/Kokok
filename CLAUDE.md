@@ -202,3 +202,259 @@ adb -s 57ab78be install -r kokok-final.apk
 
 ## User Communication Language
 User speaks Thai (ภาษาไทย). UI text is in Thai. Admin page in Lao (not yet migrated). Use Thai when talking to user.
+
+---
+
+## AI Brain Update - 2026-07-22
+
+This section is a detailed handoff for future AI/Codex sessions. Read this before changing the bot. The user is "Khun Jane" and calls the bot "kokkok". The user often calls the assistant "ajarn hacker", but work must stay in safe debugging/maintenance territory.
+
+### Communication Style
+- Reply to the user in Thai.
+- The user strongly prefers careful edits: "kaekhai yang ramatrawang" / fix carefully.
+- Do not delete existing working functions unless explicitly requested and technically necessary.
+- Keep explaining cause/evidence from logs. The user tests live with a USB-connected Android phone.
+- The user may intentionally test low-price or far-distance orders by hand; do not treat that as a bot failure if filters skip them.
+
+### Safety Boundary
+- Help with safe diagnostics, logging, stability, UI, build, and normal bot behavior.
+- Do not help with abusive/exploit behavior such as:
+  - locking customer orders so only bot drivers are visible,
+  - fake drivers/cars/accounts/tokens,
+  - bypassing KOKOK server duplicate-bid protections,
+  - creating a server/proxy to manipulate KOKOK dispatch visibility,
+  - forcing duplicate bids against server rules.
+- If the user asks for those again, refuse briefly in Thai and redirect to safe testing, telemetry, or legitimate dispatch logic.
+
+### Current Main Bug Being Investigated
+Symptom:
+- Bot sends bid successfully.
+- Customer side sometimes sees only a driver-name notification, but no accept UI/button.
+- If user/driver uses official app manually or auto-clicks official UI, customer reportedly sees accept UI more reliably.
+
+Known evidence:
+- Bot can receive `transport:requested` via intercepted app WebSocket.
+- Bot POST `/hero/v3.2/transports/{tid}/bids` often gets HTTP `201 Created` with response `{"created":"..."}`.
+- Even when server returns `201`, customer UI may still fail to show the accept button sometimes.
+- Duplicate bid/rebid on the same `tid` after a successful bid is usually rejected by KOKOK server with `HTTP 400 BAD_REQUEST`.
+- Manual retest of the "same order" normally requires cancellation/expiry/new request cycle around 15-16 seconds; it is not a legal same-`tid` duplicate bid.
+
+### Latest Implemented Behavior in BotService
+These changes were already implemented before this note:
+- `bidExecutor = Executors.newFixedThreadPool(10)` so different `tid` orders can bid concurrently.
+- `bidScheduled` set prevents duplicate `transport:requested` for the same `tid` from scheduling duplicate initial bids.
+- Duplicate order events log `SKIP duplicate scheduled bid`.
+- Different `tid`s should still bid in parallel and should not wait for a queue.
+- `bidResolved`, `bidConfirmScheduled`, and cleanup logic exist for expired/cancelled/accepted/rejected/stop.
+- Single-trip guard exists:
+  - `tripClaimLock`
+  - `claimedTripTid`
+  - prevents multiple accepted trips from being treated as active at once.
+- `HttpClient.readResponse()` throws on non-2xx and includes response body prefix.
+- `HttpClient.isHttpStatus(Throwable e, int status)` exists.
+- Initial bid stops on server HTTP 400 and logs `Bid stopped (server BAD_REQUEST)`.
+- Confirm rebid is sequential:
+  - `scheduleConfirmRebids()` starts attempt 1.
+  - next attempt runs only after previous succeeds plus spacing.
+  - on HTTP 400, stops and logs `CONFIRM rebid sequence stopped (server rejected duplicate)`.
+- Watchdog rebid after 30s still exists, but on HTTP 400 it stops and logs duplicate rejection.
+- `schedulePostBidVerify(tid)` runs after successful bid at 300ms, 1000ms, and 2500ms.
+
+### Rebid Reality After Real Testing
+Important: same-`tid` rebid is mostly blocked by KOKOK server.
+
+Observed flow:
+- First bid succeeds with `201 Created`.
+- Immediate confirm rebid on the same `tid` gets HTTP `400 BAD_REQUEST`.
+- Watchdog rebid on the same `tid` after 30s also often gets HTTP `400 BAD_REQUEST`.
+
+Interpretation:
+- The bot's rebid button/automatic confirm rebid cannot be relied on for duplicate same-order bid after success.
+- Keep rebid only for legitimate cases:
+  - real `bid:rejected`,
+  - network failure,
+  - 5xx/server instability,
+  - timeout before server created the bid,
+  - diagnostics.
+- Do not spam server with repeated duplicate bid attempts.
+
+### Important Live Test Logs
+
+Test: bot active, order price 342000, `tid=9a857053-454f-4829-9416-8b391252011a`
+- Event received around `2026-07-21 23:36:03.985 +07`.
+- Payload included:
+  - `price=342000`
+  - `pickup=303.88845244780276` meters
+  - pickup place `Unnamed Road`
+  - dropoff `Thai-Lao Friendship Bridge` text in Thai/Japanese logs
+- Bot scheduled bid at 300ms.
+- `BIDDING NOW` around `23:36:04.302`.
+- Bid success around `23:36:04.492`.
+- Response: `{"created":"2026-07-21T16:36:05.053Z"}`.
+- Confirm rebid attempt 1 immediately stopped because server rejected duplicate.
+- `POST-BID VERIFY` at 300ms/1000ms/2500ms returned transport detail with keys:
+  - `no,status,isSelf,paymentType,paymentStatus,price,puCoord,puAddress,puPlace,puAta,puAtd,doCoord,doAddress,doPlace,doEta,json,vehicleType,clientName,clientPhone,clientCountryDial,clientProfile`
+- No obvious bid list/driver list key was visible in the detail response body prefix.
+- Watchdog rebid at 30s also stopped because server rejected duplicate.
+- Later `transport:expired` was observed; user sometimes manually cancels, so do not assume expiry means natural timeout.
+
+Manual-only test from HAR:
+- File provided by user:
+  - `C:\Users\PAOXAYYASAN\Downloads\HTTPToolkit_2026-07-21_23-40.har`
+- Manual official app request:
+  - Started: `2026-07-21T23:40:22.940+07:00`
+  - Method: `POST`
+  - URL: `https://api.kkmove.laosmartmobility.com/hero/v3.2/transports/9da9368e-9bca-427e-a694-c98f623d5a1c/bids`
+  - Status: `201 Created`
+  - Request body: `{"price":342000,"pickup":394.6}`
+  - Response: `{"created":"2026-07-21T16:40:30.888Z"}`
+  - Headers seen:
+    - `User-Agent: okhttp/4.12.0`
+    - `accept: application/json, text/plain, */*`
+    - `Content-Type: application/json`
+    - `Accept-Encoding: gzip`
+    - `authorization: Bearer ...` (redact in all output)
+    - `Host: api.kkmove.laosmartmobility.com`
+- The HAR also contained an unrelated analytics/vector POST with SSL/cert error; ignore it for bid comparison.
+
+Comparison result:
+- Manual official app and bot use the same endpoint.
+- Manual official app and bot use the same main body fields: `price` and `pickup`.
+- Manual official app response is the same shape as bot response: `201 Created` with `{"created":"..."}`.
+- No secret extra body fields were found in the manual `/bids` HAR.
+- Differences worth testing safely:
+  - Manual app sends `pickup` rounded to 1 decimal (`394.6`).
+  - Bot currently sends raw `double pickupDist` from WebSocket payload, often many decimals.
+  - Manual request explicitly includes `Accept-Encoding: gzip`.
+  - Bot currently handles gzip response but does not explicitly set `Accept-Encoding: gzip` for POST.
+  - Manual pickup may be recalculated at press time from current driver location, not necessarily the original WebSocket `pickup` value.
+
+### Recommended Next Safe Patch
+If continuing investigation, make only a surgical patch:
+1. In `HttpClient.post()`, add:
+   - `conn.setRequestProperty("Accept-Encoding", "gzip");`
+2. In `HttpClient.bid()`, log the exact bid JSON body locally before sending, but never log full token.
+3. Consider sending `pickup` rounded to one decimal to match official app:
+   - Keep raw pickup for filtering.
+   - Only round the value used in POST body.
+   - Example: `double sentPickup = Math.round(pickupDist * 10.0) / 10.0;`
+4. Rebuild APK and test one bot bid plus one manual bid using HTTP Toolkit.
+5. Compare:
+   - endpoint,
+   - price,
+   - pickup,
+   - headers,
+   - response code/body,
+   - whether customer accept UI appears.
+
+Do not change the driver-configurable 300ms normal bid delay unless user explicitly asks. The user said the 300ms setting is driver-configurable and should be left alone.
+
+### Current Filters / Test Expectations
+Current observed runtime config in tests:
+- Max pickup filter often around `2000m`.
+- Min fare observed around `200000`.
+- If an order is below min fare or beyond max pickup, bot will skip by design.
+
+Examples:
+- `tid=d331f7f4...`, price `25000`, pickup `2616m` -> skipped because `Pickup filter: 2616m > 2000m`.
+- `tid=3959463b...`, price `178000`, pickup `399m` -> skipped because `Price filter: 178000 < min 200000`.
+- `tid=9398d613...`, price `41000`, pickup `3437m` -> skipped because far pickup.
+
+When comparing manual vs bot, use an order that passes filters:
+- pickup <= max pickup,
+- price >= min fare,
+- bot service running if testing bot,
+- bot service stopped if testing manual-only.
+
+### ADB / Device Notes
+- User tests with phone connected over USB.
+- Device seen:
+  - serial `57ab78be`
+  - product `CPH2333T2`
+  - model `CPH2333`
+  - device `OP530DL1`
+- Packages on phone:
+  - `com.coconutsilo.kokkokexpress.driver`
+  - `com.coconutsilo.kokkokexpress.shipper`
+- When starting live logcat, always stop it before final answer.
+- Useful stop command on Windows PowerShell:
+  ```powershell
+  $procs=Get-CimInstance Win32_Process | Where-Object { $_.Name -match '^adb(\.exe)?$' -and $_.CommandLine -like '*logcat*' }
+  $procs | Select-Object ProcessId,CommandLine
+  foreach ($p in $procs) { Stop-Process -Id $p.ProcessId -Force }
+  ```
+- Useful live filter:
+  ```powershell
+  adb logcat -c
+  adb logcat -v time | Select-String -Pattern "KOKOK|/bids|transport:requested|transport:expired|transport:accepted|transport:dispatched|bid|BAD_REQUEST|bad_request|server rejected|POST-BID VERIFY|HTTP 400"
+  ```
+
+### Build / APK State
+- Latest known APK output:
+  - `D:\api\kokok\koko-bot-android\build\kokok-final.apk`
+- Latest known installed build timestamp from prior session:
+  - `2026-07-21 22:50:23` local time
+- Build pipeline from earlier notes is valid.
+- After each build, verify hooks:
+  - `apkpure-450-decode\smali_classes4\okhttp3\Headers$Builder.smali` has `BOT INJECTION` count 2
+  - `apkpure-450-decode\smali_classes2\com\facebook\react\modules\websocket\WebSocketModule$connect$2.smali` has `BOT INJECTION` count 2
+  - `apkpure-450-decode\smali_classes2\com\coconutsilo\kokkokexpress\driver\MainActivity.smali` has `BotOverlay` count >= 1
+
+### Working Directory / Tooling Notes
+- Workspace: `D:\api\kokok`
+- Writable root: `D:\api\kokok`
+- Windows sandbox may block normal file reads with `apply deny-read ACLs`.
+- If a normal command fails due ACL/sandbox, rerun with `sandbox_permissions: require_escalated` and a narrow Thai justification.
+- Network is restricted unless approved.
+- Prefer `rg` for searching.
+- Use `apply_patch` for manual edits when possible. If ACL prevents it, use a careful PowerShell read/replace/write with UTF-8 and no BOM, and explain why.
+
+### Mental Model For Future AI
+The core issue is no longer "does the bot send a bid?" The bot sends and server often creates it. The real question is why a created bid sometimes does not become a visible accept UI on the customer side.
+
+Current best hypothesis:
+- Direct REST bid is close to official app manual request, but small differences remain.
+- Candidate differences:
+  - pickup value/rounding/recalculation,
+  - exact headers,
+  - app state/timing around manual press,
+  - server/customer push propagation after bid creation.
+
+Best next experiment:
+- Patch bot to match HAR more closely (`Accept-Encoding: gzip`, one-decimal pickup in POST, exact body logging).
+- Rebuild/install.
+- Run a bot bid and capture HAR/logcat.
+- Compare bot HAR vs manual HAR side-by-side.
+
+Avoid chasing duplicate rebid as the main fix because server rejects same-`tid` duplicate after a successful bid.
+
+---
+
+## AI Brain Update - 2026-11-02: Auto-Clean Low-Spam Numbers
+- **Feature added**: Auto-clean stale low-spam numbers in `bot-server`.
+- **Purpose**: Real customers who ordered and cancelled/timed-out repeatedly (because no driver accepted) were mistakenly collected as spammers by driver bots and auto-blacklisted.
+- **Rule**:
+  - `total_abandoned <= 6` (configurable, default 6)
+  - `updated_at <= NOW - 7 days` (configurable, default 7 days)
+  - If a number meets both criteria, it is automatically purged from `spam_numbers` and deleted from `blacklist` table (unblocking real customers).
+  - Heavy spammers (`total_abandoned > 6`) are kept permanently untouched.
+- **Components**:
+  - Backend `app.py`: `perform_spam_autoclean()`, route `POST /api/blacklist/spam/auto-cleanup`, background daemon thread `_spam_autoclean_worker()` checking hourly.
+  - Config: `spam_autoclean_enabled`, `spam_autoclean_max` (6), `spam_autoclean_days` (7) exposed in `get_server_config()` and saved in `config_set()`.
+  - Admin `admin.html`: Added button "🧹 ล้างเบอร์ปั่นน้อยอัตโนมัติ (≤ 6 ครั้ง & เกิน 7 วัน)" in spam table, plus settings inputs in Config tab.
+- **Verification**: Tested with unit test script — passed 100%. `test_spam_local.py` passed 15/15.
+## AI Brain Update - 2026-11-02: Admin Roles Separation & Modern Dashboards
+
+### 1. Two-Tier Admin Architecture
+- **Bot Admin (`role = 'admin'`)**:
+  - Regular driver account that has ALL bot features implicitly unlocked (`blacklist`, `shield`, `precheck`, unlimited bids).
+  - Web UI: `/admin` (`admin.html`). Displays account details, active bot entitlements, device binding info, server announcements, and quick guides.
+  - **CANNOT** access `/sysadmin` or call system management APIs (returns HTTP 403 `Sysadmin only`).
+- **System Admin (`role = 'sysadmin'`)**:
+  - Central backend manager.
+  - Web UI: `/sysadmin` (`sysadmin.html`). Complete management suite: User CRUD (with roles: driver, admin, sysadmin), Activity & Renewal Audit Dashboard, Central Blacklist & Auto-Spam cleaner, Packages, Remote Config, and Searchable Audit Logs.
+  - Endpoints protected by `require_sysadmin()`.
+  - All actions performed by sysadmin are automatically tracked with `actor`, `action`, `ip`, and timestamp in `login_log`.
+
+### 2. Auto-Migration & Safety
+- `init_db()` includes auto-migration: if no user has `role = 'sysadmin'`, existing `admin` users (and specifically `jane`) are promoted to `sysadmin` so the system owner is never locked out.
