@@ -1,43 +1,50 @@
-# KOKOK Bot ProGuard config — obfuscates bot code without breaking smali hooks
-# NOTE: Bot classes referenced from smali hooks must keep their names!
-# Classes NOT in this list will be obfuscated (renamed to a, b, c...)
+# KOKOK Bot R8 config — obfuscates bot internals without breaking hooks.
+# จุดเข้าที่ผูกกับ smali hooks + AndroidManifest ต้องคงชื่อเดิมเป๊ะ
+# (ตรวจจาก grep ทุก smali ฝั่งแอปจริง 2026-11-01):
+#   Headers$Builder       -> BotConfig.saveInterceptedToken(Context,String)
+#   WebSocketModule$2     -> BotConfig.saveWsMessage(Context,String)
+#   MainActivity          -> BotOverlay.<init>(Context) + .show()
+#                            OrderDisplayOverlay.<init>(Context) + .start()
+#   AndroidManifest       -> com.coconutsilo.bot.BotService, .LoginActivity
 
-# ── Keep classes referenced from smali hooks (CANNOT rename) ──
-# These are called by name from the injected smali code in the KOKOK app
-
-# BotConfig.saveInterceptedToken() — called from Headers$Builder hook
+# ── Hook-referenced entry points ──
 -keep class com.coconutsilo.bot.BotConfig {
     public static void saveInterceptedToken(android.content.Context, java.lang.String);
     public static void saveWsMessage(android.content.Context, java.lang.String);
 }
 
-# BotOverlay — called from MainActivity hook
+# ── MainActivity hook ──
 -keep class com.coconutsilo.bot.BotOverlay {
     public <init>(android.content.Context);
     public void show();
 }
+-keep class com.coconutsilo.bot.OrderDisplayOverlay {
+    public <init>(android.content.Context);
+    public void start();
+}
 
-# ── Obfuscate everything else ──
-# BotService, HttpClient, SecurityManager, BlacklistManager, OrderGuard, etc.
-# get renamed to short names — decompilers see a.b.c() instead of
-# BotService.triggerShieldForHit()
+# ── Manifest-declared components (framework calls by name) ──
+-keep class com.coconutsilo.bot.BotService {
+    public <init>();
+    public void onCreate();
+    public int onStartCommand(android.content.Intent, int, int);
+    public android.os.IBinder onBind(android.content.Intent);
+    public void onDestroy();
+}
+-keep class com.coconutsilo.bot.LoginActivity { *; }
 
+# ── WebView JS bridge resolved by annotation at runtime ──
+-keepclassmembers class * {
+    @android.webkit.JavascriptInterface <methods>;
+}
+
+# ── Obfuscate everything else (BotService internals, HttpClient,
+#    BlacklistManager, OrderGuard, SecurityManager, BotOverlay internals...) ──
 -repackageclasses ''
 -allowaccessmodification
-
-# Remove debug/log calls in release builds (optional — keeps APK smaller)
-# -assumenosideeffects class android.util.Log {
-#     public static int v(...);
-#     public static int d(...);
-# }
-
-# Optimization passes
 -optimizationpasses 3
--mergeinterfacesaggressively
 
-# Don't warn about missing references (android.jar stubs)
 -dontwarn android.**
 -dontwarn org.json.**
-
-# Keep annotations (needed for some Android features)
+-dontwarn okhttp3.**
 -keepattributes *Annotation*

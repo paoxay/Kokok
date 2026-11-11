@@ -93,3 +93,8 @@ APKEditor-*.jar
 
 # ── Exception: real bot-server python code (old *.py rule was for one-off scripts) ──
 !bot-server/*.py
+
+# ── R8 obfuscation artifacts (mapping.txt = reverse-engineering key — NEVER publish) ──
+koko-bot-android/obf-dex/
+koko-bot-android/obf-smali/
+koko-bot-android/src/*.xml
