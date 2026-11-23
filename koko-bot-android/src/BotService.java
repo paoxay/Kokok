@@ -244,6 +244,14 @@ public class BotService extends Service {
         }
     };
 
+
+    static double haversineKm(double lat1, double lng1, double lat2, double lng2) {
+        double R = 6371000.0;
+        double dLat = Math.toRadians(lat2 - lat1), dLng = Math.toRadians(lng2 - lng1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        return 2 * R * Math.asin(Math.sqrt(a)) / 1000.0;
+    }
     private void notifyUI(String type, String msg) {
         Intent intent = new Intent(ACTION_EVENT);
         intent.putExtra("type", type);
@@ -560,6 +568,7 @@ public class BotService extends Service {
     public void onCreate() {
         super.onCreate();
         config = new BotConfig(this);
+        HttpClient.botServerUrl = config.getBotServer();
         orderGuard = new OrderGuard(this);
         tokenReader = new AppTokenReader(this);
         createNotificationChannel();
@@ -1146,6 +1155,8 @@ public class BotService extends Service {
                     } // end else (idle GPS)
 
                     HttpClient.sendLocation(accessToken, sendLat, sendLng, currentHeading);
+                    BotConfig.HOTZONE_PIN_LAT = sendLat;
+                    BotConfig.HOTZONE_PIN_LNG = sendLng;
                 } catch (Exception e) {
                     Log.e(TAG, "Heartbeat error: " + e.getMessage());
                 }
@@ -1709,6 +1720,18 @@ public class BotService extends Service {
                     bidResolved.add(tid);
                     notifyUI("blacklist", "🛡️ ข้ามงานปั่น (แพทเทิร์นเดิมที่จำไว้)\nไม่เสียบิด — รองานจริงต่อเลย");
                     return;
+                }
+            }
+            // ── HOTZONE EXCLUSIVE (fb526d34): โซนเราเท่านั้น ในรัศมีเท่านั้น ──
+            if (config.isHotzoneEnabled()) {
+                double hx = BotConfig.HOTZONE_PIN_LAT, hy = BotConfig.HOTZONE_PIN_LNG;
+                if (hx != 0 || hy != 0) {
+                    double dKm = haversineKm(puLat, puLng, hx, hy);
+                    if (dKm > config.getHotzoneRadiusM() / 1000.0) {
+                        Log.i(TAG, "HOTZONE SKIP tid=" + tid + " dist=" + (int)(dKm * 1000) + "m > " + (int) config.getHotzoneRadiusM() + "m");
+                        bidResolved.add(tid);
+                        return;
+                    }
                 }
             }
             Log.i(TAG, "NEW ORDER: tid=" + tid + " pickup=" + (int) pickupDist + "m price=" + serverPrice + " " + puPlace + " -> " + doPlace);
