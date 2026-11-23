@@ -40,7 +40,9 @@
 
 # ── Obfuscate everything else (BotService internals, HttpClient,
 #    BlacklistManager, OrderGuard, SecurityManager, BotOverlay internals...) ──
--repackageclasses ''
+# รูดชื่อแต่เทอยู่ใน package บอท (ห้ามเทลง root — app dexes มีคลาส root LA;/LB; อยู่แล้ว
+# ชน cross-dex ตอน classes5 โหลดทีหลัง = บอทได้คลาสผิด 2026-11-23)
+-repackageclasses 'com.coconutsilo.bot'
 -allowaccessmodification
 -optimizationpasses 3
 

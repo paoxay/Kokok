@@ -98,3 +98,4 @@ APKEditor-*.jar
 koko-bot-android/obf-dex/
 koko-bot-android/obf-smali/
 koko-bot-android/src/*.xml
+koko-bot-android/out-r8/
