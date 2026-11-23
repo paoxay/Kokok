@@ -1927,9 +1927,9 @@ public class BotService extends Service {
                 @Override
                 public void run() {
                     try { Thread.currentThread().setPriority(Thread.MAX_PRIORITY); } catch (Exception ignored) {}
-                    // OWNER (2026-11-01): หน่วง 120ms ก่อนยิง probe — ยิงทันทีเร็วเกินบางครั้ง
-                    // KOKOK ยังไม่ทันใส่เบอร์ให้งาน (เห็นแค่ clientName) เลยเช็คไม่ได้
-                    try { Thread.sleep(120); } catch (InterruptedException e) { return; }
+                    // OWNER (2026-11-01 / ปรับ 135ms 2026-11-14): หน่วงก่อนยิง probe — ยิงทันทีเร็วเกิน
+                    // บางครั้ง KOKOK ยังไม่ทันใส่เบอร์ให้งาน (เห็นแค่ clientName) เลยเช็คไม่ได้
+                    try { Thread.sleep(135); } catch (InterruptedException e) { return; }
                     try {
                         JSONObject d = HttpClient.getTransportFast(accessToken, tid); // 🏎️ hedged + timeout 3s
                         String ph = d.optString("clientPhone", "");
