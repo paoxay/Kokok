@@ -17,6 +17,8 @@ public class HttpClient {
      *  2026.11.01 = probe หน่วง 120ms ก่อนยิง + ลองซ้ำ 1 ครั้งเมื่อยังไม่เห็นเบอร์
      *  (แก้ "เห็นแค่ชื่อ") + probe pool แยก + probe หลังตัวกรอง + dedup WS + อุ่นสระ OkHttp. */
     public static final String BOT_VERSION = "2026.11.01";
+    /** Bot server base URL — synced from BotConfig at startup; X-Bot-Version is sent ONLY here. */
+    public static String botServerUrl = "http://108.160.136.11:5050";
 
     // ── DIAGNOSTIC: probe candidate bid-withdraw endpoints. Uses the owner's
     // own token against their own transport; logs method/path/status/body so
@@ -82,7 +84,10 @@ public class HttpClient {
             conn.setReadTimeout(timeoutMs);
             conn.setRequestProperty("User-Agent", "okhttp/4.12.0");
             conn.setRequestProperty("Accept", "application/json, text/plain, */*");
-            conn.setRequestProperty("X-Bot-Version", BOT_VERSION);
+            // X-Bot-Version ONLY for bot server (version gate on /api/check, /api/me) — never to KOKOK API.
+            if (urlStr.startsWith(botServerUrl)) {
+                conn.setRequestProperty("X-Bot-Version", BOT_VERSION);
+            }
             if (authToken != null) {
                 conn.setRequestProperty("Authorization", "Bearer " + authToken);
             }
@@ -103,7 +108,10 @@ public class HttpClient {
             conn.setRequestProperty("User-Agent", "okhttp/4.12.0");
             conn.setRequestProperty("Accept", "application/json, text/plain, */*");
             conn.setRequestProperty("Accept-Encoding", "gzip");
-            conn.setRequestProperty("X-Bot-Version", BOT_VERSION);
+            // X-Bot-Version goes ONLY to our bot server (version gate) — never to the KOKOK API.
+            if (urlStr.startsWith(botServerUrl)) {
+                conn.setRequestProperty("X-Bot-Version", BOT_VERSION);
+            }
             if (authToken != null) {
                 conn.setRequestProperty("Authorization", "Bearer " + authToken);
             }
@@ -271,7 +279,6 @@ public class HttpClient {
         headerMethod.invoke(reqBuilder, "User-Agent", "okhttp/4.12.0");
         headerMethod.invoke(reqBuilder, "Accept", "application/json, text/plain, */*");
         headerMethod.invoke(reqBuilder, "Accept-Encoding", "gzip");
-        headerMethod.invoke(reqBuilder, "X-Bot-Version", BOT_VERSION);
         headerMethod.invoke(reqBuilder, "Authorization", "Bearer " + token);
         java.lang.reflect.Method buildMethod = builderCls.getMethod("build");
         Object request = buildMethod.invoke(reqBuilder);
