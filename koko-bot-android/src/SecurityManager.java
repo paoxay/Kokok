@@ -82,7 +82,7 @@ public class SecurityManager {
     /** Expected signature hash (first 8 hex chars of SHA-256 of signing cert). */
     // Our debug.keystore produces: 2fd82e9980add0c0018b17392aa811de39c6fc44 (SHA-1)
     // We use SHA-256 first 16 hex chars for stronger check
-    private static final String EXPECTED_SIG_PREFIX = "4416229bbb7793b1";
+    private static final String EXPECTED_SIG_PREFIX = "4fa1973549dbe592";
 
     /**
      * Check if the APK has been tampered with (re-signed by someone else).

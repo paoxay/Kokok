@@ -486,7 +486,6 @@ public class BotOverlay {
     private EditText etRebidCount;
     private EditText etConfirmRebidDelay;
     private EditText etGpsInterval;
-    private EditText etHotzoneRadius;
     private EditText etSkipRadius;
     private EditText etSkipWindow;
     private LinearLayout tabMain;
@@ -940,29 +939,6 @@ public class BotOverlay {
 
         // Interval setting
         etGpsInterval = addSettingRow(gpsCard, "\u23F1\uFE0F \u0e2a\u0e48\u0e07\u0e17\u0e38\u0e01", String.valueOf(config.getFakeGpsInterval()), "\u0e27\u0e34\u0e19\u0e32\u0e17\u0e35");
-
-        //  HOTZONE EXCLUSIVE (fb526d34) 
-        LinearLayout zoneRow = new LinearLayout(context);
-        zoneRow.setOrientation(LinearLayout.HORIZONTAL);
-        zoneRow.setGravity(Gravity.CENTER_VERTICAL);
-        zoneRow.setPadding(0, 10, 0, 0);
-        TextView tvZoneLbl = new TextView(context);
-tvZoneLbl.setText("HOTZONE");
-        tvZoneLbl.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
-        tvZoneLbl.setTextColor(0xFFD0D0D0);
-        tvZoneLbl.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
-        final android.widget.Switch swZone = new android.widget.Switch(context);
-        swZone.setChecked(config.isHotzoneEnabled());
-        swZone.setOnCheckedChangeListener(new android.widget.CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(android.widget.CompoundButton b, boolean v) {
-                config.setHotzoneEnabled(v);
-            }
-        });
-        zoneRow.addView(tvZoneLbl);
-        zoneRow.addView(swZone);
-        gpsCard.addView(zoneRow);
-etHotzoneRadius = addSettingRow(gpsCard, "Radius (m)", String.valueOf((int) config.getHotzoneRadiusM()), "e.g. 2000");
         if (isAdmin) tabSettings.addView(gpsCard); // admin-only feature
 
         // ── GPS Groups Container ──
@@ -1959,7 +1935,6 @@ etHotzoneRadius = addSettingRow(gpsCard, "Radius (m)", String.valueOf((int) conf
                     if (etBidRetries != null) config.setBidRetries(Integer.parseInt(etBidRetries.getText().toString()));
                     // (ขอใหม่/รีบิดยืนยัน ถูกถอดตาม owner 2026-10-20 — ไม่มีช่อง ไม่มีการบันทึก)
                     if (etGpsInterval != null) config.setFakeGpsInterval(Integer.parseInt(etGpsInterval.getText().toString()));
-            if (etHotzoneRadius != null) try { config.setHotzoneRadiusM(Float.parseFloat(etHotzoneRadius.getText().toString())); } catch (Exception ignored) {}
                     if (swFakeGps != null) config.setFakeGps(swFakeGps.isChecked());
                     // Dynamic (phase 4) text/number fields pushed from the server
                     for (int di = 0; di < dynTextKeys.size() && di < dynTextFields.size(); di++) {

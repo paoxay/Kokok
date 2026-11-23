@@ -99,14 +99,6 @@ public class BotConfig {
     public int getFakeGpsMode() { return prefs.getInt(KEY_FAKE_GPS_MODE, 0); } // 0=single, 1=multi
     public void setFakeGpsMode(int v) { prefs.edit().putInt(KEY_FAKE_GPS_MODE, v).apply(); }
     public int getFakeGpsInterval() { return prefs.getInt(KEY_FAKE_GPS_INTERVAL, 3); }
-
-    // ── HOTZONE EXCLUSIVE (fb526d34): bid only within radius of pinned GPS ──
-    public boolean isHotzoneEnabled() { return prefs.getBoolean("hotzone_enabled", false); }
-    public void setHotzoneEnabled(boolean v) { prefs.edit().putBoolean("hotzone_enabled", v).apply(); }
-    public float getHotzoneRadiusM() { return prefs.getFloat("hotzone_radius_m", 2000f); }
-    public void setHotzoneRadiusM(float v) { prefs.edit().putFloat("hotzone_radius_m", v).apply(); }
-    // last fake coordinate sent by heartbeat (hotzone anchor; 0,0 = not yet sent)
-    public static volatile double HOTZONE_PIN_LAT = 0, HOTZONE_PIN_LNG = 0; // seconds
     public void setFakeGpsInterval(int v) { prefs.edit().putInt(KEY_FAKE_GPS_INTERVAL, v).apply(); }
     public String getFakePoints() { return prefs.getString(KEY_FAKE_POINTS, ""); }
     public void setFakePoints(String v) { prefs.edit().putString(KEY_FAKE_POINTS, v).apply(); }
