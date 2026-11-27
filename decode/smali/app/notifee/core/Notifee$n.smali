@@ -1,0 +1,91 @@
+.class public Lapp/notifee/core/Notifee$n;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+# interfaces
+.implements Lcom/google/common/util/concurrent/FutureCallback;
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingMethod;
+    value = Lapp/notifee/core/Notifee;->createTriggerNotification(Landroid/os/Bundle;Landroid/os/Bundle;Lapp/notifee/core/interfaces/MethodCallResult;)V
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x1
+    name = null
+.end annotation
+
+.annotation system Ldalvik/annotation/Signature;
+    value = {
+        "Ljava/lang/Object;",
+        "Lcom/google/common/util/concurrent/FutureCallback<",
+        "Ljava/lang/Void;",
+        ">;"
+    }
+.end annotation
+
+
+# instance fields
+.field public final synthetic a:Lapp/notifee/core/interfaces/MethodCallResult;
+
+
+# direct methods
+.method public constructor <init>(Lapp/notifee/core/Notifee;Lapp/notifee/core/interfaces/MethodCallResult;)V
+    .locals 0
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "()V"
+        }
+    .end annotation
+
+    .line 1
+    iput-object p2, p0, Lapp/notifee/core/Notifee$n;->a:Lapp/notifee/core/interfaces/MethodCallResult;
+
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    return-void
+.end method
+
+
+# virtual methods
+.method public onFailure(Ljava/lang/Throwable;)V
+    .locals 2
+
+    .line 1
+    new-instance v0, Ljava/lang/Exception;
+
+    invoke-direct {v0, p1}, Ljava/lang/Exception;-><init>(Ljava/lang/Throwable;)V
+
+    .line 2
+    const-string p1, "API"
+
+    const-string v1, "createTriggerNotification"
+
+    invoke-static {p1, v1, v0}, Lapp/notifee/core/Logger;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Exception;)V
+
+    .line 3
+    iget-object p1, p0, Lapp/notifee/core/Notifee$n;->a:Lapp/notifee/core/interfaces/MethodCallResult;
+
+    const/4 v1, 0x0
+
+    invoke-interface {p1, v0, v1}, Lapp/notifee/core/interfaces/MethodCallResult;->onComplete(Ljava/lang/Exception;Ljava/lang/Object;)V
+
+    return-void
+.end method
+
+.method public onSuccess(Ljava/lang/Object;)V
+    .locals 2
+
+    .line 1
+    check-cast p1, Ljava/lang/Void;
+
+    .line 2
+    iget-object v0, p0, Lapp/notifee/core/Notifee$n;->a:Lapp/notifee/core/interfaces/MethodCallResult;
+
+    const/4 v1, 0x0
+
+    invoke-interface {v0, v1, p1}, Lapp/notifee/core/interfaces/MethodCallResult;->onComplete(Ljava/lang/Exception;Ljava/lang/Object;)V
+
+    return-void
+.end method

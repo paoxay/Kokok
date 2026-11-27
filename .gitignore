@@ -1,0 +1,11 @@
+# ของที่สร้างใหม่ได้จาก apktool — ไม่ต้องเก็บใน git (ประหยัด 487MB)
+decode/build/
+
+# 🔐 ข้อมูลลับจริง — ห้ามขึ้น git เด็ดขาด
+customer_tokens.txt
+cust_token.txt
+customer_accept_capture.txt
+
+# ของชั่วคราว
+*.idsig
+*.log

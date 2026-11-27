@@ -1,0 +1,31 @@
+.class final Lcom/google/android/gms/internal/auth-api/zbae;
+.super Lcom/google/android/gms/common/api/Api$AbstractClientBuilder;
+.source "com.google.android.gms:play-services-auth@@21.5.0"
+
+
+# virtual methods
+.method public final synthetic buildClient(Landroid/content/Context;Landroid/os/Looper;Lcom/google/android/gms/common/internal/ClientSettings;Ljava/lang/Object;Lcom/google/android/gms/common/api/internal/ConnectionCallbacks;Lcom/google/android/gms/common/api/internal/OnConnectionFailedListener;)Lcom/google/android/gms/common/api/Api$Client;
+    .locals 7
+
+    .line 1
+    move-object v3, p4
+
+    check-cast v3, Lcom/google/android/gms/auth/api/identity/zbi;
+
+    .line 2
+    new-instance v0, Lcom/google/android/gms/internal/auth-api/zbg;
+
+    move-object v1, p1
+
+    move-object v2, p2
+
+    move-object v4, p3
+
+    move-object v5, p5
+
+    move-object v6, p6
+
+    invoke-direct/range {v0 .. v6}, Lcom/google/android/gms/internal/auth-api/zbg;-><init>(Landroid/content/Context;Landroid/os/Looper;Lcom/google/android/gms/auth/api/identity/zbi;Lcom/google/android/gms/common/internal/ClientSettings;Lcom/google/android/gms/common/api/internal/ConnectionCallbacks;Lcom/google/android/gms/common/api/internal/OnConnectionFailedListener;)V
+
+    return-object v0
+.end method
