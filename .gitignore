@@ -1,7 +1,5 @@
-# ของที่สร้างใหม่ได้จาก apktool — ไม่ต้องเก็บใน git (ประหยัด 487MB)
-decode/build/
-
-# 🔐 ข้อมูลลับจริง — ห้ามขึ้น git เด็ดขาด
+# 🔐 token ลูกค้าจริง — ไม่อัพขึ้น git สาธารณะ (ย้ายด้วย ZIP แยก)
+# พอ repo เป็น private แล้ว ลบ 3 บรรทัดล่างนี้ออกแล้ว push ได้
 customer_tokens.txt
 cust_token.txt
 customer_accept_capture.txt
